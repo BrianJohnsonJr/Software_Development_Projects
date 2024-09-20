@@ -1,4 +1,5 @@
 const express = require('express');
+const methodOverride = require('method-override');
 
 // Create app
 const app = express();
