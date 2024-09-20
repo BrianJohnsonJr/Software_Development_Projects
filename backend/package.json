@@ -2,7 +2,7 @@
   "name": "merchsy",
   "version": "1.0.0",
   "description": "E-commerce and social media in one",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index"
@@ -13,5 +13,8 @@
     "express": "^4.21.0",
     "mongoose": "^8.6.2",
     "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
