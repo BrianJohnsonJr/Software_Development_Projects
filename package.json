@@ -4,11 +4,10 @@
   "description": "E-commerce and social media in one.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "Error: Please run 'npm test' in either ./frontend or ./backend && exit 1",
     "frontend": "cd frontend && npm start",
     "backend": "cd backend && npm start",
-    "startapp": "concurrently \"npm run frontend\" \"npm run backend\"",
-    "dev": "npm run test && npm run startapp"
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
   },
   "author": "",
   "license": "ISC",
