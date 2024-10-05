@@ -17,6 +17,7 @@ function App() {
         >
           Learn React
         </a>
+        <button href="/login" type="button" >Go To Login</button>
       </header>
     </div>
   );
