@@ -1,4 +1,4 @@
-const { get, findById, matchLogin } = require('./userInfo');
+const uInfo = require('./userInfo');
 
 // test('adds 1 + 2 to equal 3', () => {
 //     expect(sum(1, 2)).toBe(3);
@@ -76,22 +76,31 @@ const testingArrayMatch = [
     }
 ];
 test('Verify Array Retrieval', () => {
-    expect(get()).toStrictEqual(testingArrayMatch);
+    expect(uInfo.get()).toStrictEqual(testingArrayMatch);
 });
 
 test('Check findById Edge cases', () => {
-    expect(findById(-1)).toBe(undefined);
-    expect(findById(0)).toBe(undefined);
-    expect(findById(1)).toStrictEqual(testingArrayMatch[0]);
-    expect(findById('1')).toStrictEqual(testingArrayMatch[0]);
-    expect(findById(100)).toBe(undefined);
-    expect(findById(testingArrayMatch.length-1)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-2]);
-    expect(findById(testingArrayMatch.length)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-1]);
-    expect(findById(testingArrayMatch.length+1)).toBe(undefined);
+    expect(uInfo.findById(-1)).toBeUndefined();
+    expect(uInfo.findById(0)).toBeUndefined();;
+    expect(uInfo.findById(1)).toStrictEqual(testingArrayMatch[0]);
+    expect(uInfo.findById('1')).toStrictEqual(testingArrayMatch[0]);
+    expect(uInfo.findById(100)).toBeUndefined();
+    expect(uInfo.findById(testingArrayMatch.length-1)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-2]);
+    expect(uInfo.findById(testingArrayMatch.length)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-1]);
+    expect(uInfo.findById(testingArrayMatch.length+1)).toBeUndefined();
 });
 
 test('Login Matching all users in array', () => {
     testingArrayMatch.forEach(u => {
-        expect(matchLogin(u.username, u.password)).toStrictEqual(u);
+        expect(uInfo.matchLogin(u.username, u.password)).resolves.toStrictEqual(u);
     });
+});
+
+test('Adding a new user', () => {
+    let userToAdd = { username: "ABC123" };
+    userToAdd.password = "987ABC";
+    userToAdd.firstName = "Petro";
+    userToAdd.lastName = "Jonokovich";
+    const userId = uInfo.addNewUser(userToAdd);
+    expect(uInfo.findById(userId).id).toBe(userId);
 });
