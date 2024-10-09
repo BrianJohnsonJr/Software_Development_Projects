@@ -1,6 +1,9 @@
-// This file will be replaced by our database in sprint 2 most likely.
+const { get, findById, matchLogin } = require('./userInfo');
 
-const userInfo = [
+// test('adds 1 + 2 to equal 3', () => {
+//     expect(sum(1, 2)).toBe(3);
+//   });
+const testingArrayMatch = [
     {
         id: '1',
         username: 'John123',
@@ -72,15 +75,23 @@ const userInfo = [
         lastName: 'Samson'
     }
 ];
+test('Verify Array Retrieval', () => {
+    expect(get()).toStrictEqual(testingArrayMatch);
+});
 
-// Gets the entire array of user info
-exports.get = () => userInfo;
+test('Check findById Edge cases', () => {
+    expect(findById(-1)).toBe(undefined);
+    expect(findById(0)).toBe(undefined);
+    expect(findById(1)).toStrictEqual(testingArrayMatch[0]);
+    expect(findById('1')).toStrictEqual(testingArrayMatch[0]);
+    expect(findById(100)).toBe(undefined);
+    expect(findById(testingArrayMatch.length-1)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-2]);
+    expect(findById(testingArrayMatch.length)).toStrictEqual(testingArrayMatch[testingArrayMatch.length-1]);
+    expect(findById(testingArrayMatch.length+1)).toBe(undefined);
+});
 
-// Searches the user info array for a specific ID and returns it
-exports.findById = (id) => userInfo.find(user => user.id === `${id}`);
-
-exports.matchLogin = (username, pass) => {
-    const matchedUser = userInfo.find(user => 
-        user.username === username && user.password === pass);
-    return matchedUser;
-};
+test('Login Matching all users in array', () => {
+    testingArrayMatch.forEach(u => {
+        expect(matchLogin(u.username, u.password)).toStrictEqual(u);
+    });
+});
