@@ -97,10 +97,12 @@ test('Login Matching all users in array', () => {
 });
 
 test('Adding a new user', () => {
-    let userToAdd = { username: "ABC123" };
-    userToAdd.password = "987ABC";
-    userToAdd.firstName = "Petro";
-    userToAdd.lastName = "Jonokovich";
+    const userToAdd = { 
+        username: "ABC123",
+        password: "987ABC",
+        firstName: "Petro",
+        lastName: "Jonokovich"
+    };
     const userId = uInfo.addNewUser(userToAdd);
     expect(uInfo.findById(userId).id).toBe(userId);
 });
