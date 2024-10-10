@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import Navbar from '../Navbar';
+import Navbar from '../components/Navbar.js';
 
 const Layout = () => {
     return (
@@ -9,8 +9,6 @@ const Layout = () => {
                 <Navbar />
                 <Outlet />
             </div>
-
-            <Outlet />
         </>
     )
 }
