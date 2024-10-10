@@ -13,5 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13"
   }
 }
