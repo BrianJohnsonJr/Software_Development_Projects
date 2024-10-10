@@ -222,6 +222,10 @@ exports.findById = id => {
 
 };
 
+exports.findByTitle = title => {
+    
+};
+
 exports.updatePost = post => {
 
 };
