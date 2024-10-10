@@ -36,7 +36,6 @@
     ]
   },
   "devDependencies": {
-    "jest": "^27.5.1",
     "react-router-dom": "^6.26.2"
   }
 }
