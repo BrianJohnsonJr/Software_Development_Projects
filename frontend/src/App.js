@@ -1,9 +1,12 @@
+
 import logo from './logo.svg';
 import './App.css';
+import Navbar from './Navbar'; // Import the Navbar component
 
 function App() {
   return (
     <div className="App">
+      <Navbar /> 
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -17,7 +20,7 @@ function App() {
         >
           Learn React
         </a>
-        <button href="/login" type="button" >Go To Login</button>
+        <button href="/login" type="button">Go To Login</button>
       </header>
     </div>
   );

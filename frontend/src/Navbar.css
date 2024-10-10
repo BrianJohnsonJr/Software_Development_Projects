@@ -1,0 +1,36 @@
+
+.navbar {
+    display: flex;
+    align-items: center;
+    background-color: #282c34; /* Navbar background color */
+    padding: 10px; /* Padding around navbar */
+    color: white; /* Text color */
+  }
+  
+  .navbar-logo {
+    height: 40px; /* Adjust logo height */
+    margin-right: 20px; /* Space between logo and links */
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 20px; /* Space between links */
+  }
+  
+  .navbar-links a {
+    color: white; /* Link color */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  .search-bar {
+    margin-left: auto; /* Align search bar to the right */
+    padding: 5px; /* Padding inside search bar */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
+  .profile-icon {
+    margin-left: 10px; /* Space between search bar and profile icon */
+    font-size: 24px; /* Adjust icon size */
+  }
+  
