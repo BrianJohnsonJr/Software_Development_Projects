@@ -1,6 +1,7 @@
 const express = require('express');
 const methodOverride = require('method-override');
-const defaultRouter = require('./routes/defaultRouter');
+const loginRouter = require('./routes/loginRouter');
+const postRouter = require('./routes/postsRouter');
 
 // Create app
 const app = express();
@@ -20,8 +21,10 @@ app.get("/", (req, res) => {
     res.send("Default backend response.");
 });
 
-// Redirect all further paths to the router
-app.use('/', defaultRouter);
+// Redirect all login paths to the router
+app.use('/login', loginRouter);
+
+app.use('/posts', postRouter);
 
 
 app.use((err, req, res, next) => {

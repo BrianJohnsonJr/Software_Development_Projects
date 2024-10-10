@@ -4,7 +4,9 @@ const bcrypt = require('bcryptjs');
 
 const router = express.Router();
 
-router.get('/login', (req, res) => {
+// All routes start with /login
+
+router.get('/', (req, res) => {
     if(req.query.success === 'true') {
         res.send(userInfoModel.findById(req.query.id));
     } else if (req.query.success === 'false') {
@@ -14,7 +16,7 @@ router.get('/login', (req, res) => {
     }
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/', (req, res, next) => {
     userInfoModel.matchLogin(req.body.username, req.body.password)
     .then(matchedUser => {
         if(!matchedUser)
