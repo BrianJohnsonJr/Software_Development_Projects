@@ -1,7 +1,7 @@
-// This file will be replaced by our database in sprint 2 most likely.
 const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
 
+// This array will be replaced by our database in sprint 2 most likely.
 const userInfo = [
     {
         id: '1',
