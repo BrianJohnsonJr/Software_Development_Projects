@@ -14,7 +14,7 @@ import Explore from './pages/Explore'; // Import your Explore component
 import Footer from './components/Footer';
 
 // import App from './App';
-// import App from './App'; // Make sure your App component is in a separate file
+// import App from './App'; 
 import reportWebVitals from './reportWebVitals';
 
 function App() {
