@@ -5,7 +5,7 @@
   background-color: #333333;
   padding: 10px;
   color: #D5FFD9;
-  height: 80px;
+  height: 90px;
 }
 
 .navbar-logo {
@@ -42,6 +42,7 @@
 
 .search-bar {
   width: 200px;
+  height: 35px;
   padding: 5px;
   border: none;
   border-radius: 4px;
@@ -50,6 +51,8 @@
 
 .search-button {
   padding: 5px 10px;
+  height: 35px;
+  width: 70px;
   background-color: #D5FFD9;
   color: black;
   border: none;
