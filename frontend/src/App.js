@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar'; // Import the Navbar component
@@ -23,5 +24,4 @@ function App() {
     </div>
   );
 }
-
-export default App;
+*/
