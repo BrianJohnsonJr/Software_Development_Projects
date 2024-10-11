@@ -1,36 +1,70 @@
-
 .navbar {
-    display: flex;
-    align-items: center;
-    background-color: #282c34; /* Navbar background color */
-    padding: 10px; /* Padding around navbar */
-    color: white; /* Text color */
-  }
-  
-  .navbar-logo {
-    height: 40px; /* Adjust logo height */
-    margin-right: 20px; /* Space between logo and links */
-  }
-  
-  .navbar-links {
-    display: flex;
-    gap: 20px; /* Space between links */
-  }
-  
-  .navbar-links a {
-    color: white; /* Link color */
-    text-decoration: none; /* Remove underline */
-  }
-  
-  .search-bar {
-    margin-left: auto; /* Align search bar to the right */
-    padding: 5px; /* Padding inside search bar */
-    border: none; /* Remove border */
-    border-radius: 4px; /* Rounded corners */
-  }
-  
-  .profile-icon {
-    margin-left: 10px; /* Space between search bar and profile icon */
-    font-size: 24px; /* Adjust icon size */
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space between logo and profile */
+  background-color: #333333;
+  padding: 10px;
+  color: #D5FFD9;
+  height: 80px;
+}
+
+.navbar-logo {
+  margin-left: 70px;
+  height: 75%;
+  width: auto;
+  margin-right: 20px; 
+}
+
+.navbar-links {
+  display: flex;
+  flex-grow: 1; /* Allows the links to take available space */
+  justify-content: center; /* Center the links */
+  gap: 70px; /* Even space between the links */
+}
+
+.navbar-links a {
+  color: #D5FFD9;
+  text-decoration: none;
+  font-size: 32px; /* Increase font size */
+  padding: 5px 10px; /* Add padding to make links feel bigger */
+}
+
+.navbar-links a.active {
+  color: #D9D5FF; /* Change text color */
+  font-weight: bold; /* Make text bold */
+  border-bottom: 2px solid #D9D5FF; /* Add bottom border */
+}
+
+.navbar-search {
+  display: flex;
+  align-items: center; /* Align search bar and button */
+}
+
+.search-bar {
+  width: 200px;
+  padding: 5px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px; /* Space between search bar and button */
+}
+
+.search-button {
+  padding: 5px 10px;
+  background-color: #D5FFD9;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.search-button:hover {
+  background-color: #B5E5C7; /* Lighter green on hover */
+}
+
+.profile-icon {
+  font-size: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+  vertical-align: middle;
+}
