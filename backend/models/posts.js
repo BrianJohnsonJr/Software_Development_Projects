@@ -215,15 +215,16 @@ const posts = [
 ];
 
 exports.get = () => {
-
+    return posts;
 };
 
 exports.findById = id => {
-
+    return posts.find(post => post.id === String(id));
 };
 
 exports.updatePost = post => {
-
+    const index = posts.findIndex(post => post.id === String(id));
+    // TODO: Implement Rest of Method
 };
 
 exports.newPost = post => {
