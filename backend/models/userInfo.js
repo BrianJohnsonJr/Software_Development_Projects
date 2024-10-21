@@ -4,76 +4,96 @@ const bcrypt = require('bcryptjs');
 // This array will be replaced by our database in sprint 2 most likely.
 const userInfo = [
     {
-        id: '1',
-        username: 'John123',
-        password: '123456', // consider encoding
-        firstName: 'John',
-        lastName: 'Smith'
+      _id: "66eda5f1c49d80aeb5f5dcff",
+      name: "Jane Doe",
+      email: "jane@abc.com",
+      username: "jDoe26",
+      postIds: ["databases", "painting", "soccer"],
+      password: "jane123",
+      addressIds: [""]
     },
     {
-        id: '2',
-        username: 'JaneDoe',
-        password: 'password123', 
-        firstName: 'Jane',
-        lastName: 'Doe'
+      _id: "55eda5f1c49d80aeb5f5dcff",
+      name: "John Smith",
+      email: "john@xyz.com",
+      username: "jsmith88",
+      postIds: ["gaming", "programming", "travel"],
+      password: "john123",
+      addressIds: ["address1"]
     },
     {
-        id: '3',
-        username: 'MikeRocks',
-        password: 'mike1234', 
-        firstName: 'Mike',
-        lastName: 'Johnson'
+      _id: "77eda5f1c49d80aeb5f5dcff",
+      name: "Alice Brown",
+      email: "alice@xyz.com",
+      username: "aliceB",
+      postIds: ["fashion", "cooking", "fitness"],
+      password: "alice456",
+      addressIds: ["address2"]
     },
     {
-        id: '4',
-        username: 'SamanthaCon',
-        password: 'samantha123', 
-        firstName: 'Samantha',
-        lastName: 'Connor'
+      _id: "88eda5f1c49d80aeb5f5dcff",
+      name: "Bob Johnson",
+      email: "bob@abc.com",
+      username: "bobbyJ",
+      postIds: ["photography", "music", "writing"],
+      password: "bob789",
+      addressIds: ["address3"]
     },
     {
-        id: '5',
-        username: 'Charlie777',
-        password: 'charliepass', 
-        firstName: 'Charlie',
-        lastName: 'Brown'
+      _id: "99eda5f1c49d80aeb5f5dcff",
+      name: "Charlie Green",
+      email: "charlie@def.com",
+      username: "charlieG23",
+      postIds: ["movies", "sports", "technology"],
+      password: "charlie321",
+      addressIds: ["address4"]
     },
     {
-        id: '6',
-        username: 'LucySky',
-        password: 'lucypass1', 
-        firstName: 'Lucy',
-        lastName: 'Sky'
+      _id: "00eda5f1c49d80aeb5f5dcff",
+      name: "Emily White",
+      email: "emily@abc.com",
+      username: "emilyW",
+      postIds: ["photography", "travel", "fashion"],
+      password: "emily123",
+      addressIds: ["address5"]
     },
     {
-        id: '7',
-        username: 'TomCat',
-        password: 'tommycat', 
-        firstName: 'Tom',
-        lastName: 'Caterson'
+      _id: "11eda5f1c49d80aeb5f5dcff",
+      name: "David Harris",
+      email: "david@xyz.com",
+      username: "dHarris",
+      postIds: ["sports", "gaming", "travel"],
+      password: "david456",
+      addressIds: ["address6"]
     },
     {
-        id: '8',
-        username: 'Linda123',
-        password: 'lindapass', 
-        firstName: 'Linda',
-        lastName: 'Smith'
+      _id: "22eda5f1c49d80aeb5f5dcff",
+      name: "Sara King",
+      email: "sara@def.com",
+      username: "saraK",
+      postIds: ["art", "music", "cooking"],
+      password: "sara789",
+      addressIds: ["address7"]
     },
     {
-        id: '9',
-        username: 'BobTheBuilder',
-        password: 'builderBob', 
-        firstName: 'Bob',
-        lastName: 'Builder'
+      _id: "33eda5f1c49d80aeb5f5dcff",
+      name: "Tom Lee",
+      email: "tom@abc.com",
+      username: "tomL22",
+      postIds: ["movies", "technology", "writing"],
+      password: "tom123",
+      addressIds: ["address8"]
     },
     {
-        id: '10',
-        username: 'SammySam',
-        password: 'sammy123', 
-        firstName: 'Sam',
-        lastName: 'Samson'
+      _id: "44eda5f1c49d80aeb5f5dcff",
+      name: "Anna Scott",
+      email: "anna@xyz.com",
+      username: "annaS",
+      postIds: ["photography", "art", "fashion"],
+      password: "anna456",
+      addressIds: ["address9"]
     }
-];
+  ];
 
 // Gets the entire array of user info
 exports.get = () => userInfo;

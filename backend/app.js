@@ -2,6 +2,7 @@ const express = require('express');
 const methodOverride = require('method-override');
 const loginRouter = require('./routes/loginRouter');
 const postRouter = require('./routes/postsRouter');
+require('dotenv').config(); // load dotenvs
 
 // Create app
 const app = express();
