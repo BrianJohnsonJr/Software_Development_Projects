@@ -33,15 +33,12 @@ router.post('/register', (req, res, next) => {
     }
 
     bcrypt.genSalt(10)
-    .then(salt => {
-        bcrypt.hash(req.body.password, salt)
-        .then(secPass => {
-             let user = req.body;
-             user.password = secPass;
-             const id = userInfoModel.addNewUser(user);
-             res.redirect('/login?success=true&id=' + id);
-        })
-        .catch(err => next(err));
+    .then(salt => bcrypt.hash(req.body.password, salt))
+    .then(secPass => {
+         let user = req.body;
+         user.password = secPass;
+         const id = userInfoModel.addNewUser(user);
+         res.redirect('/login?success=true&id=' + id);
     })
     .catch(err => next(err));
 });
