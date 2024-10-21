@@ -16,15 +16,19 @@ router.get('/', (req, res) => {
     }
 });
 
-router.post('/', (req, res, next) => {
-    userInfoModel.matchLogin(req.body.username, req.body.password)
-    .then(matchedUser => {
+router.post('/', async (req, res, next) => {
+    try {
+        matchedUser = await userInfoModel.verifyUsernameAndPassword(req.body.username, req.body.password);
+
         if(!matchedUser)
             res.redirect('/login?success=false');
-        else
+        else {
+            accessToken = await userInfoModel.tokenizeLogin(matchedUser);
+            res.json({ token: accessToken });
             res.redirect('/login?success=true&id=' + matchedUser.id);
-    })
-    .catch(err => next(err));
+        }
+    }
+    catch (err) { next(err) }
 });
 
 router.post('/register', (req, res, next) => {
