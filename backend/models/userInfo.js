@@ -1,7 +1,21 @@
 const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
+// Define the user schema
+const userSchema = new Schema({
+  name: {type: String, required: [true, 'name is required']},
+  email: {type: String, required: [true, 'email is required']},
+  username: {type: String, required: [true, 'username is required']},
+  password: {type: String, required: [true, 'password is required']},
+  postIds: [Schema.Types.ObjectId],
+  addressIds: [Schema.Types.ObjectId]
+},
+{timestamps: true});
+
+const userModel = mongoose.model('User', userSchema);
 
 // This array will be replaced by our database in sprint 2 most likely.
 const userInfo = [
@@ -154,6 +168,22 @@ exports.tokenizeLogin = (user) => {
 }
 
 /**
+ * Accepts a user object and returns a signed token.
+ * @param {*} user 
+ * @returns 
+ */
+exports.tokenizeLogin = (user) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'});
+      resolve(token);
+    }
+    catch (err) { reject(err); }
+
+  })
+}
+
+/**
  * Accepts a token and verifies if it matches a user.
  * @param {string} token
  */
@@ -161,7 +191,13 @@ exports.verifyToken = (token) => {
   // TODO: use the function on line 124 to check after decoding the token.
 }
 
+/**
+ * Adds a new user to the database
+ * @param {*} user 
+ * @returns 
+ */
 exports.addNewUser = (user) => {
+  // TODO: add to database, not array.
     user.id = uuid();
     userInfo.push(user);
     return user.id;
