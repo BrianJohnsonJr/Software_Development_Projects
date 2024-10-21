@@ -168,22 +168,6 @@ exports.tokenizeLogin = (user) => {
 }
 
 /**
- * Accepts a user object and returns a signed token.
- * @param {*} user 
- * @returns 
- */
-exports.tokenizeLogin = (user) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'});
-      resolve(token);
-    }
-    catch (err) { reject(err); }
-
-  })
-}
-
-/**
  * Accepts a token and verifies if it matches a user.
  * @param {string} token
  */
