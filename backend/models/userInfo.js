@@ -1,4 +1,3 @@
-const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -11,123 +10,37 @@ const userSchema = new Schema({
   username: {type: String, required: [true, 'username is required']},
   password: {type: String, required: [true, 'password is required']},
   postIds: [Schema.Types.ObjectId],
-  addressIds: [Schema.Types.ObjectId]
-},
-{timestamps: true});
+  addressIds: [Schema.Types.ObjectId],
+  pfp: String,
+  recentlyViewed: [Schema.Types.ObjectId],
+  bio: String,
+  followers: [Schema.Types.ObjectId],
+  following: [Schema.Types.ObjectId],
+  likedPosts: [Schema.Types.ObjectId]
+});
 
 const userModel = mongoose.model('User', userSchema);
 
-// This array will be replaced by our database in sprint 2 most likely.
-const userInfo = [
-    {
-      _id: "66eda5f1c49d80aeb5f5dcff",
-      name: "Jane Doe",
-      email: "jane@abc.com",
-      username: "jDoe26",
-      postIds: ["databases", "painting", "soccer"],
-      password: "jane123",
-      addressIds: [""]
-    },
-    {
-      _id: "55eda5f1c49d80aeb5f5dcff",
-      name: "John Smith",
-      email: "john@xyz.com",
-      username: "jsmith88",
-      postIds: ["gaming", "programming", "travel"],
-      password: "john123",
-      addressIds: ["address1"]
-    },
-    {
-      _id: "77eda5f1c49d80aeb5f5dcff",
-      name: "Alice Brown",
-      email: "alice@xyz.com",
-      username: "aliceB",
-      postIds: ["fashion", "cooking", "fitness"],
-      password: "alice456",
-      addressIds: ["address2"]
-    },
-    {
-      _id: "88eda5f1c49d80aeb5f5dcff",
-      name: "Bob Johnson",
-      email: "bob@abc.com",
-      username: "bobbyJ",
-      postIds: ["photography", "music", "writing"],
-      password: "bob789",
-      addressIds: ["address3"]
-    },
-    {
-      _id: "99eda5f1c49d80aeb5f5dcff",
-      name: "Charlie Green",
-      email: "charlie@def.com",
-      username: "charlieG23",
-      postIds: ["movies", "sports", "technology"],
-      password: "charlie321",
-      addressIds: ["address4"]
-    },
-    {
-      _id: "00eda5f1c49d80aeb5f5dcff",
-      name: "Emily White",
-      email: "emily@abc.com",
-      username: "emilyW",
-      postIds: ["photography", "travel", "fashion"],
-      password: "emily123",
-      addressIds: ["address5"]
-    },
-    {
-      _id: "11eda5f1c49d80aeb5f5dcff",
-      name: "David Harris",
-      email: "david@xyz.com",
-      username: "dHarris",
-      postIds: ["sports", "gaming", "travel"],
-      password: "david456",
-      addressIds: ["address6"]
-    },
-    {
-      _id: "22eda5f1c49d80aeb5f5dcff",
-      name: "Sara King",
-      email: "sara@def.com",
-      username: "saraK",
-      postIds: ["art", "music", "cooking"],
-      password: "sara789",
-      addressIds: ["address7"]
-    },
-    {
-      _id: "33eda5f1c49d80aeb5f5dcff",
-      name: "Tom Lee",
-      email: "tom@abc.com",
-      username: "tomL22",
-      postIds: ["movies", "technology", "writing"],
-      password: "tom123",
-      addressIds: ["address8"]
-    },
-    {
-      _id: "44eda5f1c49d80aeb5f5dcff",
-      name: "Anna Scott",
-      email: "anna@xyz.com",
-      username: "annaS",
-      postIds: ["photography", "art", "fashion"],
-      password: "anna456",
-      addressIds: ["address9"]
-    }
-  ];
-
 /** 
  * @deprecated Gets the entire array of user info. Should not be used once the DB is fully implemented.
- * @returns a user object
+ * @returns an array of all user objects
  */
-exports.get = () => userInfo;
+exports.get = async () => {
+  const allUsers = await userModel.find();
+  return Array.from(allUsers);
+};
 
 /**
  *  Searches the user info array for a specific ID and returns it
  */
-exports.findById = (id) => userInfo.find(user => user.id === `${id}`);
+exports.findById = async (id) => await userModel.findById(id);
 
 /**
  * Searches the user info array for a specific username
  * @param {string} username 
  * @returns the matched user object. Otherwise, returns undefined
  */
-exports.findByUsername = (username) => userInfo.find(user => user.username === username);
+exports.findByUsername = async (username) => await userModel.find({ username: username });
 
 /**
  * Accepts a username and password, and verifies if the details match a user.
@@ -135,19 +48,18 @@ exports.findByUsername = (username) => userInfo.find(user => user.username === u
  * @param {string} pass 
  * @returns the user who was found. Otherwise returns undefined.
  */
-exports.verifyUsernameAndPassword = (username, pass) => {
-  const user = userInfo.find(u => u.username === username);
+exports.verifyUsernameAndPassword = async (username, pass) => {
+  const user = await findByUsername(username);
   if(!user) return undefined;
   
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(pass, user.password)
-    .then(success => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const success = await bcrypt.compare(pass, user.password);
+  
       if(success) resolve(user);
-      // TODO: remove unhashed password check eventually
-      else if (user.password === pass) resolve(user);
-      else return resolve(undefined);
-    })
-    .catch(err => reject(err));
+      else resolve(undefined);
+    }
+    catch (err) { reject(err); }
   });
 };
 
@@ -159,23 +71,7 @@ exports.verifyUsernameAndPassword = (username, pass) => {
 exports.tokenizeLogin = (user) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'});
-      resolve(token);
-    }
-    catch (err) { reject(err); }
-
-  })
-}
-
-/**
- * Accepts a user object and returns a signed token.
- * @param {*} user 
- * @returns 
- */
-exports.tokenizeLogin = (user) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'});
+      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'}); // TODO: Change token expiration
       resolve(token);
     }
     catch (err) { reject(err); }
@@ -196,9 +92,8 @@ exports.verifyToken = (token) => {
  * @param {*} user 
  * @returns 
  */
-exports.addNewUser = (user) => {
-  // TODO: add to database, not array.
-    user.id = uuid();
-    userInfo.push(user);
-    return user.id;
+exports.addNewUser = async (user) => {
+  const userToAdd = new model(user);
+  await userToAdd.save(userToAdd);
+  return userToAdd.id;
 };
