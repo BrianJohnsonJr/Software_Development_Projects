@@ -33,14 +33,14 @@ exports.get = async () => {
 /**
  *  Searches the user info array for a specific ID and returns it
  */
-exports.findById = (id) => userModel.findById(id);
+exports.findById = async (id) => await userModel.findById(id);
 
 /**
  * Searches the user info array for a specific username
  * @param {string} username 
  * @returns the matched user object. Otherwise, returns undefined
  */
-exports.findByUsername = (username) => userModel.find({ username: username });
+exports.findByUsername = async (username) => await userModel.find({ username: username });
 
 /**
  * Accepts a username and password, and verifies if the details match a user.
@@ -48,19 +48,18 @@ exports.findByUsername = (username) => userModel.find({ username: username });
  * @param {string} pass 
  * @returns the user who was found. Otherwise returns undefined.
  */
-exports.verifyUsernameAndPassword = (username, pass) => {
-  const user = findByUsername(username);
+exports.verifyUsernameAndPassword = async (username, pass) => {
+  const user = await findByUsername(username);
   if(!user) return undefined;
   
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(pass, user.password)
-    .then(success => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const success = await bcrypt.compare(pass, user.password);
+  
       if(success) resolve(user);
-      // TODO: remove unhashed password check eventually
-      else if (user.password === pass) resolve(user);
-      else return resolve(undefined);
-    })
-    .catch(err => reject(err));
+      else resolve(undefined);
+    }
+    catch (err) { reject(err); }
   });
 };
 
@@ -72,7 +71,7 @@ exports.verifyUsernameAndPassword = (username, pass) => {
 exports.tokenizeLogin = (user) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'}); // TODO: Change token length
+      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'}); // TODO: Change token expiration
       resolve(token);
     }
     catch (err) { reject(err); }
