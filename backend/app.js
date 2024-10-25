@@ -12,7 +12,7 @@ const app = express();
 // Set configs
 let port = 5000;
 let host = 'localhost';
-const mongoUri = 'mongodb+srv://Merchsy_Application:SecurePassword@merchsyinstance.j0zx1.mongodb.net/Merchsy?retryWrites=true&w=majority&appName=MerchsyInstance'
+const mongoUri = 'mongodb+srv://Merchsy_Application:SecurePassword@merchsyinstance.j0zx1.mongodb.net/Merchsy?retryWrites=true&w=majority&appName=MerchsyInstance';
 
 mongoose.connect(mongoUri)
 .then(() => {

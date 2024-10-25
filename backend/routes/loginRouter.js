@@ -6,13 +6,14 @@ const router = express.Router();
 
 // All routes start with /login
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     if(req.query.success === 'true') {
         res.send(userInfoModel.findById(req.query.id));
     } else if (req.query.success === 'false') {
         res.send("Your login attempt failed.");
     } else {
-        res.send(userInfoModel.get());
+        const users = await userInfoModel.get();
+        res.send(users);
     }
 });
 
