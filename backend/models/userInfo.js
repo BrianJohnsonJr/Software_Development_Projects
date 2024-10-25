@@ -1,4 +1,3 @@
-const { uuid } = require('uuidv4');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -11,9 +10,14 @@ const userSchema = new Schema({
   username: {type: String, required: [true, 'username is required']},
   password: {type: String, required: [true, 'password is required']},
   postIds: [Schema.Types.ObjectId],
-  addressIds: [Schema.Types.ObjectId]
-},
-{timestamps: true});
+  addressIds: [Schema.Types.ObjectId],
+  pfp: String,
+  recentlyViewed: [Schema.Types.ObjectId],
+  bio: String,
+  followers: [Schema.Types.ObjectId],
+  following: [Schema.Types.ObjectId],
+  likedPosts: [Schema.Types.ObjectId]
+});
 
 const userModel = mongoose.model('User', userSchema);
 
@@ -29,14 +33,14 @@ exports.get = async () => {
 /**
  *  Searches the user info array for a specific ID and returns it
  */
-exports.findById = (id) => userInfo.find(user => user.id === `${id}`);
+exports.findById = (id) => userModel.findById(id);
 
 /**
  * Searches the user info array for a specific username
  * @param {string} username 
  * @returns the matched user object. Otherwise, returns undefined
  */
-exports.findByUsername = (username) => userInfo.find(user => user.username === username);
+exports.findByUsername = (username) => userModel.find({ username: username });
 
 /**
  * Accepts a username and password, and verifies if the details match a user.
@@ -45,7 +49,7 @@ exports.findByUsername = (username) => userInfo.find(user => user.username === u
  * @returns the user who was found. Otherwise returns undefined.
  */
 exports.verifyUsernameAndPassword = (username, pass) => {
-  const user = userInfo.find(u => u.username === username);
+  const user = findByUsername(username);
   if(!user) return undefined;
   
   return new Promise((resolve, reject) => {
@@ -68,7 +72,7 @@ exports.verifyUsernameAndPassword = (username, pass) => {
 exports.tokenizeLogin = (user) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'});
+      const token = await jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '1h'}); // TODO: Change token length
       resolve(token);
     }
     catch (err) { reject(err); }
@@ -89,9 +93,8 @@ exports.verifyToken = (token) => {
  * @param {*} user 
  * @returns 
  */
-exports.addNewUser = (user) => {
-  // TODO: add to database, not array.
-    user.id = uuid();
-    userInfo.push(user);
-    return user.id;
+exports.addNewUser = async (user) => {
+  const userToAdd = new model(user);
+  await userToAdd.save(userToAdd);
+  return userToAdd.id;
 };
