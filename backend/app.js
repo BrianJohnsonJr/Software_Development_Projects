@@ -1,9 +1,12 @@
-require('dotenv').config(); // load dotenvs
+require('dotenv').config({ path: 'secret_token.env' }); // load dotenvs
 
 const express = require('express');
 const methodOverride = require('method-override');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const loginRouter = require('./routes/loginRouter');
 const postRouter = require('./routes/postsRouter');
+const profileRouter = require('./routes/profileRouter');
 const mongoose = require('mongoose');
 
 // Create app
@@ -20,8 +23,12 @@ mongoose.connect(mongoUri)
 })
 .catch(err => console.log(err));
 
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+
 // mount middleware
+app.use(cookieParser());
 app.use(express.static('public'));
+app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 
@@ -31,9 +38,11 @@ app.get("/", (req, res) => {
     res.send("Default backend response.");
 });
 
-// Redirect all login paths to the router
-app.use('/login', loginRouter);
-
+// Redirect all login paths to the login router
+app.use('/', loginRouter);
+// Profile paths to the profile router
+app.use('/', profileRouter);
+// Post paths to the post router
 app.use('/posts', postRouter);
 
 
