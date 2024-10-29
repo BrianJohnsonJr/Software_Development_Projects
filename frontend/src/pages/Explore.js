@@ -1,5 +1,7 @@
 import React from 'react';
 import Post from '../components/post'; // Import the reusable Post component
+import '../styles/Explore.css';  
+import blankImagePath from "../images/blank_image.webp";
 
 const Explore = () => {
     // Sample posts as plain objects
@@ -10,7 +12,7 @@ const Explore = () => {
             description: "",
             ownerUsername: "John Doe",
             price: 50,
-            imageUrl: "/public/blank_image.webp", // Check this path
+            imageUrl: blankImagePath, // Check this path
             tags: ["tech", "innovation", "firstPost"],
         },
         {
@@ -19,7 +21,7 @@ const Explore = () => {
             description: "Sample Post Description",
             ownerUsername: "Jane Doe",
             price: 50,
-            imageUrl: "/public/blank_image.webp", // Check this path
+            imageUrl: blankImagePath, // Check this path
             tags: ["tech", "innovation"],
         },
         {
@@ -28,7 +30,7 @@ const Explore = () => {
             description: "Sample Post Description",
             ownerUsername: "Johnny Appleseed",
             price: 50,
-            imageUrl: "/public/blank_image.webp", // Check this path
+            imageUrl: blankImagePath, // Check this path
             tags: ["tech", "innovation"],
         },
         {
@@ -37,7 +39,7 @@ const Explore = () => {
             description: "Sample Post Description",
             ownerUsername: "Janey Appleseed",
             price: 50,
-            imageUrl: "/public/blank_image.webp", // Check this path
+            imageUrl: blankImagePath, // Check this path
             tags: ["tech", "innovation"],
         },
         {
@@ -46,14 +48,13 @@ const Explore = () => {
             description: "Sample Post Description",
             ownerUsername: "George Washington",
             price: 50,
-            imageUrl: "/public/blank_image.webp", // Check this path
+            imageUrl: blankImagePath, // Check this path frontend\src\images\blank_image.webp
             tags: ["tech", "innovation"],
         }
     ];
 
     return (
         <div>
-            <h1>Explore</h1>
             <div className="posts-container">
                 {posts.length > 0 ? (
                     posts.map((post) => (

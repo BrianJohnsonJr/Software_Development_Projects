@@ -1,0 +1,56 @@
+.post {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 auto;
+    width: 100%; /* Make sure the post takes full column width */
+    max-width: 600px; /* Ensure post stretches but doesn't exceed container width */
+    box-sizing: border-box;
+}
+
+.post-image {
+    width: 100%; /* Image takes full width of the post */
+    height: auto;
+    border-radius: 8px;
+}
+
+
+.post-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.post-left {
+    flex: 1;
+    margin-right: 20px; /* Add space between the two columns */
+}
+
+.post-right {
+    flex: 1;
+    text-align: right; /* Align the price and description to the right */
+}
+
+.post-right p:first-child {
+    font-weight: bold;
+    font-size: 18px; /* Highlight the price */
+}
+
+.post-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+    margin-top: 10px; /* Add space above the tags */
+}
+
+.post-tags li {
+    background-color: #e0e0e0;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 14px; /* Adjust font size as needed */
+}

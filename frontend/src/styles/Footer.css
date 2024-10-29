@@ -1,0 +1,15 @@
+/* styles/Footer.css */
+.footer {
+    display: flex;
+    justify-content: center; /* Center the content */
+    align-items: center;
+    background-color: #333333; /* Same background as the navbar */
+    color: #D5FFD9; /* Same text color as the navbar */
+    padding: 15px; /* Same padding to match the navbar height */
+    font-size: 18px; /* Font size for the text */
+  }
+  
+  .footer p {
+    margin: 0;
+  }
+  
