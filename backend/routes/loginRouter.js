@@ -23,7 +23,8 @@ router.post('/register', async (req, res, next) => {
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
-            return res.status(400).json({ success: false, message });
+            res.status(400);
+            next(new Error(message));
         }
 
         const hashedPassword = await AuthService.hashPassword(password);
