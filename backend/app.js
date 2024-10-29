@@ -54,5 +54,5 @@ app.use((err, req, res, next) => {
     }
 
     res.status(err.status);
-    res.send(err.status + ' Error: ' + err.message);
+    res.json({ success: false, message: 'Error: ' + err.message });
 });

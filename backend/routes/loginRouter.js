@@ -42,10 +42,8 @@ router.post('/register', async (req, res, next) => {
 
         await newUser.save();
         res.json({ success: true, message: 'User registered successfully' });
-    } catch (error) {
-        console.error('Error during registration:', error);
-        res.status(500).json({ success: false, message: 'Server error during registration' });
     }
+    catch (error) { next(error); }
 });
 
 // Login route
@@ -68,10 +66,8 @@ router.post('/login', async (req, res) => {
         });
 
         res.json({ success: true });
-    } catch (error) {
-        console.error('Error during login:', error); // Log error
-        res.status(500).json({ error: 'Server error' });
     }
+    catch (error) { next(error); }
 });
 
 // Logout route
