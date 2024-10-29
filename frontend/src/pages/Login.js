@@ -1,40 +1,65 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import "./loginform.css";
+// Login.js
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import '../styles/Auth.css';
 
 const Login = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    const [popupStyle, showPopup] = useState("hide")
+    const handleLogin = async (e) => {
+        e.preventDefault();
 
-    const popup = () => {
-      showPopup("login-popup")
-      setTimeout(() => showPopup("hide"), 3000)
-    }
+        try {
+            const response = await fetch('/account/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+                credentials: 'include', // Ensures cookies are sent with requests
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                navigate('/profile'); // Redirect to profile if login is successful
+            } else {
+                setError('Invalid login credentials');
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again.');
+        }
+    };
 
     return (
-        <div className="wrapper">
-            <div className="cover">
-                <h1>Sign In</h1>
-                <input type="text" placeholder="Username" />
-                <input type="password" placeholder="Password" />
-                <div className="login-btn" onClick={popup}>Login</div>
+        <div className="auth-container">
+            <h1>Login</h1>
+            <form onSubmit={handleLogin}>
+                <label>Username:</label>
+                <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                />
 
-                <p className="register-text">Don't have an account? <Link to="/register">Register here</Link></p>
+                <label>Password:</label>
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
 
-                <p className="text">Or Login Using</p>
+                <button type="submit">Login</button>
+                {error && <p className="error-message">{error}</p>}
+            </form>
 
-                <div className="alt-login">
-                    <div className="facebook"></div>
-                    <div className="google"></div>
-                </div>
-
-                <div className={popupStyle}>
-                  <h3>Login Failed</h3>
-                  <p>Username or password incorrect</p>
-                </div>
-            </div>
+            <p className="auth-link">
+                Don’t have an account? <Link to="/register">Create one here</Link>
+            </p>
         </div>
     );
-}
+};
 
 export default Login;

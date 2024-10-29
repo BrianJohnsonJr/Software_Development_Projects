@@ -1,13 +1,14 @@
 /*
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar'; // Import the Navbar component
-import Explore from './pages/Explore'; // Import your Explore component
-import Home from './pages/Home'; // Import your Home component
-import Login from './pages/Login'; // Import your Login component
-import Following from './pages/Following'; // Import your Following component
-import Sell from './pages/Sell'; // Import your Sell component
-import Profile from './pages/Profile'; // Import your Profile component
+import Navbar from './components/Navbar'; // Import Navbar component
+import Explore from './pages/Explore'; // Import Explore page
+import Home from './pages/Home'; // Import Home page
+import Login from './pages/Login'; // Import Login page
+import Following from './pages/Following'; // Import Following page
+import Sell from './pages/Sell'; // Import Sell page
+import Profile from './pages/Profile'; // Import Profile page
+import Register from './pages/Register' // Import Register page
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/following" element={<Following />} />
         <Route path="/sell" element={<Sell />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </div>
   );
