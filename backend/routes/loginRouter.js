@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { User } = require('../models/users'); // Import the user model
+const User = require('../models/users'); // Import the user model
 const AuthService = require('../services/authService'); // Import AuthService
 const router = express.Router();
 
@@ -47,7 +47,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
 
     try {
@@ -71,9 +71,12 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout route
-router.post('/logout', (req, res) => {
-    res.clearCookie('token'); // Clear the token cookie
-    res.json({ success: true, message: 'Logged out successfully' });
+router.post('/logout', (req, res, next) => {
+    try {
+        res.clearCookie('token'); // Clear the token cookie
+        res.json({ success: true, message: 'Logged out successfully' });
+    }
+    catch (error) { next(error); }
 });
 
 module.exports = router;

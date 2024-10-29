@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/users');
+const User = require('../models/users');
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 const AuthService = {
@@ -12,7 +12,7 @@ const AuthService = {
      * @returns 
      */
     async verifyUsernameAndPassword(username, password) {
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username: username });
         if (!user) {
             console.log("User not found");
             return null;
