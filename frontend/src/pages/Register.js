@@ -29,7 +29,7 @@ const Register = () => {
         };
     
         try {
-            const response = await fetch('http://localhost:5000/register', { // Use full URL for troubleshooting
+            const response = await fetch('http://localhost:5000/account/register', { // Use full URL for troubleshooting
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData),

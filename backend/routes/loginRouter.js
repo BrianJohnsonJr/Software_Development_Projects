@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { User } = require('../models/userInfo'); // Import the user model
+const User = require('../models/users'); // Import the user model
 const AuthService = require('../services/authService'); // Import AuthService
 const router = express.Router();
 
@@ -20,14 +20,11 @@ router.post('/register', async (req, res, next) => {
     const { name, username, email, password, bio, imageUrl } = req.body;
 
     try {
-        if (!name || !username || !email || !password) {
-            return res.status(400).json({ success: false, message: 'Please provide all required fields: name, username, email, password.' });
-        }
-
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
-            return res.status(400).json({ success: false, message });
+            res.status(400);
+            next(new Error(message));
         }
 
         const hashedPassword = await AuthService.hashPassword(password);
@@ -47,7 +44,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
 
     try {
@@ -71,9 +68,12 @@ router.post('/login', async (req, res) => {
 });
 
 // Logout route
-router.post('/logout', (req, res) => {
-    res.clearCookie('token'); // Clear the token cookie
-    res.json({ success: true, message: 'Logged out successfully' });
+router.post('/logout', (req, res, next) => {
+    try {
+        res.clearCookie('token'); // Clear the token cookie
+        res.json({ success: true, message: 'Logged out successfully' });
+    }
+    catch (error) { next(error); }
 });
 
 module.exports = router;

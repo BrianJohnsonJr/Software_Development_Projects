@@ -36,7 +36,7 @@ const Profile = () => {
     // Logout function
     const handleLogout = async () => {
         try {
-            await fetch('/logout', {
+            await fetch('/account/logout', {
                 method: 'POST',
                 credentials: 'include' // Ensures cookies are included with request
             });
