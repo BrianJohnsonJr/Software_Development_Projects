@@ -3,7 +3,7 @@ const { User } = require('../models/users'); // Import User model
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.get('/profile', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
         // Retrieve the full user profile using the user ID from the token
         const user = await User.findById(req.user.id).select('-password'); // Exclude password field

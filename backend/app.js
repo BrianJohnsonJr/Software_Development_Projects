@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
 // Redirect all login paths to the login router
 app.use('/', loginRouter);
 // Profile paths to the profile router
-app.use('/', profileRouter);
+app.use('/profile', profileRouter);
 // Post paths to the post router
 app.use('/posts', postRouter);
 
