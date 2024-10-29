@@ -10,21 +10,11 @@ const userSchema = new Schema({
   password: { type: String, required: [true, 'Password is required'] },
   profilePicture: { type: String, default: '' }, // profile picture optional
   bio: { type: String, maxLength: 300 },
-  postIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
-  addressIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }]
+  postIds: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  addressIds: [{ type: Schema.Types.ObjectId, ref: 'Address' }]
 }, { timestamps: true });
 
 // Mongoose model
 const User = mongoose.model('User', userSchema);
 
-// Helper functions
-module.exports = {
-    User,
-    getAllUsers: () => User.find(),
-    findById: (id) => User.findById(id),
-    findByUsername: (username) => User.findOne({ username }),
-    addNewUser: async (userData) => {
-        const user = new User(userData);
-        return await user.save();
-    }
-};
+module.exports = User;

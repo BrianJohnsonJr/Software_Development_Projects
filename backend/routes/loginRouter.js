@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { User } = require('../models/userInfo'); // Import the user model
+const { User } = require('../models/users'); // Import the user model
 const AuthService = require('../services/authService'); // Import AuthService
 const router = express.Router();
 
