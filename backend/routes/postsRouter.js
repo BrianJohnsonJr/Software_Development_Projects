@@ -22,7 +22,10 @@ router.post('/create', async (req, res, next) => {
             tags,
             itemType,
             sizes
-        })
+        });
+
+        await newPost.save();
+        res.json({ success: true, message: 'Post successfully posted' });
     }
     catch (error) { next(error); }
 });
