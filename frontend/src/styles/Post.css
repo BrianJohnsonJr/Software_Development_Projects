@@ -54,3 +54,23 @@
     border-radius: 4px;
     font-size: 14px; /* Adjust font size as needed */
 }
+
+.post-likes {
+    text-align:left;
+}
+
+.post-likes button {
+    border: 2px solid #000000; /* Setting the border thickness and color */
+    padding: 7px 12px;         /* Add the padding for better spacing */
+    border-radius: 5px;        /* Rounding corners */
+    font-size: 16px;           /* Increase the font size if desired */
+    color: #000000;            /* Change the text color */
+    background-color: rgb(255, 255, 255);   /* Set button background color */
+    cursor: pointer;
+}
+
+.post-likes button:hover {
+    background-color: #c0f0cc;
+    color: rgb(0, 0, 0);
+    border-color: #a679cf; /* Darker border on hover */
+}
