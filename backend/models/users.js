@@ -10,8 +10,12 @@ const userSchema = new Schema({
   password: { type: String, required: [true, 'Password is required'] },
   profilePicture: { type: String, default: '' }, // profile picture optional
   bio: { type: String, maxLength: 300 },
-  postIds: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-  addressIds: [{ type: Schema.Types.ObjectId, ref: 'Address' }]
+  postIds: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+  addressIds: [{ type: Schema.Types.ObjectId, ref: 'Address', default: [] }],
+  recentlyViewed: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+  followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+  following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+  likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
 }, { timestamps: true });
 
 // Mongoose model
