@@ -61,6 +61,8 @@ router.get('/explore', async (req, res, next) => {
     catch (error) { next(error); }
 });
 
+// router.get('/')
+
 
 
 module.exports = router;
