@@ -13,6 +13,12 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^9.0.1",
+    "mongoose": "^8.7.3",
+    "npm-watch": "^0.13.0",
+    "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"

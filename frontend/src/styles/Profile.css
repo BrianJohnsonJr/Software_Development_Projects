@@ -1,0 +1,29 @@
+
+.profile-container {
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.auth-button {
+    display: block;
+    width: 150px;
+    margin: 10px auto; /* Center the button and add vertical space */
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #4CAF50; /* Green background color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}

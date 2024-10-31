@@ -1,19 +1,30 @@
-// components/Navbar.js
+
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import logo from '../images/blank_image.webp'; // Import your logo here
+import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation from react-router-dom
+import logo from '../images/logo_white.png'; // Import your logo here
 import '../styles/Navbar.css'; 
 
 const Navbar = () => {
+  const location = useLocation(); // Get current location
+
   return (
     <nav className="navbar">
       <img src={logo} alt="Logo" className="navbar-logo" />
       <div className="navbar-links">
-        <Link to="/following">Following</Link>
-        <Link to="/explore">Explore</Link>
-        <Link to="/sell">Sell</Link>
+        <Link to="/following" className={location.pathname === '/following' ? 'active' : ''}>
+          Following
+        </Link>
+        <Link to="/explore" className={location.pathname === '/explore' ? 'active' : ''}>
+          Explore
+        </Link>
+        <Link to="/sell" className={location.pathname === '/sell' ? 'active' : ''}>
+          Sell
+        </Link>
       </div>
-      <input type="text" placeholder="Search..." className="search-bar" />
+      <div className="navbar-search">
+        <input type="text" placeholder="Search..." className="search-bar" />
+        <button className="search-button">Search</button>
+      </div>
       <Link to="/profile" className="profile-icon">👤</Link>
     </nav>
   );
