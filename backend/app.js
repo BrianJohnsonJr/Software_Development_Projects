@@ -4,8 +4,8 @@ const express = require('express');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const loginRouter = require('./routes/loginRouter');
-const postRouter = require('./routes/postsRouter');
+const accountRouter = require('./routes/accountRouter');
+const postRouter = require('./routes/postRouter');
 const profileRouter = require('./routes/profileRouter');
 const mongoose = require('mongoose');
 
@@ -38,10 +38,9 @@ app.get("/", (req, res) => {
     res.send("Default backend response.");
 });
 
-// Redirect all login paths to the login router
-app.use('/account', loginRouter);
-// Profile paths to the profile router
-app.use('/profile', profileRouter);
+// Redirect all account paths to the account router
+app.use('/account', accountRouter);
+
 // Post paths to the post router
 app.use('/posts', postRouter);
 
