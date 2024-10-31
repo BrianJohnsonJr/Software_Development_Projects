@@ -33,3 +33,4 @@ function Post({ title, description, ownerUsername, price, imageUrl, tags = [], l
 }
 
 export default Post;
+
