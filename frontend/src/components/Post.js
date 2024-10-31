@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Post.css';  
+import Likes from './Likes';
 
 function Post({ title, description, ownerUsername, price, imageUrl, tags = [], likes }) {
   return (
@@ -24,8 +25,12 @@ function Post({ title, description, ownerUsername, price, imageUrl, tags = [], l
           )}
         </ul>
       </div>
+      <div className="post-likes">
+        <Likes/>
+      </div>
     </div>
   );
 }
 
 export default Post;
+

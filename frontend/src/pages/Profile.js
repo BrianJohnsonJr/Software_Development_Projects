@@ -2,6 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Profile.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
+
 
 const Profile = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -53,13 +57,31 @@ const Profile = () => {
 
     return (
         <div className="profile-container">
-            <h1>Welcome, {user?.name}</h1>
-            <p>Username: {user?.username}</p>
-            <p>Email: {user?.email}</p>
-            <p>Bio: {user?.bio}</p>
-
-            {/* Logout button */}
-            <button onClick={handleLogout} className="logout-button">
+            <div className="profile-header">
+                <img src={user?.profilePicture || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'} alt="" className="profile-picture" />
+                <h1>{user?.name}</h1>
+            </div>
+            <div className="profile-stats">
+                <div>
+                    <strong>Followers:</strong> {user?.followersCount}
+                </div>
+            </div>
+            <div className="profile-info">
+                <div>
+                    <FontAwesomeIcon icon={faUser} /> Username: {user?.username}
+                </div>
+                <div>
+                    <FontAwesomeIcon icon={faEnvelope} /> Email: {user?.email}
+                </div>
+                <div>
+                    <FontAwesomeIcon icon={faInfoCircle} /> Bio: {user?.bio}
+                </div>
+            </div>
+            <div className="profile-posts">
+                <strong>Posts:</strong> {user?.postsCount}
+            </div>
+            <Link to="/edit-profile" className="edit-button"> Edit Profile</Link>
+            <button onClick={handleLogout} className="auth-button logout-button">
                 Logout
             </button>
         </div>

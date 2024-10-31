@@ -1,15 +1,94 @@
-
+/* Container for profile page */
 .profile-container {
-    text-align: center;
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center items horizontally */
     padding: 20px;
+    width: 100vw; /* Full viewport width */
+    background-color: #353536; /* Light background color */
+    border-radius: 0; /* Remove border-radius if desired */
+    box-shadow: none; /* Remove shadow if not needed */
 }
 
-h1 {
-    margin-bottom: 20px;
+/* Name styling */
+.profile-header h1 {
+    margin-bottom: 10px;
     font-size: 24px;
-    color: #333;
+    color: white; /* Change text color to white */
 }
 
+/* Stats section styling for followers */
+.profile-stats div {
+    font-size: 16px;
+    color: white; /* Change text color to white */
+}
+
+/* Header section containing profile picture and name */
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Profile picture styling */
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid #4CAF50; /* Green border */
+}
+
+/* Name styling */
+h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #333; /* Dark text color */
+}
+
+/* Stats section styling for followers, email, etc. */
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    color: white;
+}
+
+/* Stats individual item styling */
+.profile-stats div {
+    font-size: 16px;
+    color: #fcfbfb; /* Medium-dark text color */
+}
+
+/* User info styling container */
+.profile-info {
+    font-size: 16px;
+    color: #555; /* Medium-dark text color */
+    margin-bottom: 25px;
+    background-color: #ffffff; /* White background for user info box */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid #e0e0e0; /* Light gray border */
+    max-width: 500px; /* Limit width */
+    width: 100%; /* Ensure it takes full width up to max-width */
+}
+
+/* Individual user info item styling */
+.profile-info div {
+    margin-bottom: 10px; /* Spacing between info items */
+}
+
+/* Profile posts section */
+.profile-posts {
+    font-size: 16px;
+    color: #ffffff; /* Dark text color */
+    font-weight: bold;
+    margin-top: 20px; /* Positions Posts section lower on the page */
+}
+
+/* Auth button styling */
 .auth-button {
     display: block;
     width: 150px;
@@ -22,8 +101,29 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 15px;
+    max-width: 500px; /* Limit width */
+    width: 100%; /* Ensure it takes full width up to max-width */
 }
 
+/* Auth button hover effect */
 .auth-button:hover {
     background-color: #45a049; /* Slightly darker green on hover */
+}
+
+.edit-button{
+    display: block;
+    width: 150px;
+    margin: 10px auto; /* Center the button and add vertical space */
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #4CAF50; /* Green background color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+    max-width: 480px; /* Limit width */
+    width: 100%; /* Ensure it takes full width up to max-width */
 }

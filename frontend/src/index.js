@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 // import App from './App';
 // import App from './App'; 
 import reportWebVitals from './reportWebVitals';
+import EditProfile from './pages/EditProfile'; // Adjust the path as needed
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         {/* <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
         </Route> */}
+        <Route path="/edit-profile" element={<EditProfile />} />
       </Routes>
       <Footer />
     </div>

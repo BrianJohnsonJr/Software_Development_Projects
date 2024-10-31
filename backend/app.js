@@ -1,4 +1,4 @@
-require('dotenv').config({ path: 'secret_token.env' }); // load dotenvs
+require('dotenv').config(); // load dotenvs
 
 const express = require('express');
 const methodOverride = require('method-override');
@@ -15,7 +15,7 @@ const app = express();
 // Set configs
 let port = 5000;
 let host = 'localhost';
-const mongoUri = 'mongodb+srv://Merchsy_Application:SecurePassword@merchsyinstance.j0zx1.mongodb.net/Merchsy?retryWrites=true&w=majority&appName=MerchsyInstance';
+const mongoUri = process.env.MONGO_URI;
 
 mongoose.connect(mongoUri)
 .then(() => {

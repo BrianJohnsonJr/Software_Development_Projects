@@ -1,0 +1,163 @@
+
+/* Icon to open the panel */
+.sort-filter-icon {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+/* Panel container */
+.sort-filter-panel {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Hidden off-screen initially */
+    width: 250px;
+    height: 100%;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    overflow-y: auto; /* Makes the panel scrollable */
+}
+
+/* Slide-in effect */
+.sort-filter-panel.open {
+    left: 0;
+}
+
+/* Close button on the panel */
+.close-panel-btn {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Sort option styling */
+.sort-options {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sort-option {
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0px;
+}
+
+/* Highlight selected option */
+.sort-option.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Tags */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tag {
+    background-color: #ddd;
+    border-radius: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Price Slider */
+.price-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.price-slider input[type="number"] {
+    width: 50px;
+}
+
+/* Item Type */
+.item-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.type-option {
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.type-option.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Tag to Apply */
+.toggle-container {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 20px;
+    position: relative;
+    appearance: none;
+    background-color: #ddd;
+    border-radius: 20px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.toggle-switch:checked {
+    background-color: #4caf50;
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: transform 0.2s;
+}
+
+.toggle-switch:checked::before {
+    transform: translateX(20px);
+}
+
+.toggle-label {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+/* Additional styling for scroll behavior */
+.sort-filter-panel {
+    scroll-behavior: smooth; /* Enables smooth scrolling within the panel */
+    padding-bottom: 40px; /* Extra space for scrolling */
+}
