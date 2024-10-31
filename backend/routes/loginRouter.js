@@ -5,15 +5,15 @@ const AuthService = require('../services/authService'); // Import AuthService
 const router = express.Router();
 
 // Configure multer for file uploads (profile picture now, post images later)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + '-' + file.originalname);
+//     }
+// });
+// const upload = multer({ storage: storage });
 
 // Register route
 router.post('/register', async (req, res, next) => {
