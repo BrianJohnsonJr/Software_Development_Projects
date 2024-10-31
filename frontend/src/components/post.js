@@ -1,14 +1,19 @@
 import React from 'react';
 import '../styles/Post.css';  
 import Likes from './Likes';
+import { Link } from 'react-router-dom';
 
-function Post({ title, description, ownerUsername, price, imageUrl, tags = [], likes }) {
+function Post({ id, title, description, ownerUsername, price, imageUrl, tags = [], likes }) {
   return (
     <div className="post">
       <img src={imageUrl} alt={title} className="post-image" />
       <div className="post-details">
         <div className="post-left">
-          <h2>{title}</h2>
+          <h2>
+            <Link to={`/post/${id}`} state={{ post: { id, title, description, ownerUsername, price, imageUrl, tags } }}>
+              {title}
+            </Link>
+          </h2>
           <p>Owned by: {ownerUsername}</p>
         </div>
         <div className="post-right">
