@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
     const token = req.cookies.token; // Access token from cookie
     
     if (!token) {
@@ -11,7 +11,7 @@ const authMiddleware = (req, res, next) => {
 
     try {
         // Verify token and extract the user ID
-        const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+        const decoded = await jwt.verify(token, process.env.TOKEN_SECRET);
         
         // Attach the user ID to req.user for database lookups
         req.user = { id: decoded.id };
