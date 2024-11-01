@@ -60,6 +60,36 @@ const AuthService = {
         const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
     }
+
 };
 
-module.exports = AuthService;
+exports.AuthService = AuthService;
+
+exports.AuthorizeUser = async (req, res, next) => {
+    const token = req.cookies.token; // Access token from cookie
+    
+    if (!token) {
+        let err = new Error("Access denied. No token provided");
+        err.status = 401;
+        next(err);
+    }
+
+    try {
+        // Verify token and extract the user ID
+        const decoded = await jwt.verify(token, process.env.TOKEN_SECRET);
+        
+        // Attach the user ID to req.user for database lookups
+        req.user = { id: decoded.id };
+        
+        next(); // Move to the next middleware or route handler
+    } catch (error) {
+        console.error('Token verification error:', error);
+        
+        // Clear invalid token cookies if token verification fails
+        res.clearCookie('token');
+        
+        let err = new Error("Invalid or expired token");
+        err.status = 403;
+        next(err);
+    }
+};

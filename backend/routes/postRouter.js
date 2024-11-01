@@ -1,11 +1,12 @@
 const express = require('express');
 const User = require('../models/users');
 const Post = require('../models/posts');
-const authMiddleware = require('../middleware/authMiddleware');
+const { AuthorizeUser } = require('../services/authService');
+// const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/create', authMiddleware, async (req, res, next) => {
+router.post('/create', AuthorizeUser, async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id).select('-password'); // grab user w/o password'
         
@@ -37,7 +38,7 @@ router.post('/create', authMiddleware, async (req, res, next) => {
     }
 });
 
-router.get('/following', authMiddleware, async (req, res, next) => {
+router.get('/following', AuthorizeUser, async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id, { password: 0 });
         if(!user.following || user.following.length === 0) {
@@ -69,7 +70,7 @@ router.get('/explore', async (req, res, next) => {
     catch (error) { next(error); }
 });
 
-router.get('/user', authMiddleware, async (req, res, next) => {
+router.get('/user', AuthorizeUser, async (req, res, next) => {
     try {
         if(!req.user.id) {
             let err = new Error("User not signed in");

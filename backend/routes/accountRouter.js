@@ -1,9 +1,9 @@
 const express = require('express');
 // const multer = require('multer');
 const User = require('../models/users'); // Import the user model
-const AuthService = require('../services/authService'); // Import AuthService
+const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
+// const authMiddleware = require('../middleware/authMiddleware');
 
 // Configure multer for file uploads (profile picture now, post images later)
 // const storage = multer.diskStorage({
@@ -82,7 +82,7 @@ router.post('/logout', (req, res, next) => {
     catch (error) { next(error); }
 });
 
-router.get('/profile', authMiddleware, async (req, res, next) => {
+router.get('/profile', AuthorizeUser, async (req, res, next) => {
     try {
         // Retrieve the full user profile using the user ID from the token
         const user = await User.findById(req.user.id).select('-password'); // Exclude password field
