@@ -17,6 +17,7 @@ import Footer from './components/Footer';
 // import App from './App'; 
 import reportWebVitals from './reportWebVitals';
 import EditProfile from './pages/EditProfile'; // Adjust the path as needed
+import SingleItem from './pages/SingleItem';
 
 function App() {
   return (
@@ -34,7 +35,8 @@ function App() {
           <Route index element={<Home />} />
         </Route> */}
         <Route path="/edit-profile" element={<EditProfile />} />
-      </Routes>
+        <Route path="/post/:id" element={<SingleItem />} />
+        </Routes>
       <Footer />
     </div>
   )

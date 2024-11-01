@@ -58,7 +58,7 @@ const Profile = () => {
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <img src={user?.profilePicture || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg'} alt="" className="profile-picture" />
+                <img src={user?.profilePicture || 'https://preview.redd.it/tuya5a8s2tv71.png?width=422&format=png&auto=webp&s=b379b435e0b570d34bea7eadb00f78faa53ae98d'} alt="" className="profile-picture" />
                 <h1>{user?.name}</h1>
             </div>
             <div className="profile-stats">

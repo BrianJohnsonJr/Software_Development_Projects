@@ -3,6 +3,11 @@ import Post from '../components/Post'; // Import the reusable Post component
 import SortFilterPanel from '../components/SortFilterPanel'; // Sort&Filter panel component
 import '../styles/Explore.css';  
 import blankImagePath from "../images/blank_image.webp"; //can be removed once the imageUrls are being pulled in the post object
+import shoePath from "../images/ShoesMerch.webp";
+import TShirtPath from "../images/T-ShirtMerch.jpg";
+import pantsPath from "../images/PantsMerch.avif";
+import hatPath from "../images/HatMerch.jpeg";
+import braceletPath from "../images/braceletMerch.webp"
 
 const Following = () => {
     const [posts, setPosts] = useState([]);
@@ -11,11 +16,11 @@ const Following = () => {
 
     useEffect(() => { // dummy data while we setup the api call to get ONLY posts uploaded by following list (integrate "shuffle/random" algorithm?)
         const fetchedPosts = [
-            { id: 1, title: "Sample Post Title", description: "", ownerUsername: "John Doe", price: 540, imageUrl: blankImagePath, tags: ["tech", "innovation", "firstPost"] },
-            { id: 2, title: "Sample Post Title 2", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 3, title: "Sample Post Title 3", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 5, title: "Sample Post Title 5", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: blankImagePath, tags: ["tech", "innovation"] }
+            { id: 1, title: "Chris T-Shirt", description: "", ownerUsername: "John Doe", price: 35, imageUrl: TShirtPath, tags: ["tech", "innovation", "firstPost"] },
+            { id: 2, title: "Jane Shoes", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: shoePath, tags: ["tech", "innovation"] },
+            { id: 3, title: "Designed Joggers", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: pantsPath, tags: ["tech", "innovation"] },
+            { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: hatPath, tags: ["tech", "innovation"] },
+            { id: 5, title: "Silver Bracelet", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: braceletPath, tags: ["tech", "innovation"] }
         ];
         setPosts(fetchedPosts);
     }, []);
