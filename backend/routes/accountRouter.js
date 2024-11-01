@@ -3,7 +3,6 @@ const express = require('express');
 const User = require('../models/users'); // Import the user model
 const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
 const router = express.Router();
-// const authMiddleware = require('../middleware/authMiddleware');
 
 // Configure multer for file uploads (profile picture now, post images later)
 // const storage = multer.diskStorage({
