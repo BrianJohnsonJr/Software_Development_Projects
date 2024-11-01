@@ -16,7 +16,7 @@ const Profile = () => {
         // Check if the user is authenticated
         const fetchProfile = async () => {
             try {
-                const response = await fetch('/profile', {
+                const response = await fetch('/account/profile', {
                     method: 'GET',
                     credentials: 'include' // Ensures cookies are sent with the request
                 });

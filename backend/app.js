@@ -6,7 +6,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const accountRouter = require('./routes/accountRouter');
 const postRouter = require('./routes/postRouter');
-const profileRouter = require('./routes/profileRouter');
 const mongoose = require('mongoose');
 
 // Create app
