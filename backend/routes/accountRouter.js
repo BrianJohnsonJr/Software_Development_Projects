@@ -1,19 +1,19 @@
 const express = require('express');
-const multer = require('multer');
+// const multer = require('multer');
 const User = require('../models/users'); // Import the user model
-const AuthService = require('../services/authService'); // Import AuthService
+const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
 const router = express.Router();
 
 // Configure multer for file uploads (profile picture now, post images later)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + '-' + file.originalname);
+//     }
+// });
+// const upload = multer({ storage: storage });
 
 // Register route
 router.post('/register', async (req, res, next) => {
@@ -23,8 +23,9 @@ router.post('/register', async (req, res, next) => {
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
-            res.status(400);
-            next(new Error(message));
+            let err = new Error(message);
+            err.status = 400;
+            next(err);
         }
 
         const hashedPassword = await AuthService.hashPassword(password);
@@ -49,7 +50,11 @@ router.post('/login', async (req, res, next) => {
 
     try {
         const user = await AuthService.verifyUsernameAndPassword(username, password);
-        if (!user) return res.status(400).json({ message: 'Invalid username or password' });
+        if (!user) {
+            let err = new Error('Invalid username or password');
+            err.status = 400;
+            next(err);
+        }
 
         // Generate token
         const token = AuthService.generateToken(user);
@@ -72,6 +77,22 @@ router.post('/logout', (req, res, next) => {
     try {
         res.clearCookie('token'); // Clear the token cookie
         res.json({ success: true, message: 'Logged out successfully' });
+    }
+    catch (error) { next(error); }
+});
+
+router.get('/profile', AuthorizeUser, async (req, res, next) => {
+    try {
+        // Retrieve the full user profile using the user ID from the token
+        const user = await User.findById(req.user.id).select('-password'); // Exclude password field
+        
+        if (!user) {
+            let err = new Error('User not found');
+            err.status = 404
+            next(err);
+        }
+        
+        res.json({ message: 'Profile data', user });
     }
     catch (error) { next(error); }
 });

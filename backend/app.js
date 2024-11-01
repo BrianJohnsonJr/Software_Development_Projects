@@ -1,12 +1,11 @@
-require('dotenv').config({ path: 'secret_token.env' }); // load dotenvs
+require('dotenv').config(); // load dotenvs
 
 const express = require('express');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const loginRouter = require('./routes/loginRouter');
-const postRouter = require('./routes/postsRouter');
-const profileRouter = require('./routes/profileRouter');
+const accountRouter = require('./routes/accountRouter');
+const postRouter = require('./routes/postRouter');
 const mongoose = require('mongoose');
 
 // Create app
@@ -15,7 +14,7 @@ const app = express();
 // Set configs
 let port = 5000;
 let host = 'localhost';
-const mongoUri = 'mongodb+srv://Merchsy_Application:SecurePassword@merchsyinstance.j0zx1.mongodb.net/Merchsy?retryWrites=true&w=majority&appName=MerchsyInstance';
+const mongoUri = process.env.MONGO_URI;
 
 mongoose.connect(mongoUri)
 .then(() => {
@@ -38,10 +37,9 @@ app.get("/", (req, res) => {
     res.send("Default backend response.");
 });
 
-// Redirect all login paths to the login router
-app.use('/account', loginRouter);
-// Profile paths to the profile router
-app.use('/profile', profileRouter);
+// Redirect all account paths to the account router
+app.use('/account', accountRouter);
+
 // Post paths to the post router
 app.use('/posts', postRouter);
 

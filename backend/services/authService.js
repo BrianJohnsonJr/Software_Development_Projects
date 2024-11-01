@@ -4,9 +4,9 @@ const User = require('../models/users');
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 const AuthService = {
-    // Verifies username and password, returns user if matched
+
     /**
-     * 
+     * Verifies username and password, returns user if matched
      * @param {*} username 
      * @param {*} password 
      * @returns 
@@ -25,9 +25,8 @@ const AuthService = {
         return passwordMatch ? user : null;
     },
 
-    // Generates a JWT token for a user
     /**
-     * 
+     * Generates a JWT token for a user
      * @param {*} user 
      * @returns 
      */
@@ -35,9 +34,8 @@ const AuthService = {
         return jwt.sign({ id: user._id, username: user.username }, TOKEN_SECRET, { expiresIn: '1h' });
     },
 
-    // Verifies a JWT token and returns the decoded payload if valid
     /**
-     * 
+     * Verifies a JWT token and returns the decoded payload if valid
      * @param {*} token 
      * @returns 
      */
@@ -50,9 +48,8 @@ const AuthService = {
         });
     },
 
-    // Hashes a password using bcrypt
     /**
-     * 
+     * Hashes a password using bcrypt
      * @param {*} password 
      * @returns 
      */
@@ -60,6 +57,39 @@ const AuthService = {
         const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
     }
+
 };
 
-module.exports = AuthService;
+exports.AuthService = AuthService;
+
+/**
+ * Middleware function to verify incoming requests with a jwt cookie and provides a user id in req.user.id
+ */
+exports.AuthorizeUser = async (req, res, next) => {
+    const token = req.cookies.token; // Access token from cookie
+    
+    if (!token) {
+        let err = new Error("Access denied. No token provided");
+        err.status = 401;
+        next(err);
+    }
+
+    try {
+        // Verify token and extract the user ID
+        const decoded = await jwt.verify(token, process.env.TOKEN_SECRET);
+        
+        // Attach the user ID to req.user for database lookups
+        req.user = { id: decoded.id };
+        
+        next(); // Move to the next middleware or route handler
+    } catch (error) {
+        console.error('Token verification error:', error);
+        
+        // Clear invalid token cookies if token verification fails
+        res.clearCookie('token');
+        
+        let err = new Error("Invalid or expired token");
+        err.status = 403;
+        next(err);
+    }
+};

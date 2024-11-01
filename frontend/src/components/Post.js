@@ -4,6 +4,8 @@ import Likes from './Likes';
 import { Link } from 'react-router-dom';
 
 function Post({ id, title, description, ownerUsername, price, imageUrl, tags = [], likes }) {
+
+
   return (
     <div className="post">
       <img src={imageUrl} alt={title} className="post-image" />
@@ -14,6 +16,7 @@ function Post({ id, title, description, ownerUsername, price, imageUrl, tags = [
               {title}
             </Link>
           </h2>
+        
           <p>Owned by: {ownerUsername}</p>
         </div>
         <div className="post-right">
@@ -38,3 +41,4 @@ function Post({ id, title, description, ownerUsername, price, imageUrl, tags = [
 }
 
 export default Post;
+
