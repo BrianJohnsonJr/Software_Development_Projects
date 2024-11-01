@@ -4,9 +4,9 @@ const User = require('../models/users');
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 const AuthService = {
-    // Verifies username and password, returns user if matched
+
     /**
-     * 
+     * Verifies username and password, returns user if matched
      * @param {*} username 
      * @param {*} password 
      * @returns 
@@ -25,9 +25,8 @@ const AuthService = {
         return passwordMatch ? user : null;
     },
 
-    // Generates a JWT token for a user
     /**
-     * 
+     * Generates a JWT token for a user
      * @param {*} user 
      * @returns 
      */
@@ -35,9 +34,8 @@ const AuthService = {
         return jwt.sign({ id: user._id, username: user.username }, TOKEN_SECRET, { expiresIn: '1h' });
     },
 
-    // Verifies a JWT token and returns the decoded payload if valid
     /**
-     * 
+     * Verifies a JWT token and returns the decoded payload if valid
      * @param {*} token 
      * @returns 
      */
@@ -50,9 +48,8 @@ const AuthService = {
         });
     },
 
-    // Hashes a password using bcrypt
     /**
-     * 
+     * Hashes a password using bcrypt
      * @param {*} password 
      * @returns 
      */
@@ -65,6 +62,9 @@ const AuthService = {
 
 exports.AuthService = AuthService;
 
+/**
+ * Middleware function to verify incoming requests with a jwt cookie and provides a user id in req.user.id
+ */
 exports.AuthorizeUser = async (req, res, next) => {
     const token = req.cookies.token; // Access token from cookie
     
