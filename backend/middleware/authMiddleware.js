@@ -4,7 +4,9 @@ const authMiddleware = (req, res, next) => {
     const token = req.cookies.token; // Access token from cookie
     
     if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
+        let err = new Error("Access denied. No token provided");
+        err.status = 401;
+        next(err);
     }
 
     try {
@@ -21,7 +23,9 @@ const authMiddleware = (req, res, next) => {
         // Clear invalid token cookies if token verification fails
         res.clearCookie('token');
         
-        return res.status(403).json({ message: 'Invalid or expired token' });
+        let err = new Error("Invalid or expired token");
+        err.status = 403;
+        next(err);
     }
 };
 

@@ -24,8 +24,9 @@ router.post('/register', async (req, res, next) => {
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
-            res.status(400);
-            next(new Error(message));
+            let err = new Error(message);
+            err.status = 400;
+            next(err);
         }
 
         const hashedPassword = await AuthService.hashPassword(password);
@@ -50,7 +51,11 @@ router.post('/login', async (req, res, next) => {
 
     try {
         const user = await AuthService.verifyUsernameAndPassword(username, password);
-        if (!user) return res.status(400).json({ message: 'Invalid username or password' });
+        if (!user) {
+            let err = new Error('Invalid username or password');
+            err.status = 400;
+            next(err);
+        }
 
         // Generate token
         const token = AuthService.generateToken(user);
@@ -83,8 +88,9 @@ router.get('/profile', authMiddleware, async (req, res, next) => {
         const user = await User.findById(req.user.id).select('-password'); // Exclude password field
         
         if (!user) {
-            res.status(404);
-            next(new Error('User not found'));
+            let err = new Error('User not found');
+            err.status = 404
+            next(err);
         }
         
         res.json({ message: 'Profile data', user });
