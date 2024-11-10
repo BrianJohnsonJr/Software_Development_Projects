@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/users');
 const Post = require('../models/posts');
 const { AuthorizeUser, VerifyId } = require('../services/authService');
+const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
