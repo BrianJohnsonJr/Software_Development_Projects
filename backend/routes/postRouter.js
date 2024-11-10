@@ -1,7 +1,9 @@
 const express = require('express');
 const User = require('../models/users');
 const Post = require('../models/posts');
-const { AuthorizeUser } = require('../services/authService');
+const { AuthorizeUser, VerifyId } = require('../services/authService');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const router = express.Router();
 
@@ -35,6 +37,28 @@ router.post('/create', AuthorizeUser, async (req, res, next) => {
 
         next(error);
     }
+});
+
+router.get('/:id', VerifyId, async (req, res, next) => {
+    try {
+        let id = req.params.id;
+        
+        const post = await Post.findById(id);
+        const imageKey = post.image || 'default_image.png';
+
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        });
+        
+        const signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
+
+        // const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageKey}`;
+        post.image = signedUrl;
+    
+        res.json({ success: true, post: post});
+    }
+    catch (error) { next(error); }
 });
 
 router.get('/following', AuthorizeUser, async (req, res, next) => {
