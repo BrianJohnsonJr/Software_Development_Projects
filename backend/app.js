@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const accountRouter = require('./routes/accountRouter');
 const postRouter = require('./routes/postRouter');
 const mongoose = require('mongoose');
-const { S3Client, PutObjectcommand } = require('@aws-sdk/client-s3');
+const { S3Client } = require('@aws-sdk/client-s3');
 
 // Create app
 const app = express();
