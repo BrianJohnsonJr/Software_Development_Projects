@@ -2,18 +2,8 @@ const express = require('express');
 // const multer = require('multer');
 const User = require('../models/users'); // Import the user model
 const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
+const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const router = express.Router();
-
-// Configure multer for file uploads (profile picture now, post images later)
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, Date.now() + '-' + file.originalname);
-//     }
-// });
-// const upload = multer({ storage: storage });
 
 // Register route
 router.post('/register', async (req, res, next) => {
@@ -25,7 +15,7 @@ router.post('/register', async (req, res, next) => {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
             let err = new Error(message);
             err.status = 400;
-            next(err);
+            return next(err);
         }
 
         const hashedPassword = await AuthService.hashPassword(password);
@@ -53,7 +43,7 @@ router.post('/login', async (req, res, next) => {
         if (!user) {
             let err = new Error('Invalid username or password');
             err.status = 400;
-            next(err);
+            return next(err);
         }
 
         // Generate token
@@ -89,10 +79,31 @@ router.get('/profile', AuthorizeUser, async (req, res, next) => {
         if (!user) {
             let err = new Error('User not found');
             err.status = 404
-            next(err);
+            return next(err);
         }
         
         res.json({ message: 'Profile data', user });
+    }
+    catch (error) { next(error); }
+});
+
+// change profilePic if we have a different form fieldname
+router.post('/profile', AuthorizeUser, uploadToMemory.single('profilePic'), async (req, res, next) => {
+    try {
+        if(!req.file) {
+            let err = new Error('No file uploaded');
+            err.status = 400;
+            return next(err);
+        }
+
+        const user = await User.findById(req.user.id).select('-password');
+        const file = await uploadToCloud(req.s3, req.file);
+
+        user.profilePicture = file.filename;
+
+        await user.save();
+
+        res.json({ success: true, message: 'Profile picture updated successfully' });
     }
     catch (error) { next(error); }
 });
