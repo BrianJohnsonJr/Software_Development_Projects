@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const accountRouter = require('./routes/accountRouter');
 const postRouter = require('./routes/postRouter');
 const mongoose = require('mongoose');
+const { S3Client, PutObjectcommand } = require('@aws-sdk/client-s3');
 
 // Create app
 const app = express();
@@ -30,6 +31,17 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
+
+app.use((req, res, next) => {
+    req.s3 = new S3Client({
+        region: process.env.AWS_REGION,
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        }
+    });
+    next();
+});
 
 
 // backend only -- shows backend running on port 5000 in local host.
