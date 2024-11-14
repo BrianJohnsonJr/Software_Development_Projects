@@ -98,6 +98,7 @@ router.get('/explore', async (req, res, next) => {
     catch (error) { next(error); }
 });
 
+// Route used to find all the posts by the signed in person (maybe not in the best place?)
 router.get('/user', AuthorizeUser, async (req, res, next) => {
     try {
         if(!req.user.id) {

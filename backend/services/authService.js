@@ -71,7 +71,7 @@ exports.AuthorizeUser = async (req, res, next) => {
     if (!token) {
         let err = new Error("Access denied. No token provided");
         err.status = 401;
-        next(err);
+        return next(err);
     }
 
     try {
@@ -105,7 +105,7 @@ exports.VerifyId = (req, res, next) => {
             err.status = 400;
             return next(err);
         } else {
-            next();
+            return next();
         }
     }
     catch (err) { next(err); }

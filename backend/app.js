@@ -1,5 +1,26 @@
 require('dotenv').config(); // load dotenvs
 
+// verify envs load correctly, exit immediately if there is missing one(s)
+{
+    // Append to this list if we add more env vars
+    const requiredEnvVars = [
+        "TOKEN_SECRET",
+        "MONGO_URI",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_REGION",
+        "AWS_BUCKET_NAME",
+    ];
+    const missingVars = requiredEnvVars.filter((key) => !process.env[key]);
+
+    if (missingVars.length > 0) {
+        console.error(`Missing required environment variables: ${missingVars.join(", ")}`);
+        process.exit(1);
+    } else {
+        console.log("All environment vars loaded correctly.")
+    }
+}
+
 const express = require('express');
 const methodOverride = require('method-override');
 const cors = require('cors');
@@ -57,7 +78,7 @@ app.use('/posts', postRouter);
 
 
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error("stack: " + err.stack);
     if(!err.status) {
         err.status = 500;
         err.message = ("Internal Server Error");
