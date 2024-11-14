@@ -6,7 +6,7 @@ const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const router = express.Router();
 
 // Register route
-router.post('/register', async (req, res, next) => {
+router.post('/register', uploadToMemory.none(), async (req, res, next) => {
     const { name, username, email, password, bio, imageUrl } = req.body;
 
     try {
@@ -35,7 +35,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 // Login route
-router.post('/login', async (req, res, next) => {
+router.post('/login', uploadToMemory.none(), async (req, res, next) => {
     const { username, password } = req.body;
 
     try {
@@ -63,7 +63,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 // Logout route
-router.post('/logout', (req, res, next) => {
+router.post('/logout', uploadToMemory.none(), (req, res, next) => {
     try {
         res.clearCookie('token'); // Clear the token cookie
         res.json({ success: true, message: 'Logged out successfully' });
