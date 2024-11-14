@@ -8,7 +8,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const router = express.Router();
 
-router.post('/create', AuthorizeUser, async (req, res, next) => {
+router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id).select('-password'); // grab user w/o password'
         
@@ -19,6 +19,7 @@ router.post('/create', AuthorizeUser, async (req, res, next) => {
         }
 
         const { title, description, price, image, tags, itemType, sizes } = req.body;
+
         const newPost = new Post({
             title, 
             description,
@@ -28,6 +29,9 @@ router.post('/create', AuthorizeUser, async (req, res, next) => {
             itemType,
             sizes
         });
+        
+        const file = await uploadToCloud(req.s3, req.file);
+        newPost.image = file.filename;
 
         await newPost.save();
         res.json({ success: true, message: 'Post successfully posted' });
