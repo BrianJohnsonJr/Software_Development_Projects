@@ -3,6 +3,8 @@ const express = require('express');
 const User = require('../models/users'); // Import the user model
 const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
 const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const router = express.Router();
 
 // Register route
@@ -81,8 +83,17 @@ router.get('/profile', AuthorizeUser, async (req, res, next) => {
             err.status = 404
             return next(err);
         }
+
+        const imageKey = user.profilePicture || 'default_image.png';
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        });
+        const signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
+
+        user.profilePicture = signedUrl;
         
-        res.json({ message: 'Profile data', user });
+        res.json({ success: true, user: user });
     }
     catch (error) { next(error); }
 });
