@@ -71,7 +71,7 @@ exports.AuthorizeUser = async (req, res, next) => {
     if (!token) {
         let err = new Error("Access denied. No token provided");
         err.status = 401;
-        next(err);
+        return next(err);
     }
 
     try {
@@ -92,4 +92,21 @@ exports.AuthorizeUser = async (req, res, next) => {
         err.status = 403;
         next(err);
     }
+};
+
+/**
+ * Middleware function to verify passed ID is correctly formatted
+ */
+exports.VerifyId = (req, res, next) => {
+    try {
+        let id = req.params.id;
+        if(!id.match(/^[0-9a-fA-F]{24}$/)) {
+            let err = new Error('Invalid id');
+            err.status = 400;
+            return next(err);
+        } else {
+            return next();
+        }
+    }
+    catch (err) { next(err); }
 };
