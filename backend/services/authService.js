@@ -99,7 +99,10 @@ exports.AuthorizeUser = async (req, res, next) => {
  */
 exports.VerifyId = (req, res, next) => {
     try {
-        let id = req.params.id;
+        // Grab the /:id, if doesnt exist, grab the ?lastId=, if doesn't exist, null.
+        let id = req.params.id || req.query.lastId || null;
+        if(!id) return next(); // If no id, no error needed.
+
         if(!id.match(/^[0-9a-fA-F]{24}$/)) {
             let err = new Error('Invalid id');
             err.status = 400;
