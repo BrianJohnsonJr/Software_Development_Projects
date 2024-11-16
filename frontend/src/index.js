@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './pages/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'; // Import the Register component
@@ -18,6 +17,7 @@ import Footer from './components/Footer';
 import reportWebVitals from './reportWebVitals';
 import EditProfile from './pages/EditProfile'; // Adjust the path as needed
 import SingleItem from './pages/SingleItem';
+import NotLoggedIn from './pages/NotLoggedIn';
 
 function App() {
   return (
@@ -36,7 +36,8 @@ function App() {
         </Route> */}
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/post/:id" element={<SingleItem />} />
-        </Routes>
+        <Route path="/not-logged-in" element={<NotLoggedIn />} />
+      </Routes>
       <Footer />
     </div>
   )
