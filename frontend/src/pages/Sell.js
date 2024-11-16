@@ -1,6 +1,7 @@
 // pages/Sell.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Sell.css'; // Create a CSS file for styling
+import { useNavigate } from 'react-router-dom';
 
 const Sell = () => {
   const [image, setImage] = useState(null);
@@ -10,6 +11,34 @@ const Sell = () => {
   const [price, setPrice] = useState('');
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const checkAuth = async () => {
+        try {
+          const response = await fetch('/account/auth-check', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            setIsAuthenticated(true);
+          } else {
+            navigate('/not-logged-in'); // Redirect to "NotLoggedIn" page if not authenticated
+          }
+        } catch (error) {
+          console.error('Error checking authentication:', error);
+          navigate('/not-logged-in'); // Redirect to "NotLoggedIn" page if error occurs
+        } finally {
+          setIsLoading(false);
+        }
+    };
+
+    checkAuth();
+}, [navigate]);
 
   // Handle image file upload
   const handleImageUpload = (e) => {
@@ -45,6 +74,14 @@ const Sell = () => {
     // Here you can handle form submission, such as sending the data to your server
     console.log({ image, title, description, price, sizes, tags });
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!isAuthenticated) {
+    return null; // You can also redirect or show a message here, but the redirect is already handled
+  }
 
   return (
     <div className="sell-form-container">
