@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/users');
 const Post = require('../models/posts');
-const { AuthorizeUser, VerifyId } = require('../services/authService');
+const { AuthorizeUser, VerifyLastId, VerifyParamsId } = require('../services/authService');
 const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
@@ -44,10 +44,88 @@ router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req
     }
 });
 
+
+/**
+ * This route will give the data for the 25 most recent posts following.
+ * query with lastId=<id> to get another page (the last id of the page previous)
+*/
+router.get('/following', AuthorizeUser, VerifyLastId, async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id, { password: 0 });
+        if(!user.following || user.following.length === 0) {
+            res.json([]);
+        } else {
+            
+            const lastId = req.query.lastId || null;
+            const following = user.following;
+            
+            const query = lastId ? { $and: [
+                { _id: { $lt: lastId }},
+                { owner: {$in: following }}
+            ],
+            }
+            : { owner: {$in: following }};
+
+            // grab 25 posts, sorted by time (id) desc. 25 newest posts.
+            const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+            
+            if(posts.length > 0)
+                res.json(posts);
+            else
+            res.json([]);
+    }
+}
+catch (error) { next(error); }
+});
+
+/**
+ * This route displays the newest posts.
+ * query with lastId=<id> to get another page (send the last id of the page previous)
+*/
+router.get('/explore', VerifyLastId, async (req, res, next) => {
+    try {
+        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+        const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+        
+        if(posts.length > 0)
+            res.json(posts);
+        else
+        res.json([]);
+}
+catch (error) { next(error); }
+});
+
+/**
+ * Route used to find all the posts by the signed in person 
+ * query with lastId=<id> to get another page (send the last id of the page previous)
+*/
+router.get('/user', AuthorizeUser, VerifyLastId, async (req, res, next) => {
+    try {
+        if(!req.user.id) { // maybe not needed?
+            let err = new Error("User not signed in");
+            err.status = 400;
+            next(err);
+        }
+        
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).sort({ _id: -1 }).limit(25);
+        
+        if(posts.length > 0)
+            res.json(posts);
+        else
+        res.json([]);
+}
+catch (error) { next(error); }
+});
+
 /**
  * Provides the post data with the specified id
  */
-router.get('/:id', VerifyId, async (req, res, next) => {
+router.get('/:id', VerifyParamsId, async (req, res, next) => {
+    // THIS ROUTE NEEDS TO BE LAST BECAUSE IT CATCHES OTHER ROUTES OTHERWISE!
     try {
         let id = req.params.id;
         
@@ -67,83 +145,6 @@ router.get('/:id', VerifyId, async (req, res, next) => {
     }
     catch (error) { next(error); }
 });
-
-/**
- * This route will give the data for the 25 most recent posts following.
- * query with lastId=<id> to get another page (the last id of the page previous)
- */
-router.get('/following', AuthorizeUser, VerifyId, async (req, res, next) => {
-    try {
-        const user = await User.findById(req.user.id, { password: 0 });
-        if(!user.following || user.following.length === 0) {
-            res.json([]);
-        } else {
-            
-            const lastId = req.query.lastId || null;
-            const following = user.following;
-
-            const query = lastId ? { $and: [
-                { _id: { $lt: lastId }},
-                { owner: {$in: following }}
-            ],
-            }
-            : { owner: {$in: following }};
-
-            // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-            const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
-            
-            if(posts.length > 0)
-                res.json(posts);
-            else
-                res.json([]);
-        }
-    }
-    catch (error) { next(error); }
-});
-
-/**
- * This route displays the newest posts.
- * query with lastId=<id> to get another page (send the last id of the page previous)
- */
-router.get('/explore', VerifyId, async (req, res, next) => {
-    try {
-        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-        const lastId = req.query.lastId || null;
-        const query = lastId ? { _id: { $lt: lastId }} : {};
-        const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
-
-        if(posts.length > 0)
-            res.json(posts);
-        else
-            res.json([]);
-    }
-    catch (error) { next(error); }
-});
-
-/**
- * Route used to find all the posts by the signed in person 
- * query with lastId=<id> to get another page (send the last id of the page previous)
- */
-router.get('/user', AuthorizeUser, VerifyId, async (req, res, next) => {
-    try {
-        if(!req.user.id) { // maybe not needed?
-            let err = new Error("User not signed in");
-            err.status = 400;
-            next(err);
-        }
-
-        const lastId = req.query.lastId || null;
-        const query = lastId ? { _id: { $lt: lastId }} : {};
-        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).sort({ _id: -1 }).limit(25);
-
-        if(posts.length > 0)
-            res.json(posts);
-        else
-            res.json([]);
-    }
-    catch (error) { next(error); }
-});
-
 
 
 module.exports = router;
