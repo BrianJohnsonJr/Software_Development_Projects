@@ -78,9 +78,20 @@ router.get('/following', AuthorizeUser, VerifyId, async (req, res, next) => {
         if(!user.following || user.following.length === 0) {
             res.json([]);
         } else {
+            
+            const lastId = req.query.lastId || null;
             const following = user.following;
+
+            const query = lastId ? { $and: [
+                { _id: { $lt: lastId }},
+                { owner: {$in: following }}
+            ],
+            }
+            : { owner: {$in: following }};
+
             // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-            const posts = await Post.find({ owner: {$in: following }}, null, { limit: 25, sort: { _id: -1 } });
+            const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+            
             if(posts.length > 0)
                 res.json(posts);
             else
