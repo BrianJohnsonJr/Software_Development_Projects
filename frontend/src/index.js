@@ -6,18 +6,16 @@ import Login from './pages/Login'
 import Register from './pages/Register'; // Import the Register component
 import './styles/index.css';
 import Navbar from './components/Navbar'; // Import the Navbar component
-import Following from './pages/Following'; // Import your Following component
-import Sell from './pages/Sell'; // Import your Sell component
-import Profile from './pages/Profile'; // Import your Profile component
-import Explore from './pages/Explore'; // Import your Explore component
+import Following from './pages/Following'; // Import the Following component
+import Sell from './pages/Sell'; // Import the Sell component
+import Profile from './pages/Profile'; // Import the Profile component
+import Explore from './pages/Explore'; // Import the Explore component
 import Footer from './components/Footer';
-
-// import App from './App';
-// import App from './App'; 
 import reportWebVitals from './reportWebVitals';
 import EditProfile from './pages/EditProfile'; // Adjust the path as needed
 import SingleItem from './pages/SingleItem';
 import NotLoggedIn from './pages/NotLoggedIn';
+import SearchResults from './pages/SearchResults';
 
 function App() {
   return (
@@ -37,6 +35,7 @@ function App() {
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/post/:id" element={<SingleItem />} />
         <Route path="/not-logged-in" element={<NotLoggedIn />} />
+        <Route path="/search-results" element={<SearchResults />} />
       </Routes>
       <Footer />
     </div>
