@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './pages/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'; // Import the Register component
@@ -15,6 +14,7 @@ import Footer from './components/Footer';
 import reportWebVitals from './reportWebVitals';
 import EditProfile from './pages/EditProfile'; // Adjust the path as needed
 import SingleItem from './pages/SingleItem';
+import NotLoggedIn from './pages/NotLoggedIn';
 import SearchResults from './pages/SearchResults';
 
 function App() {
@@ -33,9 +33,10 @@ function App() {
           <Route index element={<Home />} />
         </Route> */}
         <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/posts/:id" element={<SingleItem />} />
+        <Route path="/post/:id" element={<SingleItem />} />
+        <Route path="/not-logged-in" element={<NotLoggedIn />} />
         <Route path="/search-results" element={<SearchResults />} />
-        </Routes>
+      </Routes>
       <Footer />
     </div>
   )
