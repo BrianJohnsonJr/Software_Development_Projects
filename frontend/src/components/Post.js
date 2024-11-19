@@ -17,7 +17,16 @@ function Post({ id, title, description, owner, price, imageUrl, tags = [], likes
             </Link>
           </h2>
         
-          <p>Owned by: {owner?.username || 'Unknown'}</p>
+          <p>
+            Owned by:
+            <Link 
+              to={`/profile/${owner?.id || 'unknown'}`} 
+              state={{ owner }}
+              className="profile-link"
+            >
+              {owner?.username || 'Unknown'}
+            </Link>
+          </p>
         </div>
         <div className="post-right">
           <p>${price}</p>

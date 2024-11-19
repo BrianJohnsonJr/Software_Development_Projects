@@ -16,6 +16,8 @@ import EditProfile from './pages/EditProfile'; // Adjust the path as needed
 import SingleItem from './pages/SingleItem';
 import NotLoggedIn from './pages/NotLoggedIn';
 import SearchResults from './pages/SearchResults';
+import UniqueProfileView from './pages/UniqueProfileView'; // Adjust the path as needed
+
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
         <Route path="/following" element={<Following />} />
         <Route path="/sell" element={<Sell />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:id" element={<UniqueProfileView />} /> {/* UniqueProfileView route */}
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         {/* <Route path="/" element={<Layout />}>
