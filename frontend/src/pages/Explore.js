@@ -9,16 +9,25 @@ const Explore = () => {
     const [sortOption, setSortOption] = useState('');
     const [filters, setFilters] = useState({ tags: [], minPrice: 0, maxPrice: 1000, types: [], tagsApply: 'any' });
 
-    useEffect(() => { // dummy data while we setup the api call to get ALL posts (insert "Explore" algorithm?)
-        const fetchedPosts = [
-            { id: 1, title: "Sample Post Title", description: "", ownerUsername: "John Doe", price: 540, imageUrl: blankImagePath, tags: ["tech", "innovation", "firstPost"] },
-            { id: 2, title: "Sample Post Title 2", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 3, title: "Sample Post Title 3", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 5, title: "Sample Post Title 5", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: blankImagePath, tags: ["tech", "innovation"] }
-        ];
-        setPosts(fetchedPosts);
-    }, []);
+    useEffect(() => {
+        const fetchPosts = async () => {
+          const response = await fetch('/explore'); 
+          const data = await response.json();
+          setPosts(data); 
+        };
+        fetchPosts();
+      }, []);
+
+    // useEffect(() => { // dummy data while we setup the api call to get ALL posts (insert "Explore" algorithm?)
+    //     const fetchedPosts = [
+    //         { id: 1, title: "Sample Post Title", description: "", ownerUsername: "John Doe", price: 540, imageUrl: blankImagePath, tags: ["tech", "innovation", "firstPost"] },
+    //         { id: 2, title: "Sample Post Title 2", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
+    //         { id: 3, title: "Sample Post Title 3", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
+    //         { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
+    //         { id: 5, title: "Sample Post Title 5", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: blankImagePath, tags: ["tech", "innovation"] }
+    //     ];
+    //     setPosts(fetchedPosts);
+    // }, []);
 
     const filterPosts = (posts, filters) => {
         return posts.filter((post) => {
