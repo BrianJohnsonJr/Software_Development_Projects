@@ -11,7 +11,7 @@ const Navbar = () => {
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
-      navigate(`/search-results?searchTerm=${encodeURIComponent(searchTerm)}`);// Redirect with query parameter
+      navigate(`/search?searchTerm=${encodeURIComponent(searchTerm)}`);// Redirect with query parameter
     }
   };
 
