@@ -29,14 +29,16 @@ router.get('/search', async (req, res, next) => {
         
         // Combine our 4 branching paths into 1 full query
         const wholeQuery = {
-            ...searchQuery,
-            ...pageQuery
+            $and: [
+                ...searchQuery,
+                ...pageQuery
+            ],
         };
 
         const postsFound = await Post.find(wholeQuery).sort({ _id: -1 }).limit(25);
-        // const totalFound = await Post.countDocuments(searchQuery); // Count the amount of results (if we want it)
+        const totalFound = await Post.countDocuments(searchQuery); // Count the amount of results (if we want it)
 
-        res.json({ success: true, postsFound });
+        res.json({ success: true, posts: postsFound, resultCount: totalFound });
     }
     catch (err) { next(err); }
 });
@@ -144,6 +146,7 @@ router.get('/explore', VerifyLastId, async (req, res, next) => {
 catch (error) { next(error); }
 });
 
+/*
 router.get('/search-results', async (req, res, next) => {
     try {
         // Collect search parameters
@@ -187,7 +190,7 @@ router.get('/search-results', async (req, res, next) => {
         res.json({ users, posts });
     }
     catch (error) { next(error); }
-});
+});*/
 
 /**
  * Route used to find all the posts by the signed in person 
