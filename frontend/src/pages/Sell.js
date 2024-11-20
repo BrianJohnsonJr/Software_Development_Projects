@@ -1,6 +1,5 @@
 // pages/Sell.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import '../styles/Sell.css'; // Create a CSS file for styling
 
 const Sell = () => {
@@ -11,35 +10,6 @@ const Sell = () => {
   const [price, setPrice] = useState('');
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
-  const [itemType, setItemType] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if the user is authenticated
-    const checkAuth = async () => {
-        try {
-          const response = await fetch('/account/auth-check', {
-            method: 'GET',
-            credentials: 'include',
-          });
-
-          if (response.ok) {
-            setIsAuthenticated(true);
-          } else {
-            navigate('/not-logged-in'); // Redirect to "NotLoggedIn" page if not authenticated
-          }
-        } catch (error) {
-          console.error('Error checking authentication:', error);
-          navigate('/not-logged-in'); // Redirect to "NotLoggedIn" page if error occurs
-        } finally {
-          setIsLoading(false);
-        }
-    };
-
-    checkAuth();
-  }, [navigate]);
 
   // Handle image file upload
   const handleImageUpload = (e) => {
@@ -70,51 +40,11 @@ const Sell = () => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Ensure all fields are valid and structured
-    const postData = {
-        title,
-        description,
-        price,
-        tags,
-        itemType,
-        sizes,
-        imageUrl: image || "", // Ensure image is included or empty
-    };
-
-    try {
-        // Send post data to the backend
-        const response = await fetch('/posts/create', { // Adjust endpoint if necessary
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(postData),
-            credentials: 'include', // Ensure authentication cookie is sent
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            // Redirect to the post detail page using the postId from the response
-            navigate(`/posts/${data.postId}`);
-        } else {
-            // Handle errors gracefully
-            console.error(data.message || 'Failed to create post');
-            alert(data.message || 'Failed to create post');
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-        alert('An error occurred while creating the post. Please try again.');
-    }
+    // Here you can handle form submission, such as sending the data to your server
+    console.log({ image, title, description, price, sizes, tags });
   };
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!isAuthenticated) {
-    return null; // You can also redirect or show a message here, but the redirect is already handled
-  }
 
   return (
     <div className="sell-form-container">
@@ -178,26 +108,6 @@ const Sell = () => {
               </label>
             ))}
           </div>
-        </div>
-        
-        {/* Select item type */}
-        <div className="form-group">
-          <label>Select item type:</label>
-          <div className="type-options">
-            {['T-shirt', 'Hoodie', 'Poster', 'Sticker', 'Mug'].map((type) => (
-              <label key={type} className="type-option">
-                <input
-                  type="radio"
-                  value={type}
-                  checked={itemType === type}
-                  onChange={(e) => setItemType(e.target.value)}
-                  required
-                />
-                {type}
-              </label>
-            ))}
-          </div>
-
         </div>
 
         {/* Tags */}

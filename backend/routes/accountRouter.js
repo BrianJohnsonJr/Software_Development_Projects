@@ -7,22 +7,6 @@ const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const router = express.Router();
 
-// Route to check if the user is authenticated
-router.get('/auth-check', AuthorizeUser, async (req, res, next) => {
-    try {
-        const user = await User.findById(req.user.id).select('username email'); // Fetch minimal user info
-        if (!user) {
-            let err = new Error('User not found');
-            err.status = 404;
-            return next(err);
-        }
-
-        res.json({ success: true, user });
-    } catch (error) {
-        next(error);
-    }
-});
-
 // Register route
 router.post('/register', uploadToMemory.none(), async (req, res, next) => {
     const { name, username, email, password, bio, imageUrl } = req.body;
