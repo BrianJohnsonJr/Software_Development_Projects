@@ -1,22 +1,110 @@
+/* General Explore page background */
+body {
+    background-color: #1F1F1F; /* Slightly lighter than the navbar for distinction */
+    color: #D5FFD9; /* Light green text for readability */
+}
 
+/* Posts container styling */
 .posts-container {
     display: flex;
-    flex-wrap: wrap; /* Allow posts to wrap to the next row */
-    justify-content: space-between; /* Distribute space evenly between posts */
-    gap: 20px; /* Space between the posts */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
     padding: 20px;
+    background-color: #2A2A2A; /* Slightly lighter background for posts area */
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
 }
 
+/* Individual Post Styling */
 .posts-container .post {
-    flex: 1 1 45%; /* Each post takes 45% of the container's width, with flexibility */
-    max-width: 450px; /* Limit the width to a maximum of 600px */
-    box-sizing: border-box;
-    margin-bottom: 20px; /* Space between rows */
+    flex: 1 1 45%;
+    max-width: 450px;
+    background-color: #333333; /* Match navbar color */
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #D5FFD9;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Depth for posts */
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
+.posts-container .post:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5); /* Highlight effect */
+}
+
+/* Image styling */
+.post-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Post details */
+.post-details {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-left {
+    flex: 1;
+    color: #D9D5FF; /* Complementary lavender for contrast */
+}
+
+.post-right {
+    text-align: right;
+    color: #D5FFD9; /* Green text */
+}
+
+.post-right p:first-child {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Tags styling */
+.post-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.post-tags li {
+    background-color: #444444; /* Darker gray for tag background */
+    color: #D9D5FF;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Like button */
+.post-likes button {
+    border: 2px solid #D5FFD9;
+    padding: 7px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: transparent;
+    color: #D5FFD9;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.post-likes button:hover {
+    background-color: #D5FFD9;
+    color: #333333;
+    border-color: #D9D5FF;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .posts-container .post {
-        flex: 1 1 100%; /* Full width for smaller screens */
-        max-width: 100%; /* Ensure post takes full width on smaller screens */
+        flex: 1 1 100%;
+        max-width: 100%;
     }
 }
