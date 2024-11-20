@@ -35,6 +35,7 @@ router.get('/search', verifyS3, async (req, res, next) => {
             ],
         };
 
+
         const postsFound = await Post.find(wholeQuery).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         const totalFound = await Post.countDocuments(wholeQuery); // Count the amount of results
 
