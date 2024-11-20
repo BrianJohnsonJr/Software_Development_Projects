@@ -36,7 +36,7 @@ router.get('/search', async (req, res, next) => {
         };
 
         const postsFound = await Post.find(wholeQuery).sort({ _id: -1 }).limit(25);
-        const totalFound = await Post.countDocuments(searchQuery); // Count the amount of results (if we want it)
+        const totalFound = await Post.countDocuments(wholeQuery); // Count the amount of results
 
         res.json({ success: true, posts: postsFound, resultCount: totalFound });
     }
@@ -73,9 +73,8 @@ router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req
             owner: user._id,
         });
         
-        // COMMENT BACK IN WHEN IMAGE UPLOAD IS FULLY FUNCTIONAL
-        // const file = await uploadToCloud(req.s3, req.file);
-        // newPost.image = file.filename;
+        const file = await uploadToCloud(req.s3, req.file);
+        newPost.image = file.filename;
 
         // Save the new post to the database
         const savedPost = await newPost.save();
