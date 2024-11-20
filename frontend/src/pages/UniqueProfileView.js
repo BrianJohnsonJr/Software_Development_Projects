@@ -1,4 +1,3 @@
-// UniqueProfileView.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/UniqueProfileView.css';
@@ -8,13 +7,13 @@ import { faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-ic
 const UniqueProfileView = () => {
     const [user, setUser] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
-    const { userId } = useParams(); // Assuming the URL contains the userId for the profile
+    const { userId } = useParams(); // Get userId from the URL
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // Replace with your API call to fetch user details
+                // Fetch the user profile from the backend using the userId
                 const response = await fetch(`/users/${userId}`, {
                     method: 'GET',
                     credentials: 'include'
@@ -23,7 +22,7 @@ const UniqueProfileView = () => {
                 if (response.ok) {
                     const userData = await response.json();
                     setUser(userData.user);
-                    setIsFollowing(userData.isFollowing); // Assume the API indicates follow status
+                    setIsFollowing(userData.isFollowing); // Assume the API sends follow status
                 } else {
                     console.error('Error fetching profile');
                 }
