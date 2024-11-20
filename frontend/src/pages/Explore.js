@@ -9,15 +9,28 @@ const Explore = () => {
     const [sortOption, setSortOption] = useState('');
     const [filters, setFilters] = useState({ tags: [], minPrice: 0, maxPrice: 1000, types: [], tagsApply: 'any' });
 
-    useEffect(() => { // dummy data while we setup the api call to get ALL posts (insert "Explore" algorithm?)
-        const fetchedPosts = [
-            { id: 1, title: "Sample Post Title", description: "", ownerUsername: "John Doe", price: 540, imageUrl: blankImagePath, tags: ["tech", "innovation", "firstPost"] },
-            { id: 2, title: "Sample Post Title 2", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 3, title: "Sample Post Title 3", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: blankImagePath, tags: ["tech", "innovation"] },
-            { id: 5, title: "Sample Post Title 5", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: blankImagePath, tags: ["tech", "innovation"] }
-        ];
-        setPosts(fetchedPosts);
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try{
+                const response = await fetch('/posts/explore'); 
+                if(!response.ok){
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Fetched posts:', data);
+                if (Array.isArray(data)) {
+                    setPosts(data); // Ensure `posts` is an array
+                } else {
+                    console.error('Unexpected response:', data);
+                    setPosts([]); // Fallback to an empty array
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                setPosts([]); // Set to empty array on failure
+            }
+          
+        };
+        fetchPosts();
     }, []);
 
     const filterPosts = (posts, filters) => {

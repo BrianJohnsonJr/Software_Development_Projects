@@ -1,0 +1,109 @@
+/* Container for unique profile page */
+.unique-profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100vw;
+    background-color: #2c3e50; /* Darker background color for differentiation */
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Header section styling */
+.unique-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Profile picture styling */
+.unique-profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid #3498db; /* Blue border for differentiation */
+}
+
+/* Name styling */
+.unique-profile-header h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: white;
+}
+
+/* Stats section styling */
+.unique-profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.unique-profile-stats div {
+    font-size: 16px;
+}
+
+/* User info section */
+.unique-profile-info {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 25px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    max-width: 500px;
+    width: 100%;
+}
+
+.unique-profile-info div {
+    margin-bottom: 10px;
+}
+
+/* Posts section */
+.unique-profile-posts {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Follow button styling */
+.follow-button {
+    display: block;
+    width: 150px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff; /* Blue background for follow */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.follow-button.following {
+    background-color: #dc3545; /* Red background for unfollow */
+}
+
+.follow-button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
+}
+
+.follow-button.following:hover {
+    background-color: #c82333; /* Darker red for hover effect */
+}
+
+/* Title styling */
+.unique-profile-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #e6e5e5;
+}
