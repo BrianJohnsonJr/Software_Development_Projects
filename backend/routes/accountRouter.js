@@ -1,7 +1,7 @@
 const express = require('express');
 // const multer = require('multer');
 const User = require('../models/users'); // Import the user model
-const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
+const { AuthService, AuthorizeUser, VerifyParamsId } = require('../services/authService'); // Import AuthService
 const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
@@ -133,6 +133,36 @@ router.post('/profile', AuthorizeUser, uploadToMemory.single('profilePic'), asyn
         res.json({ success: true, message: 'Profile picture updated successfully' });
     }
     catch (error) { next(error); }
+});
+
+router.get('/profile/:id', VerifyParamsId, async (req, res, next) => {
+    // This route must be last so it doesnt catch other routes
+    try {
+        let id = req.params.id;
+
+        const profile = await User.findById(id).select('-password');
+        if(!profile) {
+            let err = new Error('User not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        const pfpKey = profile.profilePicture || 'default_image.png';
+
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: pfpKey,
+        });
+
+        if(!req.s3) {
+            let err = new Error('No s3 connection');
+            err.status = 503; // Service unavailable
+        }
+        profile.profilePicture = await getSignedUrl(req.s3, command, { expiresIn: 60 * 10 });
+
+        res.json({ success: true, user: profile });
+    }
+    catch (err) { next(err); }
 });
 
 module.exports = router;
