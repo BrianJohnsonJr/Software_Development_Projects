@@ -27,11 +27,10 @@ router.get('/search', async (req, res, next) => {
         const pageQuery = lastId ? { _id: { $lt: lastId }} : {};
         
         // Combine our 4 branching paths into 1 full query
+        // mongoDb allows implicit $and here
         const wholeQuery = {
-            $and: [
-                ...searchQuery,
-                ...pageQuery
-            ],
+            ...searchQuery,
+            ...pageQuery
         };
 
         const postsFound = await Post.find(wholeQuery).sort({ _id: -1 }).limit(25);
