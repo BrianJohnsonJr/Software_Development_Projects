@@ -1,116 +1,119 @@
 /* SingleItem.css */
 
 .single-item-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .single-item-header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .single-item-title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .single-item-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 1rem;
-    color: #666;
-  }
-  
-  .single-item-price {
-    font-size: 1.5rem;
-    color: #008080;
-    font-weight: bold;
-  }
-  
-  .single-item-description {
-    margin: 20px 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-    color: #555;
-  }
-  
-  .single-item-image {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .single-item-tags {
-    margin: 10px 0;
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .single-item-tags ul {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .single-item-tags li {
-    background-color: #f0f0f0;
-    color: #008080;
-    padding: 5px 10px;
-    border-radius: 20px;
-    margin: 5px;
-  }
-  
-  .single-item-owner {
-    font-size: 1rem;
-    color: #333;
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  /* Button Styles */
-  .button-group {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-  
-  .purchase-button, .cart-button {
-    padding: 12px 25px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .purchase-button {
-    background-color: #008080;
-    color: #fff;
-  }
-  
-  .cart-button {
-    background-color: #ff9800;
-    color: #fff;
-  }
-  
-  .purchase-button:hover {
-    background-color: #006666;
-    transform: scale(1.05);
-  }
-  
-  .cart-button:hover {
-    background-color: #e68900;
-    transform: scale(1.05);
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #2A2A2A; /* Dark background to match Explore page */
+  color: #D5FFD9; /* Light green text for readability */
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+}
+
+.single-item-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.single-item-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #D5FFD9; /* Light green title color */
+}
+
+.single-item-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  color: #D5FFD9; /* Light green text */
+}
+
+.single-item-price {
+  font-size: 1.5rem;
+  color: #D9D5FF; /* Lavender price color */
+  font-weight: bold;
+}
+
+.single-item-description {
+  margin: 20px 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #D5FFD9; /* Light green description */
+}
+
+.single-item-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.single-item-tags {
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: #D5FFD9; /* Light green tags */
+}
+
+.single-item-tags ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.single-item-tags li {
+  background-color: #444444; /* Darker gray for tag background */
+  color: #D9D5FF; /* Lavender tag color */
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin: 5px;
+}
+
+.single-item-owner {
+  font-size: 1rem;
+  color: #D5FFD9; /* Light green text for owner */
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Button Styles */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.purchase-button, .cart-button {
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.purchase-button {
+  background-color: #D9D5FF; /* Lavender background */
+  color: #333333; /* Dark text */
+}
+
+.cart-button {
+  background-color: #FF9800; /* Amber background */
+  color: #333333; /* Dark text */
+}
+
+.purchase-button:hover {
+  background-color: #B8A6FF; /* Lighter lavender */
+  transform: scale(1.05);
+}
+
+.cart-button:hover {
+  background-color: #FF8C00; /* Darker amber */
+  transform: scale(1.05);
+}

@@ -20,7 +20,7 @@
     left: -300px; /* Hidden off-screen initially */
     width: 250px;
     height: 100%;
-    background-color: #fff;
+    background-color: #474444;
     border-right: 1px solid #ddd;
     padding: 20px;
     transition: left 0.3s ease;
