@@ -26,10 +26,8 @@ exports.search = async (req, res, next) => {
         
         // Combine our 4 branching paths into 1 full query
         const wholeQuery = {
-            $and: [
-                ...searchQuery,
-                ...pageQuery
-            ],
+            ...searchQuery,
+            ...pageQuery
         };
 
 
