@@ -8,6 +8,39 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const router = express.Router();
 
+/**
+ * Queries the posts and returns posts matching the specified query.
+ * Allows for paging with lastId=<id>
+ */
+router.get('/search', async (req, res, next) => {
+    try {
+        const searchParams = req.query.query?.trim() || '';
+        const searchQuery = searchParams ? {
+            $or: [
+                { title: { $regex: searchParams, $options: 'i' }},
+                { description: { $regex: searchParams, $options: 'i' }},
+                { tags: { $elemMatch: { $regex: searchParams, $options: 'i' }}}
+            ],
+        }
+        : {};
+
+        const lastId = req.query.lastId || null;
+        const pageQuery = lastId ? { _id: { $lt: lastId }} : {};
+        
+        // Combine our 4 branching paths into 1 full query
+        const wholeQuery = {
+            ...searchQuery,
+            ...pageQuery
+        };
+
+        const postsFound = await Post.find(wholeQuery).sort({ _id: -1 }).limit(25);
+        // const totalFound = await Post.countDocuments(searchQuery); // Count the amount of results (if we want it)
+
+        res.json({ success: true, postsFound });
+    }
+    catch (err) { next(err); }
+});
+
 router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id).select('-password'); // grab user w/o password'
