@@ -10,6 +10,7 @@ const storage = multer.memoryStorage({
 });
 
 const upload = multer({ storage: storage });
+
 /**
  * Uploads file to temporary memory using multer
  */
