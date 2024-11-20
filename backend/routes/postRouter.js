@@ -59,41 +59,18 @@ router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req
     }
 });
 
-router.get('/:id', VerifyId, async (req, res, next) => {
+router.get('/explore', async (req, res, next) => {
     try {
-        let id = req.params.id;
-        
-        console.log('Fetching post with ID:', id);
-
-        const post = await Post.findById(id).populate('owner', 'username');
-        if(!post){
-            return res.status(404).json({ success: false, message: 'Post not found' });
-        }
-
-        const imageKey = post.image || 'default_image.png';
-        let signedUrl = null;
-
-        if (req.s3) {
-            const command = new GetObjectCommand({
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: imageKey,
-            });
-
-            signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
-        }
-
-        // const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageKey}`;
-        post.image = signedUrl || post.image;
-    
-        res.json({ success: true, post: post});
+        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
+        console.log('Request received on /posts/explore');
+        const posts = await Post.find().limit(25).sort({ _id: -1 }); 
+        console.log('Posts fetched:', posts);
+        if(posts.length > 0)
+            res.json(posts);
+        else
+            res.json([]);
     }
-    catch (error) { 
-        if (error.kind === 'ObjectId') {
-            // Handle invalid ObjectId errors
-            return res.status(400).json({ success: false, message: 'Invalid post ID format' });
-        }
-        next(error); 
-    }
+    catch (error) { next(error); }
 });
 
 router.get('/following', AuthorizeUser, async (req, res, next) => {
@@ -110,21 +87,6 @@ router.get('/following', AuthorizeUser, async (req, res, next) => {
             else
                 res.json([]);
         }
-    }
-    catch (error) { next(error); }
-});
-
-router.get('/explore', async (req, res, next) => {
-    try {
-        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-        // unsure which is better...
-        const posts = await Post.find({}, null, { limit: 25, sort: { _id: -1 } })
-                                .populate('owner', 'username'); 
-        // const posts = await Post.find().limit(25).sort({ _id: -1 }); 
-        if(posts.length > 0)
-            res.json(posts);
-        else
-            res.json([]);
     }
     catch (error) { next(error); }
 });
@@ -191,6 +153,41 @@ router.get('/user', AuthorizeUser, async (req, res, next) => {
     catch (error) { next(error); }
 });
 
+router.get('/:id', VerifyId, async (req, res, next) => {
+    try {
+        let id = req.params.id;
+        
+        console.log('Fetching post with ID:', id);
 
+        const post = await Post.findById(id).populate('owner', 'username');
+        if(!post){
+            return res.status(404).json({ success: false, message: 'Post not found' });
+        }
+
+        const imageKey = post.image || 'default_image.png';
+        let signedUrl = null;
+
+        if (req.s3) {
+            const command = new GetObjectCommand({
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: imageKey,
+            });
+
+            signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
+        }
+
+        // const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageKey}`;
+        post.image = signedUrl || post.image;
+    
+        res.json({ success: true, post: post});
+    }
+    catch (error) { 
+        if (error.kind === 'ObjectId') {
+            // Handle invalid ObjectId errors
+            return res.status(400).json({ success: false, message: 'Invalid post ID format' });
+        }
+        next(error); 
+    }
+});
 
 module.exports = router;
