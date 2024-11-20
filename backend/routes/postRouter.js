@@ -35,7 +35,8 @@ router.get('/search', async (req, res, next) => {
             ],
         };
 
-        const postsFound = await Post.find(wholeQuery).sort({ _id: -1 }).limit(25);
+
+        const postsFound = await Post.find(wholeQuery).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         const totalFound = await Post.countDocuments(wholeQuery); // Count the amount of results
 
         res.json({ success: true, posts: postsFound, resultCount: totalFound });
@@ -115,7 +116,7 @@ router.get('/following', AuthorizeUser, VerifyLastId, async (req, res, next) => 
             : { owner: {$in: following }};
 
             // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-            const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+            const posts = await Post.find(query).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
             
             if(posts.length > 0)
                 res.json(posts);
@@ -135,7 +136,7 @@ router.get('/explore', VerifyLastId, async (req, res, next) => {
         // grab 25 posts, sorted by time (id) desc. 25 newest posts.
         const lastId = req.query.lastId || null;
         const query = lastId ? { _id: { $lt: lastId }} : {};
-        const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+        const posts = await Post.find(query).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         
         if(posts.length > 0)
             res.json(posts);
@@ -205,7 +206,7 @@ router.get('/user', AuthorizeUser, VerifyLastId, async (req, res, next) => {
         
         const lastId = req.query.lastId || null;
         const query = lastId ? { _id: { $lt: lastId }} : {};
-        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).sort({ _id: -1 }).limit(25);
+        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         
         if(posts.length > 0)
             res.json(posts);
@@ -223,7 +224,7 @@ router.get('/:id', VerifyParamsId, async (req, res, next) => {
     try {
         let id = req.params.id;
       
-        const post = await Post.findById(id).populate('owner', 'username');
+        const post = await Post.findById(id).populate('owner', 'username name');
         if(!post){
             let err = new Error('Post not found');
             err.status = 404;
@@ -237,9 +238,11 @@ router.get('/:id', VerifyParamsId, async (req, res, next) => {
             Key: imageKey,
         });
         
-        const signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
-
-        post.image = signedUrl;
+        if(!req.s3) {
+            let err = new Error('No s3 connection');
+            err.status = 503; // Service unavailable
+        }
+        post.image = await getSignedUrl(req.s3, command, { expiresIn: 60 * 10 });
     
         res.json({ success: true, post: post});
     }
