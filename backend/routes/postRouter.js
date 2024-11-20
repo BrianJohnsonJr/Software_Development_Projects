@@ -109,6 +109,7 @@ router.get('/explore', VerifyLastId, async (req, res, next) => {
         res.json([]);
 }
 catch (error) { next(error); }
+});
 
 router.get('/search-results', async (req, res, next) => {
     try {
@@ -186,12 +187,12 @@ router.get('/:id', VerifyParamsId, async (req, res, next) => {
     // THIS ROUTE NEEDS TO BE LAST BECAUSE IT CATCHES OTHER ROUTES OTHERWISE!
     try {
         let id = req.params.id;
-        
-        const post = await Post.findById(id);
       
         const post = await Post.findById(id).populate('owner', 'username');
         if(!post){
-            return res.status(404).json({ success: false, message: 'Post not found' });
+            let err = new Error('Post not found');
+            err.status = 404;
+            return next(err);
         }
       
         const imageKey = post.image || 'default_image.png';
