@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/users');
 const Post = require('../models/posts');
-const { AuthorizeUser, VerifyId } = require('../services/authService');
+const { AuthorizeUser, VerifyLastId, VerifyParamsId } = require('../services/authService');
 const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
@@ -59,37 +59,56 @@ router.post('/create', AuthorizeUser, uploadToMemory.single('image'), async (req
     }
 });
 
-router.get('/explore', async (req, res, next) => {
-    try {
-        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-        console.log('Request received on /posts/explore');
-        const posts = await Post.find().limit(25).sort({ _id: -1 }); 
-        console.log('Posts fetched:', posts);
-        if(posts.length > 0)
-            res.json(posts);
-        else
-            res.json([]);
-    }
-    catch (error) { next(error); }
-});
-
-router.get('/following', AuthorizeUser, async (req, res, next) => {
+/**
+ * This route will give the data for the 25 most recent posts following.
+ * query with lastId=<id> to get another page (the last id of the page previous)
+*/
+router.get('/following', AuthorizeUser, VerifyLastId, async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id, { password: 0 });
         if(!user.following || user.following.length === 0) {
             res.json([]);
         } else {
+            
+            const lastId = req.query.lastId || null;
             const following = user.following;
+            
+            const query = lastId ? { $and: [
+                { _id: { $lt: lastId }},
+                { owner: {$in: following }}
+            ],
+            }
+            : { owner: {$in: following }};
+
             // grab 25 posts, sorted by time (id) desc. 25 newest posts.
-            const posts = await Post.find({ owner: {$in: following }}, null, { limit: 25, sort: { _id: -1 } });
+            const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+            
             if(posts.length > 0)
                 res.json(posts);
             else
-                res.json([]);
-        }
+            res.json([]);
     }
-    catch (error) { next(error); }
+}
+catch (error) { next(error); }
 });
+
+/**
+ * This route displays the newest posts.
+ * query with lastId=<id> to get another page (send the last id of the page previous)
+*/
+router.get('/explore', VerifyLastId, async (req, res, next) => {
+    try {
+        // grab 25 posts, sorted by time (id) desc. 25 newest posts.
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+        const posts = await Post.find(query).sort({ _id: -1 }).limit(25);
+        
+        if(posts.length > 0)
+            res.json(posts);
+        else
+        res.json([]);
+}
+catch (error) { next(error); }
 
 router.get('/search-results', async (req, res, next) => {
     try {
@@ -136,48 +155,55 @@ router.get('/search-results', async (req, res, next) => {
     catch (error) { next(error); }
 });
 
-// Route used to find all the posts by the signed in person (maybe not in the best place?)
-router.get('/user', AuthorizeUser, async (req, res, next) => {
+/**
+ * Route used to find all the posts by the signed in person 
+ * query with lastId=<id> to get another page (send the last id of the page previous)
+*/
+router.get('/user', AuthorizeUser, VerifyLastId, async (req, res, next) => {
     try {
-        if(!req.user.id) {
+        if(!req.user.id) { // maybe not needed?
             let err = new Error("User not signed in");
             err.status = 400;
             next(err);
         }
-        const posts = await Post.find({ owner: req.user.id }, null, { limit: 25, sort: { _id: -1 } });
+        
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).sort({ _id: -1 }).limit(25);
+        
         if(posts.length > 0)
             res.json(posts);
         else
-            res.json([]);
-    }
-    catch (error) { next(error); }
+        res.json([]);
+}
+catch (error) { next(error); }
 });
 
-router.get('/:id', VerifyId, async (req, res, next) => {
+/**
+ * Provides the post data with the specified id
+ */
+router.get('/:id', VerifyParamsId, async (req, res, next) => {
+    // THIS ROUTE NEEDS TO BE LAST BECAUSE IT CATCHES OTHER ROUTES OTHERWISE!
     try {
         let id = req.params.id;
         
-        console.log('Fetching post with ID:', id);
-
+        const post = await Post.findById(id);
+      
         const post = await Post.findById(id).populate('owner', 'username');
         if(!post){
             return res.status(404).json({ success: false, message: 'Post not found' });
         }
-
+      
         const imageKey = post.image || 'default_image.png';
-        let signedUrl = null;
 
-        if (req.s3) {
-            const command = new GetObjectCommand({
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: imageKey,
-            });
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: imageKey,
+        });
+        
+        const signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
 
-            signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
-        }
-
-        // const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${imageKey}`;
-        post.image = signedUrl || post.image;
+        post.image = signedUrl;
     
         res.json({ success: true, post: post});
     }

@@ -95,17 +95,28 @@ exports.AuthorizeUser = async (req, res, next) => {
     }
 };
 
+function validateId(id) {
+    if(!id.match(/^[0-9a-fA-F]{24}$/)) {
+        let err = new Error('Invalid id: ' + id);
+        err.status = 400;
+        return err;
+    } else {
+        return null;
+    }
+}
+
 /**
- * Middleware function to verify passed ID is correctly formatted
+ * Middleware function to verify passed lastId is correctly formatted
  */
-exports.VerifyId = (req, res, next) => {
-    
-    
+exports.VerifyLastId = (req, res, next) => {
+
     try {
-        let id = req.params.id;
-        if(!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
-            let err = new Error('Invalid id');
-            err.status = 400;
+        // Grab the ?lastId=, if doesn't exist, null.
+        let id = req.query.lastId || null;
+        if(!id) return next(); // If no id, no error needed.
+
+        const err = validateId(id);
+        if(err) {
             return next(err);
         } else {
             return next();
@@ -113,3 +124,21 @@ exports.VerifyId = (req, res, next) => {
     }
     catch (err) { next(err); }
 };
+
+/**
+ * Middleware function to verify parameter id is correctly formatted
+ */
+exports.VerifyParamsId = (req, res, next) => {
+    try {
+        // Grab the /:id
+        let id = req.params.id;
+
+        const err = validateId(id);
+        if(err) {
+            return next(err);
+        } else {
+            return next();
+        }
+    }
+    catch (err) { next(err); }
+}
