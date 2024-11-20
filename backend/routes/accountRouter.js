@@ -1,8 +1,8 @@
 const express = require('express');
 // const multer = require('multer');
 const User = require('../models/users'); // Import the user model
-const { AuthService, AuthorizeUser } = require('../services/authService'); // Import AuthService
-const { uploadToMemory, uploadToCloud } = require('../services/uploadService');
+const { AuthService, AuthorizeUser, VerifyParamsId } = require('../services/authService'); // Import AuthService
+const { uploadToMemory, uploadToCloud, verifyS3, replaceProfilePicPath } = require('../services/fileService');
 const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const router = express.Router();
@@ -89,7 +89,7 @@ router.post('/logout', uploadToMemory.none(), (req, res, next) => {
     catch (error) { next(error); }
 });
 
-router.get('/profile', AuthorizeUser, async (req, res, next) => {
+router.get('/profile', AuthorizeUser, verifyS3, async (req, res, next) => {
     try {
         // Retrieve the full user profile using the user ID from the token
         const user = await User.findById(req.user.id).select('-password'); // Exclude password field
@@ -115,7 +115,7 @@ router.get('/profile', AuthorizeUser, async (req, res, next) => {
 });
 
 // change profilePic if we have a different form fieldname
-router.post('/profile', AuthorizeUser, uploadToMemory.single('profilePic'), async (req, res, next) => {
+router.post('/profile', AuthorizeUser, verifyS3, uploadToMemory.single('profilePic'), async (req, res, next) => {
     try {
         if(!req.file) {
             let err = new Error('No file uploaded');
@@ -133,6 +133,24 @@ router.post('/profile', AuthorizeUser, uploadToMemory.single('profilePic'), asyn
         res.json({ success: true, message: 'Profile picture updated successfully' });
     }
     catch (error) { next(error); }
+});
+
+router.get('/profile/:id', VerifyParamsId, verifyS3, async (req, res, next) => {
+    // This route must be last so it doesnt catch other routes
+    try {
+        let id = req.params.id;
+
+        const profile = await User.findById(id).select('-password');
+        if(!profile) {
+            let err = new Error('User not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        await replaceProfilePicPath(req.s3, profile);
+        res.json({ success: true, user: profile });
+    }
+    catch (err) { next(err); }
 });
 
 module.exports = router;

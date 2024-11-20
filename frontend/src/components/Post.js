@@ -3,7 +3,7 @@ import '../styles/Post.css';
 import Likes from './Likes';
 import { Link } from 'react-router-dom';
 
-function Post({ id, title, description, owner, price, imageUrl, tags = [], likes }) {
+function Post({ id, title, description, owner, price, image, tags = [], likes }) {
 
   return (
     // Update the Link path to match the route "/post/:id" in App.js
