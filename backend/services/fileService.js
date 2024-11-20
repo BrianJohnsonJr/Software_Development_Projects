@@ -1,5 +1,6 @@
 const multer = require('multer');
 const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // Set storagetype as temp in memory
 const storage = multer.memoryStorage({
