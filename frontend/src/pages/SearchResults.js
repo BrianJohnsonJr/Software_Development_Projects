@@ -12,21 +12,24 @@ const SearchResults = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchSearchResults = async () => {
+        const fetchUserSearchResults = async () => {
             if (!searchTerm || searchTerm.trim() === "") {
                 setError('Please enter a search term.');
                 setIsLoading(false);
                 return;
             }
-
             try {
                 setIsLoading(true);
-                const response = await fetch(`/search-results?searchTerm=${encodeURIComponent(searchTerm)}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch search results.');
+                const userResponse = await fetch(`/account/search?query=${encodeURIComponent(searchTerm)}`);
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user search results.');
                 }
-                const data = await response.json();
-                setResults(data);
+                const data = await userResponse.json();
+                console.log("data: ", data);
+                setResults((prevResults) => ({
+                    ...prevResults,
+                    usersFound: data
+                }));
                 setError(null);
             } catch (err) {
                 console.error('Error fetching search results:', err);
@@ -35,8 +38,35 @@ const SearchResults = () => {
                 setIsLoading(false);
             }
         };
-
-        fetchSearchResults();
+        const fetchPostSearchResults = async () => {
+            if (!searchTerm || searchTerm.trim() === "") {
+                setError('Please enter a search term.');
+                setIsLoading(false);
+                return;
+            }
+            try {
+                setIsLoading(true);
+                const postResponse = await fetch(`/posts/search?query=${encodeURIComponent(searchTerm)}`)
+                if (!postResponse.ok) {
+                    console.log(postResponse);
+                    throw new Error('Failed to fetch post search results.');
+                }
+                const data = await postResponse.json();
+                console.log("data: ", data);
+                setResults((prevResults) => ({
+                    ...prevResults,
+                    posts: data
+                }));
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching search results:', err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUserSearchResults();
+        fetchPostSearchResults();
     }, [searchTerm]);
 
     if (isLoading) {

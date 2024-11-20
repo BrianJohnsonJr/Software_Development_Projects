@@ -38,7 +38,7 @@ function App() {
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/post/:id" element={<SingleItem />} />
         <Route path="/not-logged-in" element={<NotLoggedIn />} />
-        <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/search" element={<SearchResults />} />
       </Routes>
       <Footer />
     </div>

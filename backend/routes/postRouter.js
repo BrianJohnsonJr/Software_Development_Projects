@@ -18,8 +18,7 @@ router.get('/search', async (req, res, next) => {
         const searchQuery = searchParams ? {
             $or: [
                 { title: { $regex: searchParams, $options: 'i' }},
-                { description: { $regex: searchParams, $options: 'i' }},
-                { tags: { $elemMatch: { $regex: searchParams, $options: 'i' }}}
+                { description: { $regex: searchParams, $options: 'i' }}
             ],
         }
         : {};
