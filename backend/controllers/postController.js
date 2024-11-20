@@ -1,6 +1,6 @@
 const User = require('../models/users');
 const Post = require('../models/posts');
-const { uploadToCloud } = require('../services/uploadService');
+const { uploadToCloud } = require('../services/fileService');
 
 /**
  * Searches for posts based on a search term, with optional pagination and filtering by tags.
