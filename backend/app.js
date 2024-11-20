@@ -64,7 +64,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 // backend only -- shows backend running on port 5000 in local host.
 app.get("/", (req, res) => {
     res.send("Default backend response.");
