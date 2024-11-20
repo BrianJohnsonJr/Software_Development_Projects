@@ -237,9 +237,11 @@ router.get('/:id', VerifyParamsId, async (req, res, next) => {
             Key: imageKey,
         });
         
-        const signedUrl = await getSignedUrl(req.s3, command, { expiresIn: 60 });
-
-        post.image = signedUrl;
+        if(!req.s3) {
+            let err = new Error('No s3 connection');
+            err.status = 503; // Service unavailable
+        }
+        post.image = await getSignedUrl(req.s3, command, { expiresIn: 60 * 10 });
     
         res.json({ success: true, post: post});
     }
