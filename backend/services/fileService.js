@@ -1,5 +1,5 @@
 const multer = require('multer');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 // Set storagetype as temp in memory
 const storage = multer.memoryStorage({
