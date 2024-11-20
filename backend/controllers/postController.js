@@ -9,7 +9,6 @@ const { uploadToCloud, replaceFilePath } = require('../services/fileService');
  * Supports pagination by using `lastId` to fetch posts before the provided ID.
  */
 exports.search = async (req, res, next) => {
-    // TODO: const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
     try {
         const searchParams = req.query.query?.trim() || '';
         const searchQuery = searchParams ? {

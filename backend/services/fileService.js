@@ -59,7 +59,7 @@ exports.replaceFilePath = async (s3, posts) => {
     } else {
         await replacePostImage(posts);
     }
-}
+};
 
 /**
  * Gets a signed url from AWS S3 and replaces the profile picture image name with an absolute path.
@@ -83,18 +83,4 @@ exports.replaceProfilePicPath = async (s3, users) => {
     } else {
         await replacePfpImage(users);
     }
-}
-
-/**
- * Middleware to verify that req.s3 variable is properly set and exists
- */
-exports.verifyS3 = async (req, res, next) => {
-    if(!req.s3) {
-        let err = new Error('No s3 connection');
-        err.status = 503; // Service unavailable
-        return next(err);
-    }
-    else {
-        return next();
-    }
-}
+};

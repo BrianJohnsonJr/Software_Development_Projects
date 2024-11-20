@@ -1,6 +1,7 @@
 const express = require('express');
-const { AuthorizeUser, VerifyLastId, VerifyParamsId } = require('../services/authService');
-const { uploadToMemory, verifyS3 } = require('../services/fileService');
+const { AuthorizeUser } = require('../services/authService');
+const { uploadToMemory } = require('../services/fileService');
+const { VerifyLastId, VerifyParamsId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
 const controller = require('../controllers/postController');
 
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
  * Queries the posts and returns posts matching the specified query.
  * Allows for paging with lastId=<id>
  */
-router.get('/search', controller.search);
+router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
 router.post('/create', AuthorizeUser, uploadToMemory.single('image'), controller.newPost);
 
@@ -17,23 +18,23 @@ router.post('/create', AuthorizeUser, uploadToMemory.single('image'), controller
  * This route will give the data for the 25 most recent posts following.
  * query with lastId=<id> to get another page (the last id of the page previous)
 */
-router.get('/following', AuthorizeUser, VerifyLastId, verifyS3, controller.following);
+router.get('/following', AuthorizeUser, VerifyLastId, VerifyS3, controller.following);
 
 /**
  * This route displays the newest posts.
  * query with lastId=<id> to get another page (send the last id of the page previous)
 */
-router.get('/explore', VerifyLastId, verifyS3, controller.explore);
+router.get('/explore', VerifyLastId, VerifyS3, controller.explore);
 
 /**
  * Route used to find all the posts by the signed in person 
  * query with lastId=<id> to get another page (send the last id of the page previous)
 */
-router.get('/user', AuthorizeUser, VerifyLastId, verifyS3, controller.userPosts);
+router.get('/user', AuthorizeUser, VerifyLastId, VerifyS3, controller.userPosts);
 
 /**
  * Provides the post data with the specified id
  */
-router.get('/:id', VerifyParamsId, verifyS3, controller.getPostInfo);
+router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
 
 module.exports = router;

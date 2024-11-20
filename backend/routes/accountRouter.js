@@ -1,6 +1,7 @@
 const express = require('express');
-const { AuthorizeUser, VerifyParamsId } = require('../services/authService'); // Import AuthService
-const { uploadToMemory, verifyS3 } = require('../services/fileService');
+const { AuthorizeUser } = require('../services/authService'); // Import AuthService
+const { VerifyParamsId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
+const { uploadToMemory } = require('../services/fileService');
 const controller = require('../controllers/accountController');
 
 const router = express.Router();
@@ -12,7 +13,7 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
  * Queries users and returns users matching the specified query.
  * Does not allow for paging with lastId=<id>
  */
-router.get('/search', controller.search);
+router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
 // Register route
 router.post('/register', uploadToMemory.none(), controller.register);
@@ -28,6 +29,6 @@ router.get('/profile', AuthorizeUser, controller.viewProfile);
 // change profilePic if we have a different form fieldname
 router.post('/profile', AuthorizeUser, uploadToMemory.single('profilePic'), controller.updateProfile);
 
-router.get('/profile/:id', VerifyParamsId, verifyS3, controller.getUserProfile);
+router.get('/profile/:id', VerifyParamsId, VerifyS3, controller.getUserProfile);
 
 module.exports = router;
