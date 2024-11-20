@@ -3,7 +3,7 @@ import '../styles/Post.css';
 import Likes from './Likes';
 import { Link } from 'react-router-dom';
 
-function Post({ id, title, description, owner, price, imageUrl, tags = [], likes }) {
+function Post({ id, title, description, ownerUsername, price, imageUrl, tags = [], likes }) {
 
 
   return (
@@ -12,12 +12,12 @@ function Post({ id, title, description, owner, price, imageUrl, tags = [], likes
       <div className="post-details">
         <div className="post-left">
           <h2>
-            <Link to={`/posts/${id}`} state={{ post: { id, title, description, owner, price, imageUrl, tags } }}>
+            <Link to={`/post/${id}`} state={{ post: { id, title, description, ownerUsername, price, imageUrl, tags } }}>
               {title}
             </Link>
           </h2>
         
-          <p>Owned by: {owner?.username || 'Unknown'}</p>
+          <p>Owned by: {ownerUsername}</p>
         </div>
         <div className="post-right">
           <p>${price}</p>

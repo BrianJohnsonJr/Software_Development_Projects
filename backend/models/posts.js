@@ -5,10 +5,10 @@ const postSchema = new Schema({
   title: { type: String, required: [true, 'Name is required'] },
   description: { type: String, required: [true, 'Description is required'] },
   price: { type: Number, required: [true, 'Price is required'], min: 0.00 },
-  owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  owner: { type: Schema.Types.ObjectId, ref: 'User' },
   image: { type: String, default: '' },
   tags: [{ type: String }],
-  itemType: { type: String, default: 'None'},
+  itemType: { type: String, required: [true, 'Item type is required'] },
   sizes: [{ type: String }],
   likeCount: { type: Number, default: 0 }
 }, { timestamps: true });

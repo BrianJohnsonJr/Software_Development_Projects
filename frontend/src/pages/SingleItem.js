@@ -1,40 +1,11 @@
-import { React, useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import '../styles/SingleItem.css';
 
 function SingleItem() {
-  const { id } = useParams(); // Extract the post ID from the URL
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { state } = useLocation();
+  const post = state?.post;
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/posts/${id}`); // Adjust endpoint if necessary
-        if (!response.ok) {
-          throw new Error('Failed to fetch post');
-        }
-        const data = await response.json();
-        setPost(data.post);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [id]);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-  
   if (!post) {
     return <p>Post not found.</p>;
   }
@@ -55,7 +26,7 @@ function SingleItem() {
           ))}
         </ul>
       </div>
-      <p className="single-item-owner">Owned by: {post.owner?.username}</p>
+      <p className="single-item-owner">Owned by: {post.ownerUsername}</p>
       
       <div className="button-group">
         <button className="purchase-button">Purchase</button>
