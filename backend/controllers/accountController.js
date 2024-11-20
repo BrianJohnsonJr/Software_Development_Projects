@@ -1,6 +1,6 @@
 const User = require('../models/users'); // Import the user model
 const { AuthService } = require('../services/authService'); // Import AuthService
-const { uploadToCloud } = require('../services/uploadService');
+const { uploadToCloud } = require('../services/fileService');
 const { replaceProfilePicPath } = require('../services/fileService');
 
 /**
