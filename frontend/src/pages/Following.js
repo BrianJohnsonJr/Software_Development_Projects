@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Post from '../components/Post'; // Import the reusable Post component
 import SortFilterPanel from '../components/SortFilterPanel'; // Sort&Filter panel component
 import '../styles/Explore.css';  
-import shoePath from "../images/ShoesMerch.webp";
-import TShirtPath from "../images/T-ShirtMerch.jpg";
-import pantsPath from "../images/PantsMerch.avif";
-import hatPath from "../images/HatMerch.jpeg";
-import braceletPath from "../images/braceletMerch.webp"
 import { useNavigate } from 'react-router-dom';
 
 const Following = () => {
@@ -20,6 +15,7 @@ const Following = () => {
     useEffect(() => {
         // Check if the user is authenticated
         const checkAuth = async () => {
+            setIsLoading(true);
             try {
                 const response = await fetch('/account/auth-check', {
                     method: 'GET',
@@ -34,26 +30,39 @@ const Following = () => {
             } catch (error) {
                 console.error('Error checking authentication:', error);
                 navigate('/not-logged-in'); // Redirect to "NotLoggedIn" page if error occurs
+            } finally {
+                setIsLoading(false);
             }
         };
 
         checkAuth();
     }, [navigate]);
 
-    useEffect(() => { // dummy data while we setup the api call to get ONLY posts uploaded by following list (integrate "shuffle/random" algorithm?)
+    useEffect(() => {
         if(isAuthenticated){
-            const fetchedPosts = [
-                { id: 1, title: "Chris T-Shirt", description: "", ownerUsername: "John Doe", price: 35, imageUrl: TShirtPath, tags: ["tech", "innovation", "firstPost"] },
-                { id: 2, title: "Jane Shoes", description: "Sample Post Description", ownerUsername: "Jane Doe", price: 30, imageUrl: shoePath, tags: ["tech", "innovation"] },
-                { id: 3, title: "Designed Joggers", description: "Sample Post Description", ownerUsername: "Johnny Appleseed", price: 10, imageUrl: pantsPath, tags: ["tech", "innovation"] },
-                { id: 4, title: "Sample Post Title 4", description: "Sample Post Description", ownerUsername: "Janey Appleseed", price: 5000, imageUrl: hatPath, tags: ["tech", "innovation"] },
-                { id: 5, title: "Silver Bracelet", description: "Sample Post Description", ownerUsername: "George Washington", price: 500, imageUrl: braceletPath, tags: ["tech", "innovation"] }
-            ];
-            setPosts(fetchedPosts);
-            setIsLoading(false);
+            const fetchPosts = async () => {
+                try{
+                    const response = await fetch('/posts/following'); 
+                    if(!response.ok){
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        setPosts(data); // Ensure `posts` is an array
+                    } else {
+                        console.error('Data response is not an array:', data);
+                        setPosts([]); // Fallback to an empty array
+                    }
+                } catch (error) {
+                    console.error('Error fetching posts:', error);
+                    setPosts([]); // Set to empty array on failure
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchPosts();
         }
-        
-    }, [isAuthenticated]);
+    }, []);
 
     const filterPosts = (posts, filters) => {
         return posts.filter((post) => {
