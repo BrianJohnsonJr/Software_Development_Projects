@@ -3,11 +3,11 @@ import '../styles/Post.css';
 import Likes from './Likes';
 import { Link } from 'react-router-dom';
 
-function Post({ id, title, description, owner, price, image, tags = [], likes }) {
+function Post({ id, title, description, owner, price, imageUrl, tags = [], likes }) {
 
   return (
-    // Update the Link path to match the route "/post/:id" in App.js
-    <Link to={`/post/${id}`} state={{ post: { id, title, description, owner, price, image, tags } }} className="post-link">
+
+    <Link to={`/posts/${id}`} state={{ post: { id, title, description, owner, price, image, tags } }} className="post-link">
       <div className="post">
         <img src={image} alt={title} className="post-image" />
         <div className="post-details">
@@ -15,8 +15,9 @@ function Post({ id, title, description, owner, price, image, tags = [], likes })
             <h2>{title}</h2>
             <p>
               Owned by:
+              {/* Update this Link to point to /profile/:ownerId */}
               <Link 
-                to={`/profile/${owner?.id || 'unknown'}`} 
+                to={`/profile/${owner?._id}`} // Use owner._id here
                 state={{ owner }}
                 className="profile-link"
               >

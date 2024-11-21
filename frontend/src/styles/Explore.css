@@ -32,7 +32,8 @@ body {
 
 .posts-container .post:hover {
     transform: scale(1.02);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5); /* Highlight effect */
+    border: 2px solid #B8A6FF; /* Lavender border to match the button */
+    box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.767); /* Highlight effect */
 }
 
 /* Image styling */
