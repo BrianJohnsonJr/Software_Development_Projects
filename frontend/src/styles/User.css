@@ -1,43 +1,47 @@
 .user-result {
     display: flex;
+    flex-direction: column; /* Stack the items vertically */
     align-items: center;
     padding: 15px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: #333333;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .profile-picture-container {
-    margin-right: 20px;
+    margin-bottom: 10px; /* Space between the profile picture and the user info */
 }
 
 .profile-picture {
-    width: 60px;
-    height: 60px;
+    width: 100px; /* Adjusted width */
+    height: 100px; /* Adjusted height */
     border-radius: 50%;
     object-fit: cover;
 }
 
 .user-info {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack the information vertically */
+    align-items: center; /* Center the information */
 }
 
 .username {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    margin: 0;
+    margin: 5px 0;
 }
 
 .stats {
     display: flex;
-    gap: 15px;
+    flex-direction: column; /* Stack the stats vertically */
     font-size: 14px;
     color: #555;
+    align-items: center; /* Center align each stat */
+    margin-top: 1px; /* Space between username and stats */
 }
 
 .stats p {
-    margin: 5px 0;
+    margin: 5px 0; /* Space between each stat */
 }
