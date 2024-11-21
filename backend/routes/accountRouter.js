@@ -15,29 +15,6 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
  */
 router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
-/**
- * Queries users and returns users matching the specified query.
- * Does not allow for paging with lastId=<id>
- */
-router.get('/search', async (req, res, next) => {
-    try {
-        const searchParams = req.query.query?.trim() || '';
-        const searchQuery = searchParams ? {
-            $or: [
-                { username: { $regex: searchParams, $options: 'i' }},
-                { name: { $regex: searchParams, $options: 'i' }}
-            ],
-        }
-        : {};
-
-        const usersFound = await User.find(searchQuery).select('-password').sort({ _id: -1 }).limit(25);
-        const totalFound = await User.countDocuments(searchQuery); // Count the amount of results
-
-        res.json({ success: true, users: usersFound, resultCount: totalFound });
-    }
-    catch (err) { next(err); }
-});
-
 // Register route
 router.post('/register', uploadToMemory.none(), controller.register);
 
