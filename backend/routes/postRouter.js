@@ -12,6 +12,9 @@ const router = express.Router();
  */
 router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
+/**
+ * Creates a post, requiring a field to be named 'image' for upload. Escapes user inputs
+ */
 router.post('/create', AuthorizeUser, uploadToMemory.single('image'), controller.newPost);
 
 /**
@@ -36,5 +39,10 @@ router.get('/user', AuthorizeUser, VerifyLastId, VerifyS3, controller.userPosts)
  * Provides the post data with the specified id
  */
 router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
+
+router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.getComments);
+
+router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), controller.postComment);
+
 
 module.exports = router;
