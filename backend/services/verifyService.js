@@ -92,8 +92,8 @@ exports.EscapeRegister = [
     body('username').trim().escape().isAlphanumeric().isLength({min: 3, max: 30}),
     body('email').isEmail().normalizeEmail(),
     // Enable the first one if we want a proper password validation
-    // body('password').isStrongPassword({minLength: 5, minUppercase: 1, minNumbers: 1, minSymbols: 1}),
-    body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8}),
+    // body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 }),
+    body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 0, minNumbers: 0, minSymbols: 0 }),
     body('bio').optional().trim().escape().isLength({max: 250}),
 
 ];
