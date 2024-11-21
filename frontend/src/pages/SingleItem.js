@@ -8,7 +8,10 @@ function SingleItem() {
   const [post, setPost] = useState(location.state?.post || null); // Initialize post state from location state or null
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [comments, setComments] = useState([]); // Store comments
+  const [newComment, setNewComment] = useState(''); // Store new comment text
+  const [rating, setRating] = useState(0); // Store selected rating (1-5)
+  
   useEffect(() => {
     if (!post) { // If post is not available from state, fetch it manually from the server
       setLoading(true);
@@ -30,6 +33,22 @@ function SingleItem() {
       fetchPost();
     }
   }, [id, post]); // Only fetch if there's no post already loaded
+
+  const handleSubmitComment = () => {
+    // Submit the comment along with rating (You can add further logic to send this to the server)
+    const newCommentData = {
+      username: 'User', // Replace with actual user logic if available
+      comment: newComment,
+      rating: rating
+    };
+    setComments([...comments, newCommentData]); // Update comments array
+    setNewComment(''); // Reset the input field
+    setRating(0); // Reset rating after submission
+  };
+
+  const handleStarClick = (star) => {
+    setRating(star);
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -63,6 +82,59 @@ function SingleItem() {
       <div className="button-group">
         <button className="purchase-button">Purchase</button>
         <button className="cart-button">Add to Cart</button>
+      </div>
+
+      {/* Comment Section */}
+      <div className="comment-section">
+        <h3 className="comment-section-title">Leave a Comment</h3>
+
+        {/* Rating Stars */}
+        <div className="star-rating">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span
+              key={star}
+              className={`star ${rating >= star ? 'selected' : ''}`}
+              onClick={() => handleStarClick(star)}
+            >
+              ★
+            </span>
+          ))}
+        </div>
+
+        {/* Comment Text Input */}
+        <textarea
+          className="comment-input"
+          placeholder="Write your comment here..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        ></textarea>
+
+        {/* Submit Button */}
+        <button onClick={handleSubmitComment} className="submit-comment-button">
+          Submit Comment
+        </button>
+
+        {/* Display Submitted Comments */}
+        <div className="comments-display">
+          {comments.map((comment, index) => (
+            <div key={index} className="comment">
+              <div className="comment-header">
+                <span className="username">{comment.username}</span>
+                <div className="rating">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={`star ${comment.rating >= star ? 'selected' : ''}`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p className="comment-text">{comment.comment}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
