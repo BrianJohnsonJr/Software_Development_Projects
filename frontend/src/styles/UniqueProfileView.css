@@ -5,12 +5,33 @@
     align-items: center;
     padding: 20px;
     width: 100vw;
-    background-color: #2c3e50; /* Darker background color for differentiation */
-    border-radius: 0;
-    box-shadow: none;
+    background-color: #222222; /* Dark background color */
+    border-radius: 8px; /* Rounded corners for consistency */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
 }
 
-/* Header section styling */
+/* Name styling */
+.unique-profile-header h1 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #D5FFD9; /* Light green text color for consistency */
+}
+
+/* Stats section styling for followers */
+.unique-profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+    color: #D5FFD9; /* Light green text color for consistency */
+}
+
+/* Stats individual item styling */
+.unique-profile-stats div {
+    font-size: 16px;
+    color: #D5FFD9; /* Light green text for stats section */
+}
+
+/* Header section containing profile picture and name */
 .unique-profile-header {
     display: flex;
     flex-direction: column;
@@ -24,52 +45,34 @@
     height: 120px;
     border-radius: 50%;
     margin-bottom: 10px;
-    border: 2px solid #3498db; /* Blue border for differentiation */
+    border: 2px solid #D9D5FF; /* Lavender border to match other elements */
 }
 
-/* Name styling */
-.unique-profile-header h1 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: white;
-}
-
-/* Stats section styling */
-.unique-profile-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-    color: white;
-}
-
-.unique-profile-stats div {
-    font-size: 16px;
-}
-
-/* User info section */
+/* User info styling container */
 .unique-profile-info {
     font-size: 16px;
-    color: #555;
+    color: #D5FFD9; /* Light green text color */
     margin-bottom: 25px;
-    background-color: #ffffff;
+    background-color: #333; /* Dark background for user info box */
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-    max-width: 500px;
-    width: 100%;
+    border-radius: 8px; /* Rounded corners for consistency */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    border: 1px solid #555; /* Dark border */
+    max-width: 500px; /* Limit width */
+    width: 100%; /* Ensure it takes full width up to max-width */
 }
 
+/* Individual user info item styling */
 .unique-profile-info div {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Spacing between info items */
 }
 
-/* Posts section */
+/* Profile posts section */
 .unique-profile-posts {
     font-size: 16px;
-    color: #ffffff;
+    color: #D5FFD9; /* Light green text color */
     font-weight: bold;
-    margin-top: 20px;
+    margin-top: 20px; /* Positions Posts section lower on the page */
 }
 
 /* Follow button styling */
@@ -79,8 +82,8 @@
     margin: 10px auto;
     padding: 10px;
     font-size: 16px;
-    color: white;
-    background-color: #007bff; /* Blue background for follow */
+    color: #333; /* Dark text color */
+    background-color: #D9D5FF; /* Lavender background color */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -92,7 +95,7 @@
 }
 
 .follow-button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
+    background-color: #B8A6FF; /* Lighter lavender on hover */
 }
 
 .follow-button.following:hover {
@@ -105,5 +108,5 @@
     font-size: 28px;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #e6e5e5;
+    color: #D5FFD9; /* Light green color */
 }
