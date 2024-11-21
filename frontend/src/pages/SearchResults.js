@@ -25,10 +25,10 @@ const SearchResults = () => {
                     throw new Error('Failed to fetch user search results.');
                 }
                 const data = await userResponse.json();
-                console.log("data: ", data);
+                console.log("user data fetched: ", data);
                 setResults((prevResults) => ({
                     ...prevResults,
-                    usersFound: data
+                    users: data.users
                 }));
                 setError(null);
             } catch (err) {
@@ -52,10 +52,10 @@ const SearchResults = () => {
                     throw new Error('Failed to fetch post search results.');
                 }
                 const data = await postResponse.json();
-                console.log("data: ", data);
+                console.log("post data fetched: ", data);
                 setResults((prevResults) => ({
                     ...prevResults,
-                    posts: data
+                    posts: data.posts
                 }));
                 setError(null);
             } catch (err) {
@@ -77,7 +77,7 @@ const SearchResults = () => {
         return <p>{error}</p>;
     }
 
-    if (!results.users.length && !results.posts.length) {
+    if (results.users.length === 0 && results.posts.length === 0) {
         return <p>No results found for "{searchTerm}".</p>;
     }
 
@@ -85,35 +85,37 @@ const SearchResults = () => {
         <div className="search-results-container">
             <h1>Search Results for "{searchTerm}"</h1>
 
-            {results.users.length > 0 && (
-                <div className="results-section">
+            {results.users?.length >= 0 && (
+                <div className="user-results-section">
                     <h2>Users</h2>
-                    <div className="results-grid">
+                    <div className="user-results-grid">
                         {results.users.map((user) => (
                             <User
                                 key={user._id}
-                                username={user.username}
-                                profilePicture={user.profilePicture}
-                                followersCount={user.followers.length}
-                                followingCount={user.following.length}
-                                postsCount={user.postIds.length}
+                                user={{
+                                    username: user.username,
+                                    image: user.image,
+                                    followers: user.followers,
+                                    following: user.following,
+                                    postIds: user.postIds,
+                                }}
                             />
                         ))}
                     </div>
                 </div>
             )}
 
-            {results.posts.length > 0 && (
-                <div className="results-section">
+            {results.posts?.length >= 0 && (
+                <div className="post-results-section">
                     <h2>Posts</h2>
-                    <div className="results-grid">
+                    <div className="post-results-grid">
                         {results.posts.map((post) => (
                             <Post
                                 key={post._id}
                                 title={post.title}
                                 price={post.price}
                                 tags={post.tags}
-                                imageUrl={post.imageUrl}
+                                image={post.image}
                             />
                         ))}
                     </div>
