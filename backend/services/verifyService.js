@@ -91,7 +91,7 @@ exports.EscapeRegister = [
     body('email').isEmail().normalizeEmail(),
     // Enable the first one if we want a proper password validation
     // body('password').isStrongPassword({minLength: 5, minUppercase: 1, minNumbers: 1, minSymbols: 1}),
-    body('password').isStrongPassword({minLength: 5}),
+    body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8}),
     body('bio').optional().trim().escape().isLength({max: 250}),
 
 ];
