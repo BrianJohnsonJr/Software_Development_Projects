@@ -54,11 +54,22 @@ exports.replaceFilePath = async (s3, posts) => {
     };
 
     if(Array.isArray(posts)) {
-        await Promise.all(posts.map(post => replacePostImage));
+        await Promise.all(posts.map(post => replacePostImage(post)));
     } else {
         await replacePostImage(posts);
     }
-}
+};
+
+async function replacePfpImage(s3, user) {
+    const pfpKey = user.profilePicture || 'default_image.png';
+
+    const command = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: pfpKey,
+    });
+    
+    user.profilePicture = await getSignedUrl(s3, command, { expiresIn: 60 * 10 });
+};
 
 /**
  * Gets a signed url from AWS S3 and replaces the profile picture image name with an absolute path.
@@ -66,23 +77,25 @@ exports.replaceFilePath = async (s3, posts) => {
  * @param {Object|Array} users A single user or Array of users to modify urls
  */
 exports.replaceProfilePicPath = async (s3, users) => {
-    const replacePfpImage = async (user) => {
-        const pfpKey = user.profilePicture || 'default_image.png';
-    
-        const command = new GetObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: pfpKey,
-        });
-        
-        user.profilePicture = await getSignedUrl(s3, command, { expiresIn: 60 * 10 });
-    };
-
     if(Array.isArray(users)) {
-        await Promise.all(users.map(post => replacePfpImage));
+        await Promise.all(users.map(user => replacePfpImage(s3, user)));
     } else {
-        await replacePfpImage(users);
+        await replacePfpImage(s3, users);
     }
-}
+};
+
+/**
+ * Gets a signed url from AWS S3 and replaces the profile picture image name with an absolute path.
+ * @param {Object} s3 the current s3 instance
+ * @param {Object|Array} users A single user or Array of users to modify urls
+ */
+exports.replaceCommentProfilePicPath = async (s3, comments) => {
+    if(Array.isArray(comments)) {
+        await Promise.all(comments.map(comment => replacePfpImage(s3, comment.owner)));
+    } else {
+        await replacePfpImage(s3, comments.owner);
+    }
+};
 
 /**
  * Middleware to verify that req.s3 variable is properly set and exists
