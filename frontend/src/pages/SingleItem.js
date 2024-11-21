@@ -25,10 +25,11 @@ function SingleItem() {
         } finally {
           setLoading(false);
         }
-
+      };
       fetchPost();
-    }
+    } 
   }, [id, post]); // Only fetch if there's no post already loaded
+  
 
   if (loading) {
     return <p>Loading...</p>;
