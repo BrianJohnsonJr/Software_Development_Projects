@@ -87,7 +87,7 @@ exports.replaceProfilePicPath = async (s3, users) => {
 /**
  * Middleware to verify that req.s3 variable is properly set and exists
  */
-exports.verifyS3 = async (req, res, next) => {
+exports.VerifyS3 = async (req, res, next) => {
     if(!req.s3) {
         let err = new Error('No s3 connection');
         err.status = 503; // Service unavailable
