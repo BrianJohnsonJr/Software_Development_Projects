@@ -55,7 +55,7 @@ exports.replaceFilePath = async (s3, posts) => {
     };
 
     if(Array.isArray(posts)) {
-        await Promise.all(posts.map(post => replacePostImage));
+        await Promise.all(posts.map(post => replacePostImage(post)));
     } else {
         await replacePostImage(posts);
     }
