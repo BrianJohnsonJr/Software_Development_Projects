@@ -92,12 +92,28 @@ exports.EscapeRegister = [
     // Enable the first one if we want a proper password validation
     // body('password').isStrongPassword({minLength: 5, minUppercase: 1, minNumbers: 1, minSymbols: 1}),
     body('password').isStrongPassword({minLength: 5}),
-    body('bio').trim().escape().isLength({max: 250}),
-    // TODO: Lets check for the image when its fixed
+    body('bio').optional().trim().escape().isLength({max: 250}),
 
 ];
 
 exports.EscapeLogin = [
     body('username').trim().escape(),
     body('password').notEmpty()
+];
+
+exports.EscapeNewPost = [
+    body('title').escape().trim().isLength({min: 2}),
+    body('description').optional().escape().trim(),
+    body('price').escape().trim().isNumeric(),
+    body('itemType').notEmpty().trim().escape(),
+    body('tags').optional().isArray().customSanitizer(tags => {
+        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '')); 
+    }),
+    body('sizes').optional().isArray().customSanitizer(sizes => {
+        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, ''));
+    })
+];
+
+exports.EscapeNewComment = [
+    body('text').notEmpty().escape().trim(),
 ];
