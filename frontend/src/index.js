@@ -36,7 +36,7 @@ function App() {
           <Route index element={<Home />} />
         </Route> */}
         <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/post/:id" element={<SingleItem />} />
+        <Route path="/posts/:id" element={<SingleItem />} />
         <Route path="/not-logged-in" element={<NotLoggedIn />} />
         <Route path="/search" element={<SearchResults />} />
       </Routes>

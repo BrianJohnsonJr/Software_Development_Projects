@@ -14,6 +14,7 @@ const Sell = () => {
   const [itemType, setItemType] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true); 
+  const [imageURL, setImageURL] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +44,11 @@ const Sell = () => {
 
   // Handle image file upload
   const handleImageUpload = (e) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
+    setImageURL(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file) {
+        setImage(file); // Store the raw file for uploading
+    }
   };
 
   // Handle size selection (multiple sizes)
@@ -73,23 +78,21 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Ensure all fields are valid and structured
-    const postData = {
-        title,
-        description,
-        price,
-        tags,
-        itemType,
-        sizes,
-        imageUrl: image || "", // Ensure image is included or empty
-    };
+
+    const formData = new FormData();
+    formData.append('image', image); // Attach the raw file
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price);
+    formData.append('tags', JSON.stringify(tags)); // Convert array to string
+    formData.append('itemType', itemType);
+    formData.append('sizes', JSON.stringify(sizes)); // Convert array to string
 
     try {
         // Send post data to the backend
         const response = await fetch('/posts/create', { // Adjust endpoint if necessary
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(postData),
+            body: formData,
             credentials: 'include', // Ensure authentication cookie is sent
         });
 
@@ -123,15 +126,17 @@ const Sell = () => {
         {/* Image Upload */}
         <div className="form-group">
           <label>Upload Image:</label>
-          <input type="file" onChange={handleImageUpload} />
-          {image && <img src={image} alt="Uploaded Preview" className="image-preview" />}
+          <input type="file" id="image" name="image" onChange={handleImageUpload} />
+          {imageURL && <img src={imageURL} alt="Uploaded Preview" className="image-preview" />}
         </div>
 
         {/* Post Title */}
         <div className="form-group">
-          <label>Title:</label>
+          <label for="title">Title:</label>
           <input
             type="text"
+            id="title"
+            name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -141,8 +146,10 @@ const Sell = () => {
 
         {/* Post Description */}
         <div className="form-group">
-          <label>Description:</label>
+          <label for="description">Description:</label>
           <textarea
+            id="description"
+            name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
@@ -152,8 +159,10 @@ const Sell = () => {
 
         {/* Price */}
         <div className="form-group">
-          <label>Price:</label>
+          <label for="price">Price:</label>
           <input
+            id="price"
+            name="price"
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
@@ -164,11 +173,13 @@ const Sell = () => {
 
         {/* Available Sizes */}
         <div className="form-group">
-          <label>Select Sizes:</label>
-          <div className="size-options">
+          <label for="sizes">Select Sizes:</label>
+          <div className="size-options" id="sizes" name="sizes">
             {['S', 'M', 'L', 'XL'].map((size) => (
-              <label key={size}>
+              <label for={size} key={size}>
                 <input
+                  id={size}
+                  name={size}
                   type="checkbox"
                   value={size}
                   checked={sizes.includes(size)}

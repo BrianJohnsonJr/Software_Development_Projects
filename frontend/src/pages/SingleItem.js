@@ -4,28 +4,31 @@ import '../styles/SingleItem.css';
 
 function SingleItem() {
   const { id } = useParams(); // Extract the post ID from the URL
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation(); // Get the location object
+  const [post, setPost] = useState(location.state?.post || null); // Initialize post state from location state or null
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/posts/${id}`); // Adjust endpoint if necessary
-        if (!response.ok) {
-          throw new Error('Failed to fetch post');
+    if (!post) { // If post is not available from state, fetch it manually from the server
+      setLoading(true);
+      const fetchPost = async () => {
+        try {
+          const response = await fetch(`/posts/${id}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch post');
+          }
+          const data = await response.json();
+          setPost(data.post); // Set the fetched post data
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-        const data = await response.json();
-        setPost(data.post);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchPost();
-  }, [id]);
+      fetchPost();
+    }
+  }, [id, post]); // Only fetch if there's no post already loaded
 
   if (loading) {
     return <p>Loading...</p>;
@@ -34,7 +37,7 @@ function SingleItem() {
   if (error) {
     return <p>Error: {error}</p>;
   }
-  
+
   if (!post) {
     return <p>Post not found.</p>;
   }
@@ -45,7 +48,7 @@ function SingleItem() {
         <h1 className="single-item-title">{post.title}</h1>
         <p className="single-item-price">${post.price}</p>
       </div>
-      <img src={post.imageUrl} alt={post.title} className="single-item-image" />
+      <img src={post.image} alt={post.title} className="single-item-image" />
       <p className="single-item-description">{post.description}</p>
       <div className="single-item-tags">
         <strong>Tags:</strong>
@@ -56,7 +59,6 @@ function SingleItem() {
         </ul>
       </div>
       <p className="single-item-owner">Owned by: {post.owner?.username}</p>
-      
       <div className="button-group">
         <button className="purchase-button">Purchase</button>
         <button className="cart-button">Add to Cart</button>

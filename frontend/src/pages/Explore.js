@@ -86,7 +86,7 @@ const Explore = () => {
                             description={post.description}
                             ownerUsername={post.ownerUsername}
                             price={post.price}
-                            imageUrl={post.imageUrl}
+                            image={post.image}
                             tags={post.tags}
                         />
                     ))
