@@ -41,8 +41,15 @@ router.get('/user', AuthorizeUser, VerifyLastId, VerifyS3, controller.userPosts)
  */
 router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
 
+/**
+ * Returns the newest comments on a post specified with :id.
+ * Query with lastId=<id> to get the next page(s)  (send the last id of the page previous)
+ */
 router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.getComments);
 
+/**
+ * Posts a comment to a givent post specified with :id
+ */
 router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), EscapeNewComment, ValidateResult, controller.postComment);
 
 
