@@ -1,7 +1,7 @@
 const User = require('../models/users');
 const Post = require('../models/posts');
 const Comment = require('../models/comments');
-const { uploadToCloud, replaceFilePath, replaceProfilePicPath } = require('../services/fileService');
+const { uploadToCloud, replaceFilePath, replaceCommentProfilePicPath } = require('../services/fileService');
 
 /**
  * Searches for posts based on a search term, with optional pagination and filtering by tags.
@@ -168,7 +168,7 @@ exports.userPosts = async (req, res, next) => {
         
         const lastId = req.query.lastId || null;
         const query = lastId ? { _id: { $lt: lastId }} : {};
-        const posts = await Post.find({$and: [{query}, { owner: req.user.id }]}).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
+        const posts = await Post.find({$and: [query, { owner: req.user.id }]}).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         
         if(posts.length > 0) {
             await replaceFilePath(req.s3, posts);
@@ -218,12 +218,51 @@ exports.getComments = async (req, res, next) => {
         const lastId = req.query.lastId || null;
         const query = lastId ? { _id: { $lt: lastId }} : {};
 
-        const comments = await Comment.find({ $and: [{query}, { postId: id }]}).sort({ _id: -1 }).limit(25).populate('owner', 'username name profilePicture');
+        const comments = await Comment.find({ $and: [query, { postId: id }]}).sort({ _id: -1 }).limit(25).populate('owner', 'username name profilePicture');
         if(comments.length > 0) {
-            await replaceProfilePicPath(req.s3, comments);
+            await replaceCommentProfilePicPath(req.s3, comments);
             res.json(comments);
         }
         else res.json([]);
     }
     catch (err) { next(err); }
+};
+
+exports.postComment = async (req, res, next) => {
+    try {
+        let id = req.params.id; // post id
+        
+        const user = await User.findById(req.user.id).select('-password'); // grab user w/o password'
+        if(!user) {
+            let err = new Error('No user logged in')
+            err.status = 401;
+            next(err);
+        }
+
+        const text = req.body.text;
+
+        // Validate required fields
+        if (!text) {
+            let err = new Error('Missing required field: text');
+            err.status = 400;
+            return next(err);
+        }
+
+        const newComment = new Comment({
+            postId: id,
+            owner: user._id,
+            text: text,
+            likes: 0,
+        });
+
+        const savedComment = await newComment.save();
+        
+        // Respond with success and the created post's ID
+        res.status(201).json({ 
+            success: true, 
+            message: 'Comment successfully created', 
+            commentId: savedComment._id 
+        });
+    }
+     catch (err) { next(err); }
 };
