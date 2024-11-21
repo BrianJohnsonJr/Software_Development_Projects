@@ -1,6 +1,7 @@
 const express = require('express');
 const { AuthorizeUser } = require('../services/authService'); // Import AuthService
-const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
+const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, ValidateResult, 
+    EscapeRegister, EscapeLogin, } = require('../services/verifyService');
 const { uploadToMemory } = require('../services/fileService');
 const controller = require('../controllers/accountController');
 
@@ -16,10 +17,10 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
 router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
 // Register route
-router.post('/register', uploadToMemory.none(), controller.register);
+router.post('/register', uploadToMemory.none(), EscapeRegister, controller.register);
 
 // Login route
-router.post('/login', uploadToMemory.none(), controller.loginUser);
+router.post('/login', uploadToMemory.none(), EscapeLogin, controller.loginUser);
 
 // Logout route
 router.post('/logout', uploadToMemory.none(), controller.logout);
