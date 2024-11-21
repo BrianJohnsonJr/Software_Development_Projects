@@ -116,4 +116,5 @@ exports.EscapeNewPost = [
 
 exports.EscapeNewComment = [
     body('text').notEmpty().escape().trim(),
+    body('rating').notEmpty().isNumeric().toFloat().isFloat({ min: 0, max: 5 }),
 ];
