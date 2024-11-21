@@ -107,10 +107,10 @@ exports.EscapeNewPost = [
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
     body('tags').optional().isArray().customSanitizer(tags => {
-        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '')); 
+        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
     }),
     body('sizes').optional().isArray().customSanitizer(sizes => {
-        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, ''));
+        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
     })
 ];
 
