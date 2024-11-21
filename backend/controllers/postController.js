@@ -33,7 +33,7 @@ exports.search = async (req, res, next) => {
         const postsFound = await Post.find(wholeQuery).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
         const totalFound = await Post.countDocuments(wholeQuery); // Count the amount of results
 
-        if(posts.length > 0) {
+        if(postsFound.length > 0) {
             await replaceFilePath(req.s3, postsFound);
             res.json({ success: true, posts: postsFound, resultCount: totalFound });
         }
