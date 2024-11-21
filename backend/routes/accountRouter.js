@@ -17,10 +17,10 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
 router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
 // Register route
-router.post('/register', uploadToMemory.none(), EscapeRegister, controller.register);
+router.post('/register', uploadToMemory.none(), EscapeRegister, ValidateResult, controller.register);
 
 // Login route
-router.post('/login', uploadToMemory.none(), EscapeLogin, controller.loginUser);
+router.post('/login', uploadToMemory.none(), EscapeLogin, ValidateResult, controller.loginUser);
 
 // Logout route
 router.post('/logout', uploadToMemory.none(), controller.logout);
