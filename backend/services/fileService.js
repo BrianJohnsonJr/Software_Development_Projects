@@ -10,6 +10,7 @@ const storage = multer.memoryStorage({
 });
 
 const upload = multer({ storage: storage });
+
 /**
  * Uploads file to temporary memory using multer
  */
@@ -54,11 +55,11 @@ exports.replaceFilePath = async (s3, posts) => {
     };
 
     if(Array.isArray(posts)) {
-        await Promise.all(posts.map(post => replacePostImage));
+        await Promise.all(posts.map(post => replacePostImage(post)));
     } else {
         await replacePostImage(posts);
     }
-}
+};
 
 /**
  * Gets a signed url from AWS S3 and replaces the profile picture image name with an absolute path.
@@ -82,18 +83,4 @@ exports.replaceProfilePicPath = async (s3, users) => {
     } else {
         await replacePfpImage(users);
     }
-}
-
-/**
- * Middleware to verify that req.s3 variable is properly set and exists
- */
-exports.verifyS3 = async (req, res, next) => {
-    if(!req.s3) {
-        let err = new Error('No s3 connection');
-        err.status = 503; // Service unavailable
-        return next(err);
-    }
-    else {
-        return next();
-    }
-}
+};

@@ -23,6 +23,29 @@ exports.authCheck = async (req, res, next) => {
 };
 
 /**
+ * Searches for users based on a search term, with optional pagination
+ * The search term is applied to the username, name of users.
+ */
+exports.search = async (req, res, next) => {
+    try {
+        const searchParams = req.query.query?.trim() || '';
+        const searchQuery = searchParams ? {
+            $or: [
+                { username: { $regex: searchParams, $options: 'i' }},
+                { name: { $regex: searchParams, $options: 'i' }}
+            ],
+        }
+        : {};
+
+        const usersFound = await User.find(searchQuery).select('-password').sort({ _id: -1 }).limit(25);
+        const totalFound = await User.countDocuments(searchQuery); // Count the amount of results
+
+        res.json({ success: true, users: usersFound, resultCount: totalFound });
+    }
+    catch (err) { next(err); }
+};
+
+/**
  * Registers a new user by validating input, hashing the password, and saving the user to the database.
  */
 exports.register = async (req, res, next) => {

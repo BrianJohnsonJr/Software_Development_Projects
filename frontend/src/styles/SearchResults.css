@@ -1,0 +1,76 @@
+.search-results-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-results-section {
+    margin-bottom: 20px;
+}
+
+.user-results-section h2 {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.user-results-grid {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 10px; /* Space between user components */
+    padding: 10px;
+    scroll-snap-type: x mandatory; /* Smooth snap scrolling for better UX */
+}
+
+.user-results-grid::-webkit-scrollbar {
+    height: 8px; /* Horizontal scrollbar height */
+}
+
+.user-results-grid::-webkit-scrollbar-thumb {
+    background-color: #888; /* Thumb color */
+    border-radius: 4px;
+}
+
+.user-results-grid::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Track color */
+}
+
+.user-results-grid > * {
+    scroll-snap-align: center; /* Snap alignment for individual items */
+    flex: 0 0 auto; /* Prevent items from shrinking or growing */
+    width: 150px; /* Adjust width based on user card size */
+}
+
+.post-results-section {
+    margin-top: 20px;
+}
+
+.post-results-section h2 {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.post-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid */
+    gap: 15px;
+    max-height: 70vh; /* Limit height for vertical scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+}
+
+.post-results-grid::-webkit-scrollbar {
+    width: 8px; /* Vertical scrollbar width */
+}
+
+.post-results-grid::-webkit-scrollbar-thumb {
+    background-color: #888; /* Thumb color */
+    border-radius: 4px;
+}
+
+.post-results-grid::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Track color */
+}

@@ -29,10 +29,10 @@ function SingleItem() {
           setLoading(false);
         }
       };
-
       fetchPost();
-    }
+    } 
   }, [id, post]); // Only fetch if there's no post already loaded
+  
 
   const handleSubmitComment = () => {
     // Submit the comment along with rating (You can add further logic to send this to the server)

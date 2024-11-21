@@ -12,21 +12,24 @@ const SearchResults = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchSearchResults = async () => {
+        const fetchUserSearchResults = async () => {
             if (!searchTerm || searchTerm.trim() === "") {
                 setError('Please enter a search term.');
                 setIsLoading(false);
                 return;
             }
-
             try {
                 setIsLoading(true);
-                const response = await fetch(`/search-results?searchTerm=${encodeURIComponent(searchTerm)}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch search results.');
+                const userResponse = await fetch(`/account/search?query=${encodeURIComponent(searchTerm)}`);
+                if (!userResponse.ok) {
+                    throw new Error('Failed to fetch user search results.');
                 }
-                const data = await response.json();
-                setResults(data);
+                const data = await userResponse.json();
+                console.log("user data fetched: ", data);
+                setResults((prevResults) => ({
+                    ...prevResults,
+                    users: data.users
+                }));
                 setError(null);
             } catch (err) {
                 console.error('Error fetching search results:', err);
@@ -35,8 +38,35 @@ const SearchResults = () => {
                 setIsLoading(false);
             }
         };
-
-        fetchSearchResults();
+        const fetchPostSearchResults = async () => {
+            if (!searchTerm || searchTerm.trim() === "") {
+                setError('Please enter a search term.');
+                setIsLoading(false);
+                return;
+            }
+            try {
+                setIsLoading(true);
+                const postResponse = await fetch(`/posts/search?query=${encodeURIComponent(searchTerm)}`)
+                if (!postResponse.ok) {
+                    console.log(postResponse);
+                    throw new Error('Failed to fetch post search results.');
+                }
+                const data = await postResponse.json();
+                console.log("post data fetched: ", data);
+                setResults((prevResults) => ({
+                    ...prevResults,
+                    posts: data.posts
+                }));
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching search results:', err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUserSearchResults();
+        fetchPostSearchResults();
     }, [searchTerm]);
 
     if (isLoading) {
@@ -47,7 +77,7 @@ const SearchResults = () => {
         return <p>{error}</p>;
     }
 
-    if (!results.users.length && !results.posts.length) {
+    if (results.users.length === 0 && results.posts.length === 0) {
         return <p>No results found for "{searchTerm}".</p>;
     }
 
@@ -55,35 +85,37 @@ const SearchResults = () => {
         <div className="search-results-container">
             <h1>Search Results for "{searchTerm}"</h1>
 
-            {results.users.length > 0 && (
-                <div className="results-section">
+            {results.users?.length >= 0 && (
+                <div className="user-results-section">
                     <h2>Users</h2>
-                    <div className="results-grid">
+                    <div className="user-results-grid">
                         {results.users.map((user) => (
                             <User
                                 key={user._id}
-                                username={user.username}
-                                profilePicture={user.profilePicture}
-                                followersCount={user.followers.length}
-                                followingCount={user.following.length}
-                                postsCount={user.postIds.length}
+                                user={{
+                                    username: user.username,
+                                    image: user.image,
+                                    followers: user.followers,
+                                    following: user.following,
+                                    postIds: user.postIds,
+                                }}
                             />
                         ))}
                     </div>
                 </div>
             )}
 
-            {results.posts.length > 0 && (
-                <div className="results-section">
+            {results.posts?.length >= 0 && (
+                <div className="post-results-section">
                     <h2>Posts</h2>
-                    <div className="results-grid">
+                    <div className="post-results-grid">
                         {results.posts.map((post) => (
                             <Post
                                 key={post._id}
                                 title={post.title}
                                 price={post.price}
                                 tags={post.tags}
-                                imageUrl={post.imageUrl}
+                                image={post.image}
                             />
                         ))}
                     </div>

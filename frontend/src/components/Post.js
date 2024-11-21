@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 function Post({ id, title, description, owner, price, imageUrl, tags = [], likes }) {
 
   return (
-    <Link to={`/posts/${id}`} state={{ post: { id, title, description, owner, price, imageUrl, tags } }} className="post-link">
+
+    <Link to={`/posts/${id}`} state={{ post: { id, title, description, owner, price, image, tags } }} className="post-link">
       <div className="post">
-        <img src={imageUrl} alt={title} className="post-image" />
+        <img src={image} alt={title} className="post-image" />
         <div className="post-details">
           <div className="post-left">
             <h2>{title}</h2>
