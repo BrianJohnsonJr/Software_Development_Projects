@@ -117,3 +117,224 @@
   background-color: #FF8C00; /* Darker amber */
   transform: scale(1.05);
 }
+
+.comment-section {
+  margin-top: 30px;
+  background-color: #2A2A2A; /* Dark background to match the post container */
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #B8A6FF; /* White outline */
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.5); /* White box shadow */
+  color: #D5FFD9; /* Light green text for readability */
+}
+
+
+.comment-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #D5FFD9; /* Light green heading */
+  text-align: center;
+}
+
+.comment-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px 0;
+  border-top: 1px solid #444444; /* Subtle divider */
+  margin-top: 15px;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  justify-content: flex-start;
+  padding: 10px;
+  border: 1px solid #D5FFD9;
+  background-color: #444444;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comment-author {
+  font-weight: bold;
+  color: #D9D5FF; /* Lavender text for author */
+  margin-bottom: 5px;
+  text-align: center; /* Center the author's name */
+}
+
+.comment-text {
+  color: #D5FFD9; /* Light green comment text */
+  font-size: 1rem;
+  text-align: center; /* Center the comment text */
+  margin-top: 0;
+}
+
+.comment-avatar {
+  width: 50px;
+  height: 50px;
+  background-color: #444444; /* Darker gray for avatar background */
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.comment-content {
+  flex-grow: 1;
+}
+
+.comment-content .username {
+  font-weight: bold;
+  color: #D9D5FF; /* Lavender for username */
+  margin-bottom: 5px;
+  display: block;
+}
+
+.comment-content p {
+  color: #D5FFD9; /* Light green for comment text */
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.comment-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-input {
+  width: 100%; /* Ensure input takes full width of its container */
+  max-width: 100%; /* Prevents it from being larger than the container */
+  padding: 10px; /* Space inside the input box */
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #D5FFD9; /* Light green border to match color scheme */
+  background-color: #444444; /* Dark background to match */
+  color: #D5FFD9; /* Light green text */
+  margin-bottom: 10px;
+  box-sizing: border-box; /* Ensures padding does not add to width */
+}
+
+.comment-input::placeholder {
+  color: #888888; /* Subtle placeholder color */
+}
+
+.comment-button {
+  align-self: flex-end;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #D9D5FF; /* Lavender button background */
+  color: #333333; /* Dark button text */
+  transition: transform 0.2s ease-in-out;
+}
+
+.comment-button:disabled {
+  background-color: #444444; /* Darker gray when disabled */
+  color: #888888; /* Subtle text color for disabled state */
+  cursor: not-allowed;
+}
+
+.comment-button:hover:not(:disabled) {
+  background-color: #B8A6FF; /* Lighter lavender when hovered */
+  transform: scale(1.05);
+}
+
+/* Star Rating Styles */
+.star-rating {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.star {
+  font-size: 2rem;
+  color: #D9D5FF; /* Lavender color for stars */
+  cursor: pointer;
+}
+
+.star.selected {
+  color: #FFD700; /* Gold color for selected stars */
+}
+
+.comment-section {
+  margin-top: 30px;
+}
+
+.comment-section-title {
+  font-size: 1.5rem;
+  color: #D5FFD9; /* Light green title */
+  margin-bottom: 10px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #444444;
+  border-radius: 8px;
+  color: #D5FFD9;
+  background-color: #333333;
+  margin-bottom: 10px;
+}
+
+.submit-comment-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #333333;
+  background-color: #D9D5FF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.submit-comment-button:hover {
+  background-color: #B8A6FF;
+  transform: scale(1.05);
+}
+
+.comments-display {
+  margin-top: 20px;
+}
+
+.comment {
+  background-color: #444444;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+
+.comment-header {
+  display: flex;
+  flex-direction: column; /* Stack username and stars vertically */
+  align-items: center; /* Center align both username and stars */
+  margin-bottom: 10px; /* Add some space between the comment header and the comment text */
+  text-align: center; /* Center text within the header */
+}
+
+.username {
+  font-weight: bold;
+  color: #D9D5FF;
+  margin-bottom: 5px; /* Add margin for space between username and stars */
+}
+
+.rating .star {
+  font-size: 1.5rem;
+}
+
+.comment-text {
+  color: #D5FFD9;
+  font-size: 1rem;
+}
+
+.rating {
+  display: flex;
+  gap: 5px;
+}

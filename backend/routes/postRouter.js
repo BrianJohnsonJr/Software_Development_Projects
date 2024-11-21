@@ -1,6 +1,7 @@
 const express = require('express');
-const { AuthorizeUser, VerifyLastId, VerifyParamsId } = require('../services/authService');
-const { uploadToMemory, VerifyS3 } = require('../services/fileService');
+const { AuthorizeUser } = require('../services/authService');
+const { uploadToMemory } = require('../services/fileService');
+const { VerifyLastId, VerifyParamsId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
 const controller = require('../controllers/postController');
 
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
  * Queries the posts and returns posts matching the specified query.
  * Allows for paging with lastId=<id>
  */
-router.get('/search', controller.search);
+router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
 
 /**
  * Creates a post, requiring a field to be named 'image' for upload. Escapes user inputs
@@ -42,5 +43,6 @@ router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
 router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.getComments);
 
 router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), controller.postComment);
+
 
 module.exports = router;

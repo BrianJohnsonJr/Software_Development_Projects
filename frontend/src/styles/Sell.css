@@ -1,84 +1,100 @@
 /* styles/Sell.css */
 .sell-form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .sell-form h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  .size-options label {
-    margin-right: 10px;
-  }
-  
-  .image-preview {
-    max-width: 100%;
-    margin-top: 10px;
-    border-radius: 8px;
-  }
-  
-  .tags-input {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .tags-list {
-    margin-top: 10px;
-  }
-  
-  .tag {
-    display: inline-block;
-    background-color: #e0e0e0;
-    padding: 5px 10px;
-    margin-right: 5px;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .remove-tag-btn {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #ff0000;
-    cursor: pointer;
-  }
-  
-  .submit-btn {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .submit-btn:hover {
-    background-color: #555;
-  }
-  
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #222222; /* Dark background for consistency */
+  color: #D5FFD9; /* Light green text */
+  border: 2px solid #B8A6FF; /* Lavender border */
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgb(192, 191, 191); /* Subtle shadow for depth */
+}
+
+.sell-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #D5FFD9; /* Light green title color */
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #D5FFD9; /* Light green for label text */
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #444; /* Dark border for inputs */
+  border-radius: 4px;
+  background-color: #333; /* Slightly lighter background for inputs */
+  color: #D5FFD9; /* Light green text for input fields */
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #FF9800; /* Amber border on focus */
+}
+
+.size-options label {
+  margin-right: 10px;
+  color: #D5FFD9; /* Light green color for size options */
+}
+
+.image-preview {
+  max-width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 2px solid #B8A6FF; /* Lavender border to match color scheme */
+}
+
+.tags-input {
+  display: flex;
+  gap: 10px;
+}
+
+.tags-list {
+  margin-top: 10px;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #444; /* Dark background for tags */
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #D5FFD9; /* Light green text for tags */
+}
+
+.remove-tag-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #FF5733; /* Red color for remove button */
+  cursor: pointer;
+}
+
+.submit-btn {
+  background-color: #D9D5FF; /* Lavender background for the button */
+  color: #333; /* Dark text */
+  padding: 12px 30px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #B8A6FF; /* Lighter lavender on hover */
+  transform: scale(1.05); /* Slight scale effect on hover */
+}
