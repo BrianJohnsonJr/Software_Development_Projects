@@ -41,4 +41,6 @@ router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
 
 router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.getComments);
 
+router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), controller.postComment);
+
 module.exports = router;
