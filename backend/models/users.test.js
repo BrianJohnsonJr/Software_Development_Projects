@@ -1,4 +1,4 @@
-const uInfo = require('./userInfo');
+//const uInfo = require('./users');
 
 // test('adds 1 + 2 to equal 3', () => {
 //     expect(sum(1, 2)).toBe(3);
@@ -97,34 +97,232 @@ const testingUserInfo = [
     }
   ];
 
-test('Verify Array Retrieval', () => {
-    expect(uInfo.get()).toStrictEqual(testingUserInfo);
-});
-
-test('Check findById Edge cases', () => {
-    expect(uInfo.findById(-1)).toBeUndefined();
-    expect(uInfo.findById(0)).toBeUndefined();;
-    expect(uInfo.findById(1)).toStrictEqual(testingUserInfo[0]);
-    expect(uInfo.findById('1')).toStrictEqual(testingUserInfo[0]);
-    expect(uInfo.findById(100)).toBeUndefined();
-    expect(uInfo.findById(testingUserInfo.length-1)).toStrictEqual(testingUserInfo[testingUserInfo.length-2]);
-    expect(uInfo.findById(testingUserInfo.length)).toStrictEqual(testingUserInfo[testingUserInfo.length-1]);
-    expect(uInfo.findById(testingUserInfo.length+1)).toBeUndefined();
-});
-
-test('Login Matching all users in array', () => {
-    testingUserInfo.forEach(u => {
-        expect(uInfo.matchLogin(u.username, u.password)).resolves.toStrictEqual(u);
+  const mongoose = require('mongoose');
+  const User = require('./users'); // Adjust path as needed
+  require('dotenv').config(); // load dotenvs
+  const mongoUri = process.env.MONGO_URI;
+  
+  describe('User Schema Test', () => {
+    // Array to keep track of created user IDs
+    let testUserIds = [];
+  
+    // Connect to MongoDB before running tests
+    beforeAll(async () => {
+      await mongoose.connect(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
     });
-});
-
-test('Adding a new user', () => {
-    const userToAdd = { 
-        username: "ABC123",
-        password: "987ABC",
-        firstName: "Petro",
-        lastName: "Jonokovich"
-    };
-    const userId = uInfo.addNewUser(userToAdd);
-    expect(uInfo.findById(userId).id).toBe(userId);
-});
+  
+    // Clear test users after each test
+    afterEach(async () => {
+      if (testUserIds.length > 0) {
+        await User.collection.deleteOne({ _id: { $in: testUserIds } });
+        testUserIds = []; // Reset the array
+      }
+    });
+  
+    // Disconnect after all tests
+    afterAll(async () => {
+      await mongoose.connection.close();
+    });
+  
+    // Test valid user creation
+    it('should create & save user successfully', async () => {
+      const validUser = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123',
+        bio: 'Hello, I am John',
+        postIds: [new mongoose.Types.ObjectId()],
+        addressIds: [new mongoose.Types.ObjectId()]
+      });
+  
+      const savedUser = await validUser.save();
+      testUserIds.push(savedUser._id); // Track the created user
+      
+      expect(savedUser._id).toBeDefined();
+      expect(savedUser.name).toBe(validUser.name);
+      expect(savedUser.email).toBe(validUser.email);
+      expect(savedUser.username).toBe(validUser.username);
+      expect(savedUser.password).toBe(validUser.password);
+      expect(savedUser.bio).toBe(validUser.bio);
+      expect(savedUser.profilePicture).toBe(''); // Default value
+      expect(savedUser.postIds).toEqual(expect.arrayContaining(validUser.postIds));
+      expect(savedUser.addressIds).toEqual(expect.arrayContaining(validUser.addressIds));
+      expect(savedUser.createdAt).toBeDefined();
+      expect(savedUser.updatedAt).toBeDefined();
+    });
+  
+    // Test required fields
+    it('should fail to save user without required fields', async () => {
+      const userWithoutRequiredFields = new User({});
+  
+      let err;
+      try {
+        const savedUser = await userWithoutRequiredFields.save();
+        if (savedUser) {
+          testUserIds.push(savedUser._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
+      expect(err.errors.name).toBeDefined();
+      expect(err.errors.email).toBeDefined();
+      expect(err.errors.username).toBeDefined();
+      expect(err.errors.password).toBeDefined();
+    });
+  
+    // Test unique email constraint
+    it('should fail to save user with duplicate email', async () => {
+      // Create first user
+      const firstUser = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe1',
+        password: 'password123'
+      });
+      const savedFirstUser = await firstUser.save();
+      testUserIds.push(savedFirstUser._id); // Track first user
+  
+      // Try to create second user with same email
+      const secondUser = new User({
+        name: 'Jane Doe',
+        email: 'john@example.com', // Same email
+        username: 'janedoe',
+        password: 'password456'
+      });
+  
+      let err;
+      try {
+        const savedSecondUser = await secondUser.save();
+        if (savedSecondUser) {
+          testUserIds.push(savedSecondUser._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeDefined();
+      expect(err.code).toBe(11000); // MongoDB duplicate key error code
+    });
+  
+    // Test unique username constraint
+    it('should fail to save user with duplicate username', async () => {
+      // Create first user
+      const firstUser = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123'
+      });
+      const savedFirstUser = await firstUser.save();
+      testUserIds.push(savedFirstUser._id); // Track first user
+  
+      // Try to create second user with same username
+      const secondUser = new User({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        username: 'johndoe', // Same username
+        password: 'password456'
+      });
+  
+      let err;
+      try {
+        const savedSecondUser = await secondUser.save();
+        if (savedSecondUser) {
+          testUserIds.push(savedSecondUser._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeDefined();
+      expect(err.code).toBe(11000); // MongoDB duplicate key error code
+    });
+  
+    // Test bio maxLength
+    it('should fail to save user with bio exceeding maxLength', async () => {
+      const userWithLongBio = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123',
+        bio: 'a'.repeat(301) // Create string longer than 300 characters
+      });
+  
+      let err;
+      try {
+        const savedUser = await userWithLongBio.save();
+        if (savedUser) {
+          testUserIds.push(savedUser._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
+      expect(err.errors.bio).toBeDefined();
+    });
+  
+    // Test default value for profilePicture
+    it('should set default profilePicture when not provided', async () => {
+      const user = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123'
+      });
+  
+      const savedUser = await user.save();
+      testUserIds.push(savedUser._id); // Track the created user
+      expect(savedUser.profilePicture).toBe('');
+    });
+  
+    // Test updating user
+    it('should update user successfully', async () => {
+      const user = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123'
+      });
+  
+      const savedUser = await user.save();
+      testUserIds.push(savedUser._id); // Track the created user
+      
+      const newName = 'John Updated';
+      savedUser.name = newName;
+      const updatedUser = await savedUser.save();
+  
+      expect(updatedUser.name).toBe(newName);
+      expect(updatedUser.updatedAt).not.toEqual(updatedUser.createdAt);
+    });
+  
+    // Test adding posts and addresses
+    it('should add postIds and addressIds successfully', async () => {
+      const user = new User({
+        name: 'John Doe',
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123'
+      });
+  
+      const savedUser = await user.save();
+      testUserIds.push(savedUser._id); // Track the created user
+      
+      const newPostId = new mongoose.Types.ObjectId();
+      const newAddressId = new mongoose.Types.ObjectId();
+      
+      savedUser.postIds.push(newPostId);
+      savedUser.addressIds.push(newAddressId);
+      
+      const updatedUser = await savedUser.save();
+  
+      expect(updatedUser.postIds).toContainEqual(newPostId);
+      expect(updatedUser.addressIds).toContainEqual(newAddressId);
+    });
+  });
