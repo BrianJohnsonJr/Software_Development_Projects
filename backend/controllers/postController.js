@@ -1,6 +1,7 @@
 const User = require('../models/users');
 const Post = require('../models/posts');
-const { uploadToCloud, replaceFilePath } = require('../services/fileService');
+const Comment = require('../models/comments');
+const { uploadToCloud, replaceFilePath, replaceProfilePicPath } = require('../services/fileService');
 
 /**
  * Searches for posts based on a search term, with optional pagination and filtering by tags.
@@ -204,4 +205,25 @@ exports.getPostInfo = async (req, res, next) => {
         }
         next(error); 
     }
-}
+};
+
+/**
+ * Fetches up to 25 comments for a post, sorted by newest first.
+ * Supports pagination using the `lastId` query parameter.
+ */
+exports.getComments = async (req, res, next) => {
+    try {
+        let id = req.params.id;
+
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+
+        const comments = await Comment.find({ $and: [{query}, { postId: id }]}).sort({ _id: -1 }).limit(25).populate('owner', 'username name profilePicture');
+        if(comments.length > 0) {
+            await replaceProfilePicPath(req.s3, comments);
+            res.json(comments);
+        }
+        else res.json([]);
+    }
+    catch (err) { next(err); }
+};
