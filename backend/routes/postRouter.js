@@ -39,6 +39,6 @@ router.get('/user', AuthorizeUser, VerifyLastId, VerifyS3, controller.userPosts)
  */
 router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
 
-router.get('/:id/comments', VerifyParamsId, VerifyS3, );
+router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.getComments);
 
 module.exports = router;
