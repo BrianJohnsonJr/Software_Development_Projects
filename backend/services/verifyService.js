@@ -84,3 +84,20 @@ exports.ValidateResult = (req, res, next) => {
 exports.SanitizeSearch = [
     query('query').trim().isString().isLength({max: 100}).escape().toLowerCase()
 ];
+
+exports.EscapeRegister = [
+    body('name').trim().escape().isLength({min: 2, max: 50}),
+    body('username').trim().escape().isAlphanumeric().isLength({min: 3, max: 30}),
+    body('email').isEmail().normalizeEmail(),
+    // Enable the first one if we want a proper password validation
+    // body('password').isStrongPassword({minLength: 5, minUppercase: 1, minNumbers: 1, minSymbols: 1}),
+    body('password').isStrongPassword({minLength: 5}),
+    body('bio').trim().escape().isLength({max: 250}),
+    // TODO: Lets check for the image when its fixed
+
+];
+
+exports.EscapeLogin = [
+    body('username').trim().escape(),
+    body('password').notEmpty()
+];
