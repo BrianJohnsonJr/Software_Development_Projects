@@ -1,6 +1,6 @@
 const express = require('express');
 const { AuthorizeUser } = require('../services/authService'); // Import AuthService
-const { VerifyParamsId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
+const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
 const { uploadToMemory } = require('../services/fileService');
 const controller = require('../controllers/accountController');
 
