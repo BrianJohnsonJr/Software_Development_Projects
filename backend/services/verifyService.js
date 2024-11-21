@@ -67,7 +67,7 @@ exports.VerifyS3 = async (req, res, next) => {
  * Middleware to check the results of the validators ran in the previous middleware.
  * Creates an error if there were  failures on the validators
  */
-exports.ValidateResult = (req, res, next) => {
+exports.VerifyValidationResult = (req, res, next) => {
     let errors = validationResult(req);
     if(!errors.isEmpty()) {
         let err = new Error(errors.array().join('\n'));
