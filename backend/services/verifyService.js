@@ -70,7 +70,9 @@ exports.VerifyS3 = async (req, res, next) => {
 exports.ValidateResult = (req, res, next) => {
     let errors = validationResult(req);
     if(!errors.isEmpty()) {
-        let err = new Error(errors.array().join('\n'));
+        // console.log(errors.array());
+        let errMessages = errors.array().map(error => `${error.type} error: ${error.msg} in ${error.path}`);
+        let err = new Error(errMessages.join('\n'));
         err.status = 400;
         return next(err);
     } else {
