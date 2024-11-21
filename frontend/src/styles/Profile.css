@@ -5,22 +5,30 @@
     align-items: center; /* Center items horizontally */
     padding: 20px;
     width: 100vw; /* Full viewport width */
-    background-color: #535357; /* Light background color */
-    border-radius: 0; /* Remove border-radius if desired */
-    box-shadow: none; /* Remove shadow if not needed */
+    background-color: #222222; /* Dark background color */
+    border-radius: 8px; /* Rounded corners for consistency */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
 }
 
 /* Name styling */
 .profile-header h1 {
     margin-bottom: 10px;
     font-size: 24px;
-    color: white; /* Change text color to white */
+    color: #D5FFD9; /* Light green text color for consistency */
 }
 
 /* Stats section styling for followers */
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px; /* Increased margin bottom for space */
+    color: #D5FFD9; /* Light green text color for consistency */
+}
+
+/* Stats individual item styling */
 .profile-stats div {
     font-size: 16px;
-    color: white; /* Change text color to white */
+    color: #D5FFD9; /* Light green text for stats section */
 }
 
 /* Header section containing profile picture and name */
@@ -37,40 +45,19 @@
     height: 120px;
     border-radius: 50%;
     margin-bottom: 10px;
-    border: 2px solid #4CAF50; /* Green border */
-}
-
-/* Name styling */
-h1 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: #333; /* Dark text color */
-}
-
-/* Stats section styling for followers, email, etc. */
-.profile-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-    color: white;
-}
-
-/* Stats individual item styling */
-.profile-stats div {
-    font-size: 16px;
-    color: #fcfbfb; /* Medium-dark text color */
+    border: 2px solid #D9D5FF; /* Lavender border to match other elements */
 }
 
 /* User info styling container */
 .profile-info {
     font-size: 16px;
-    color: #555; /* Medium-dark text color */
+    color: #D5FFD9; /* Light green text color */
     margin-bottom: 25px;
-    background-color: #ffffff; /* White background for user info box */
+    background-color: #333; /* Dark background for user info box */
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 8px; /* Rounded corners for consistency */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    border: 1px solid #e0e0e0; /* Light gray border */
+    border: 1px solid #555; /* Dark border */
     max-width: 500px; /* Limit width */
     width: 100%; /* Ensure it takes full width up to max-width */
 }
@@ -83,7 +70,7 @@ h1 {
 /* Profile posts section */
 .profile-posts {
     font-size: 16px;
-    color: #ffffff; /* Dark text color */
+    color: #D5FFD9; /* Light green text color */
     font-weight: bold;
     margin-top: 20px; /* Positions Posts section lower on the page */
 }
@@ -95,8 +82,8 @@ h1 {
     margin: 10px auto; /* Center the button and add vertical space */
     padding: 10px;
     font-size: 16px;
-    color: white;
-    background-color: #4CAF50; /* Green background color */
+    color: #333; /* Dark text color */
+    background-color: #D9D5FF; /* Lavender background color */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -106,19 +93,18 @@ h1 {
     width: 100%; /* Ensure it takes full width up to max-width */
 }
 
-/* Auth button hover effect */
 .auth-button:hover {
-    background-color: #45a049; /* Slightly darker green on hover */
+    background-color: #B8A6FF; /* Lighter lavender on hover */
 }
 
-.edit-button{
+.edit-button {
     display: block;
     width: 150px;
     margin: 10px auto; /* Center the button and add vertical space */
     padding: 10px;
     font-size: 16px;
-    color: white;
-    background-color: #4CAF50; /* Green background color */
+    color: #333; /* Dark text color */
+    background-color: #D9D5FF; /* Lavender background color */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -126,4 +112,8 @@ h1 {
     margin-top: 15px;
     max-width: 480px; /* Limit width */
     width: 100%; /* Ensure it takes full width up to max-width */
+}
+
+.edit-button:hover {
+    background-color: #B8A6FF; /* Lighter lavender on hover */
 }
