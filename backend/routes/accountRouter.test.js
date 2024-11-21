@@ -1,105 +1,98 @@
-const request = require('supertest'); // For HTTP assertions
+const request = require('supertest');
 const express = require('express');
-const accountRouter = require('../routes/accountRouter');
-const { AuthService } = require('../services/authService');
+const accountRouter = require('../routes/accountRouter'); // Adjust path as needed
+const { AuthorizeUser } = require('../services/authService');
+const controller = require('../controllers/accountController');
 
-// Mock the database model
-jest.mock('../models/users', () => ({
-    findById: jest.fn(),
-    findOne: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-    save: jest.fn(),
-}));
-
-const User = require('../models/users');
-
-// Mock the AuthService methods
+// Mocking services and middlewares
 jest.mock('../services/authService', () => ({
-    AuthService: {
-        verifyPassword: jest.fn(),
-        hashPassword: jest.fn(),
-    },
-    AuthorizeUser: jest.fn((req, res, next) => {
-        req.user = { id: 'mockUserId' }; // Mock user ID
-        next();
-    }),
+  AuthorizeUser: jest.fn((req, res, next) => next()), // Mocked Authorization middleware
 }));
 
-// Setup Express app
-const app = express();
-app.use(express.json());
-app.use('/account', accountRouter);
+jest.mock('../services/verifyService', () => ({
+  VerifyParamsId: jest.fn((req, res, next) => next()),
+  VerifyLastId: jest.fn((req, res, next) => next()),
+  VerifyS3: jest.fn((req, res, next) => next()),
+  SanitizeSearch: jest.fn((req, res, next) => next()),
+  VerifyValidationResult: jest.fn((req, res, next) => next()),
+  EscapeRegister: jest.fn((req, res, next) => next()),
+  EscapeLogin: jest.fn((req, res, next) => next()),
+}));
 
-describe('Account Router Tests', () => {
-    afterEach(() => {
-        jest.clearAllMocks(); // Clear mocks after each test
-    });
+jest.mock('../services/fileService', () => ({
+  uploadToMemory: { none: jest.fn().mockReturnThis(), single: jest.fn().mockReturnThis() },
+}));
 
-    it('should return account settings', async () => {
-        User.findById.mockResolvedValue({
-            name: 'Test User',
-            username: 'testuser',
-            email: 'test@example.com',
-            bio: 'This is a bio.',
-            profilePicture: 'profile.jpg',
-        });
+jest.mock('../controllers/accountController', () => ({
+  authCheck: jest.fn((req, res) => res.status(200).send('Authenticated')),
+  search: jest.fn((req, res) => res.status(200).json([{ username: 'testUser' }])),
+  register: jest.fn((req, res) => res.status(201).send('User registered')),
+  loginUser: jest.fn((req, res) => res.status(200).send('User logged in')),
+  logout: jest.fn((req, res) => res.status(200).send('User logged out')),
+  viewProfile: jest.fn((req, res) => res.status(200).json({ username: 'testUser' })),
+  updateProfile: jest.fn((req, res) => res.status(200).send('Profile updated')),
+  getUserProfile: jest.fn((req, res) => res.status(200).json({ username: 'testUser', profilePic: 'imageUrl' })),
+}));
 
-        const res = await request(app).get('/account/settings');
+describe('Account Router', () => {
+  const app = express();
+  app.use(express.json());
+  app.use('/account', accountRouter);
 
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('success', true);
-        expect(res.body.user).toHaveProperty('username', 'testuser');
-    });
+  test('GET /auth-check should return 200 if user is authenticated', async () => {
+    const response = await request(app).get('/account/auth-check');
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('Authenticated');
+  });
 
-    it('should return 404 if user not found in settings', async () => {
-        User.findById.mockResolvedValue(null); // No user found
+  test('GET /search should return users matching the query', async () => {
+    const response = await request(app).get('/account/search?query=test');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ username: 'testUser' }]);
+  });
 
-        const res = await request(app).get('/account/settings');
+  test('POST /register should create a new user', async () => {
+    const response = await request(app)
+      .post('/account/register')
+      .send({ username: 'newUser', password: 'password' });
 
-        expect(res.status).toBe(404);
-        expect(res.body).toHaveProperty('success', false);
-    });
+    expect(response.status).toBe(201);
+    expect(response.text).toBe('User registered');
+  });
 
-    it('should update account details', async () => {
-        User.findById.mockResolvedValue({
-            save: jest.fn(),
-            username: 'oldUsername',
-            email: 'old@example.com',
-        });
+  test('POST /login should authenticate the user', async () => {
+    const response = await request(app)
+      .post('/account/login')
+      .send({ username: 'testUser', password: 'password' });
 
-        User.findOne.mockResolvedValue(null); // No conflicting usernames or emails
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('User logged in');
+  });
 
-        const res = await request(app)
-            .put('/account/update')
-            .send({ username: 'newUsername', email: 'new@example.com' });
+  test('POST /logout should log the user out', async () => {
+    const response = await request(app).post('/account/logout');
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('User logged out');
+  });
 
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('success', true);
-    });
+  test('GET /profile should return the profile data for authenticated user', async () => {
+    const response = await request(app).get('/account/profile');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ username: 'testUser' });
+  });
 
-    it('should change the password successfully', async () => {
-        User.findById.mockResolvedValue({
-            password: 'hashedPassword',
-            save: jest.fn(),
-        });
+  test('POST /profile should update the profile picture for authenticated user', async () => {
+    const response = await request(app)
+      .post('/account/profile')
+      .attach('profilePic', 'path/to/image.jpg'); // Adjust image path accordingly
 
-        AuthService.verifyPassword.mockResolvedValue(true); // Current password matches
-        AuthService.hashPassword.mockResolvedValue('newHashedPassword'); // New password hashed
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('Profile updated');
+  });
 
-        const res = await request(app)
-            .put('/account/change-password')
-            .send({ currentPassword: 'currentPass', newPassword: 'newPass' });
-
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('success', true);
-    });
-
-    it('should delete the account successfully', async () => {
-        User.findByIdAndDelete.mockResolvedValue(true); // Account deleted
-
-        const res = await request(app).delete('/account/delete');
-
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('success', true);
-    });
+  test('GET /profile/:id should return user profile by ID', async () => {
+    const response = await request(app).get('/account/profile/123');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ username: 'testUser', profilePic: 'imageUrl' });
+  });
 });

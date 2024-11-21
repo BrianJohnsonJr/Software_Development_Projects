@@ -1,147 +1,96 @@
 const request = require('supertest');
 const express = require('express');
-const bodyParser = require('body-parser');
+const postRouter = require('../routes/postRouter'); // Adjust path as needed
+const { AuthorizeUser } = require('../services/authService');
+const controller = require('../controllers/postController');
 
-// Import router and models
-const postRoutes = require('./postRouter'); // Adjust if necessary
-const { AuthService } = require('../services/authService');
-
-// Set up the Express app
-const app = express();
-app.use(bodyParser.json());
-app.use('/posts', postRoutes);
-
-// Mock the Post and User models
-jest.mock('../models/posts', () => ({
-    create: jest.fn(),
-    findById: jest.fn(),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    deleteOne: jest.fn(),
-}));
-
-jest.mock('../models/users', () => ({
-    findById: jest.fn(),
-    findOne: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-}));
-
-// Mock AuthService
+// Mocking services and middlewares
 jest.mock('../services/authService', () => ({
-    AuthService: {
-        verifyPassword: jest.fn(),
-        hashPassword: jest.fn(),
-    },
-    AuthorizeUser: jest.fn((req, res, next) => {
-        req.user = { id: 'mockUserId' };  // Mock the user id for authentication
-        next();
-    }),
+  AuthorizeUser: jest.fn((req, res, next) => next()), // Mocked Authorization middleware
 }));
 
-// Dummy data
-const mockUserId = 'mockUserId';
-const mockPostId = 'mockPostId';
-const mockUser = {
-    _id: mockUserId,
-    username: 'testUser',
-    password: 'hashedpassword',
-    following: [],
-};
+jest.mock('../services/verifyService', () => ({
+  VerifyParamsId: jest.fn((req, res, next) => next()),
+  VerifyLastId: jest.fn((req, res, next) => next()),
+  VerifyS3: jest.fn((req, res, next) => next()),
+  SanitizeSearch: jest.fn((req, res, next) => next()),
+  VerifyValidationResult: jest.fn((req, res, next) => next()),
+  EscapeNewPost: jest.fn((req, res, next) => next()),
+  EscapeNewComment: jest.fn((req, res, next) => next()),
+}));
 
-const mockPost = {
-    _id: mockPostId,
-    title: 'Test Post',
-    description: 'This is a test post',
-    price: 20,
-    tags: ['test', 'sample'],
-    owner: mockUserId,
-};
+jest.mock('../services/fileService', () => ({
+  uploadToMemory: { none: jest.fn().mockReturnThis(), single: jest.fn().mockReturnThis() },
+}));
 
-// Test cases
-describe('Post Routes', () => {
-    beforeEach(() => {
-        jest.clearAllMocks(); // Clear mocks before each test to avoid interference
-    });
+jest.mock('../controllers/postController', () => ({
+  search: jest.fn((req, res) => res.status(200).json([{ postId: '123', content: 'Test post' }])),
+  newPost: jest.fn((req, res) => res.status(201).send('Post created')),
+  following: jest.fn((req, res) => res.status(200).json([{ postId: '124', content: 'Post from someone followed' }])),
+  explore: jest.fn((req, res) => res.status(200).json([{ postId: '125', content: 'Exploration post' }])),
+  userPosts: jest.fn((req, res) => res.status(200).json([{ postId: '126', content: 'User posts' }])),
+  getPostInfo: jest.fn((req, res) => res.status(200).json({ postId: '127', content: 'Post data' })),
+  getComments: jest.fn((req, res) => res.status(200).json([{ commentId: '1', text: 'Great post!' }])),
+  postComment: jest.fn((req, res) => res.status(201).send('Comment posted')),
+}));
 
-    test('GET /posts/search should return posts matching a query', async () => {
-        // Mock Post.find to return mock data
-        require('../models/posts').find.mockResolvedValue([mockPost]);
+describe('Post Router', () => {
+  const app = express();
+  app.use(express.json());
+  app.use('/posts', postRouter);
 
-        const response = await request(app)
-            .get('/posts/search')
-            .query({ query: 'test' });
+  test('GET /search should return posts matching the query', async () => {
+    const response = await request(app).get('/posts/search?query=test');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ postId: '123', content: 'Test post' }]);
+  });
 
-        expect(response.statusCode).toBe(200);
-        expect(response.body.success).toBe(true);
-        expect(response.body.posts.length).toBeGreaterThan(0);
-        expect(response.body.posts[0].title).toBe(mockPost.title);
-    });
+  test('POST /create should create a new post', async () => {
+    const response = await request(app)
+      .post('/posts/create')
+      .send({ content: 'New post content' })
+      .attach('image', 'path/to/image.jpg'); // Adjust image path accordingly
 
-    test('POST /posts/create should create a post', async () => {
-        const postData = {
-            title: 'New Post',
-            description: 'A new test post',
-            price: 30,
-            tags: ['new', 'test'],
-            owner: mockUserId,
-        };
+    expect(response.status).toBe(201);
+    expect(response.text).toBe('Post created');
+  });
 
-        // Mock the Post.create method to simulate successful post creation
-        require('../models/posts').create.mockResolvedValue(mockPost);
+  test('GET /following should return posts from followed users', async () => {
+    const response = await request(app).get('/posts/following');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ postId: '124', content: 'Post from someone followed' }]);
+  });
 
-        const response = await request(app)
-            .post('/posts/create')
-            .set('Authorization', `Bearer mockAuthToken`) // Mock the token validation
-            .send(postData);
+  test('GET /explore should return the newest posts', async () => {
+    const response = await request(app).get('/posts/explore');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ postId: '125', content: 'Exploration post' }]);
+  });
 
-        expect(response.statusCode).toBe(201);
-        expect(response.body.success).toBe(true);
-        expect(response.body.message).toBe('Post successfully created');
-    });
+  test('GET /user should return posts by the signed-in user', async () => {
+    const response = await request(app).get('/posts/user');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ postId: '126', content: 'User posts' }]);
+  });
 
-    test('GET /posts/following should return posts from followed users', async () => {
-        // Mock the Post.find to return posts from followed users
-        require('../models/posts').find.mockResolvedValue([mockPost]);
+  test('GET /:id should return post data by ID', async () => {
+    const response = await request(app).get('/posts/127');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ postId: '127', content: 'Post data' });
+  });
 
-        const response = await request(app)
-            .get('/posts/following')
-            .set('Authorization', `Bearer mockAuthToken`);
+  test('GET /:id/comments should return comments for a post', async () => {
+    const response = await request(app).get('/posts/127/comments');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([{ commentId: '1', text: 'Great post!' }]);
+  });
 
-        expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body)).toBe(true);
-        expect(response.body.length).toBeGreaterThan(0);
-    });
+  test('POST /:id/comments should post a new comment', async () => {
+    const response = await request(app)
+      .post('/posts/127/comments')
+      .send({ text: 'This is a comment' });
 
-    test('GET /posts/explore should return the newest posts', async () => {
-        // Mock Post.find to return the newest posts
-        require('../models/posts').find.mockResolvedValue([mockPost]);
-
-        const response = await request(app).get('/posts/explore');
-        expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body)).toBe(true);
-        expect(response.body.length).toBeGreaterThan(0);
-    });
-
-    test('GET /posts/user should return posts created by the logged-in user', async () => {
-        // Mock Post.find to return the logged-in user's posts
-        require('../models/posts').find.mockResolvedValue([mockPost]);
-
-        const response = await request(app)
-            .get('/posts/user')
-            .set('Authorization', `Bearer mockAuthToken`);
-
-        expect(response.statusCode).toBe(200);
-        expect(Array.isArray(response.body)).toBe(true);
-        expect(response.body.length).toBeGreaterThan(0);
-    });
-
-    test('GET /posts/:id should return a single post by ID', async () => {
-        // Mock Post.findById to return a specific post
-        require('../models/posts').findById.mockResolvedValue(mockPost);
-
-        const response = await request(app).get(`/posts/${mockPostId}`);
-        expect(response.statusCode).toBe(200);
-        expect(response.body.success).toBe(true);
-        expect(response.body.post.title).toBe(mockPost.title);
-    });
+    expect(response.status).toBe(201);
+    expect(response.text).toBe('Comment posted');
+  });
 });
