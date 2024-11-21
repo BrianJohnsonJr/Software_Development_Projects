@@ -68,7 +68,7 @@ function SingleItem() {
         <h1 className="single-item-title">{post.title}</h1>
         <p className="single-item-price">${post.price}</p>
       </div>
-      <img src={post.imageUrl} alt={post.title} className="single-item-image" />
+      <img src={post.image} alt={post.title} className="single-item-image" />
       <p className="single-item-description">{post.description}</p>
       <div className="single-item-tags">
         <strong>Tags:</strong>
