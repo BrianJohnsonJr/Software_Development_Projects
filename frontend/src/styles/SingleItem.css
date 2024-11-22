@@ -323,6 +323,7 @@
   border-radius: 50%; /* Makes the image circular */
   object-fit: cover; /* Ensures the image doesn't stretch */
   margin-right: 10px; /* Adds spacing between the image and the username */
+  margin-bottom: 5px;
 }
 
 .username {
@@ -352,4 +353,14 @@
 .rating {
   display: flex;
   gap: 5px;
+}
+
+/* Profile link styling */
+.comment-section .comments-display .comment-header .profile-link {
+  color: #D5FFD9;
+}
+
+/* Profile link hover state */
+.comment-section .comments-display .comment-header .profile-link:hover {
+  color: #D5FFD9; /* Darker blue color when hovered */
 }
