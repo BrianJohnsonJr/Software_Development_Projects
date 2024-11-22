@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';  // Import Link from react-router-dom
 import '../styles/User.css';
 
 const UserResult = ({ user }) => {
-    const { username, image, followers, following, postIds } = user;
+    const { username, image, followers, following, postIds, _id } = user;  // Destructure _id to use in the link
 
     return (
         <div className="user-result">
@@ -17,7 +18,12 @@ const UserResult = ({ user }) => {
 
             {/* User Information */}
             <div className="user-info">
-                <h2 className="username">{username}</h2>
+                {/* Link wrapped around the username */}
+                <h2 className="username">
+                    <Link to={`/profile/${_id}`} className="profile-link">
+                        {username}
+                    </Link>
+                </h2>
                 <div className="stats">
                     <p><strong>Followers:</strong> {followers.length}</p>
                     <p><strong>Following:</strong> {following.length}</p>

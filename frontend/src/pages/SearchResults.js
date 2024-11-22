@@ -113,13 +113,16 @@ const SearchResults = () => {
                     <h2>Posts</h2>
                     <div className="post-results-grid">
                         {results.posts.map((post) => (
-                            <Post
-                                key={post._id}
-                                title={post.title}
-                                price={post.price}
-                                tags={post.tags}
-                                image={post.image}
-                            />
+                            <div className="post-card" key={post._id}>
+                                <Post
+                                    key={post._id}
+                                    title={post.title}
+                                    price={post.price}
+                                    tags={post.tags}
+                                    image={post.image}
+                                />
+                            </div>
+                            
                         ))}
                     </div>
                 </div>
