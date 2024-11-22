@@ -69,6 +69,7 @@ exports.VerifyS3 = async (req, res, next) => {
  */
 exports.VerifyValidationResult = (req, res, next) => {
     let errors = validationResult(req);
+    
     if(!errors.isEmpty()) {
         // console.log(errors.array());
         let errMessages = errors.array().map(error => `${error.type} error: ${error.msg} in ${error.path}`);
@@ -118,5 +119,5 @@ exports.EscapeNewPost = [
 
 exports.EscapeNewComment = [
     body('text').notEmpty().escape().trim(),
-    body('rating').notEmpty().isNumeric().toFloat().isFloat({ min: 0, max: 5 }),
+    body('rating').notEmpty().isNumeric().isInt({ min: 0, max: 5 }).toInt(),
 ];
