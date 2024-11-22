@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import '../styles/SingleItem.css';
 
 function SingleItem() {
@@ -185,7 +185,13 @@ function SingleItem() {
                                     <div key={comment._id || index} className="comment">
                                         <div className="comment-header">
                                             <img alt="userProfilePic" src={comment.owner?.profilePicture}></img>
-                                            <span className="username">{comment.owner?.username || 'Anonymous'}</span>
+                                            <Link
+                                              to={`/profile/${comment.owner?._id}`}
+                                              state={{ owner: comment.owner }}
+                                              className="profile-link"
+                                            >
+                                              <span className="username">{comment.owner?.username || 'Anonymous'}</span>
+                                            </Link>
                                             <div className="rating">
                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                     <span
