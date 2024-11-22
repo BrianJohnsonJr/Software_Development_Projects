@@ -104,58 +104,167 @@ const testingPosts = [
     }
   ];
 
-test('Verify Array Retrieval', () => expect(posts.get()).toStrictEqual(testingPosts));
-
-test('Find by ID Edge Cases', () =>{
-    expect(posts.findById(-1)).toBeUndefined();
-    expect(posts.findById(0)).toBeUndefined();
-    expect(posts.findById(1)).toStrictEqual(testingPosts[0]);
-    expect(posts.findById('1')).toStrictEqual(testingPosts[0]);
-    expect(posts.findById(100)).toBeUndefined();
-    expect(posts.findById(testingPosts.length-1)).toStrictEqual(testingPosts[testingPosts.length-2])
-    expect(posts.findById(testingPosts.length)).toStrictEqual(testingPosts[testingPosts.length-1])
-    expect(posts.findById(testingPosts.length+1)).toBeUndefined();
-});
-
-
-const postAdd = {
-    title: "postTest",
-    description: "This is a fake item to test",
-    ownerId: '10000',
-    price: 1000000,
-    imageUrl: null,
-    tags: ['expensive'],
-    likes: []
-}
-
-test("new post Tests", () =>{
-    const testPostID = posts.newPost(postAdd);
-    expect(posts.findById(testPostID).id).toBe(testPostID);
-})
-
-test("UpdatePost Tests", () => {
-    // Find post to update
-    let post = posts.findByTitle(postAdd.title);
-
-    // Update Post Title
-    post.title = "updateTestTitle";
-    
-    // Perform the update
-    const updatedPost = posts.updatePost(post.id, post);
-
-    // Verify that the post has been updated
-    expect(updatedPost.title).toBe("updateTestTitle");
-    expect(posts.findById(post.id).title).toBe("updateTestTitle");
-})
-
-test("delete post", () => {
-    //Create new post
-    const testPostID = posts.newPost(postAdd);
-
-    // Delete the newly created post
-    const deletionResult = posts.deletePost(testPostID);
-
-    // Verify that the post was deleted successfully
-    expect(deletionResult).toBe(true);
-    expect(posts.findById(testPostID)).toBeUndefined();
-})
+  const Post = require('./posts');
+  const mongoose = require('mongoose');
+  require('dotenv').config(); // load dotenvs
+  
+  const mongoUri = process.env.MONGO_URI;
+  
+  describe('Post Schema Test', () => {
+    // Array to keep track of created post IDs
+    let testPostIds = [];
+  
+    // Connect to MongoDB before running tests
+    beforeAll(async () => {
+      await mongoose.connect(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+    });
+  
+    // Clear test posts after each test
+    afterEach(async () => {
+      if (testPostIds.length > 0) {
+        await Post.collection.deleteOne({ _id: { $in: testPostIds } });
+        testPostIds = []; // Reset the array
+      }
+    });
+  
+    // Disconnect after all tests
+    afterAll(async () => {
+      await mongoose.connection.close();
+    });
+  
+    // Test valid post creation
+    it('should create & save post successfully', async () => {
+      const validPost = new Post({
+        title: 'Test Post',
+        description: 'Test Description',
+        price: 99.99,
+        owner: new mongoose.Types.ObjectId(),
+        itemType: 'clothing',
+        tags: ['summer', 'casual'],
+        sizes: ['S', 'M', 'L']
+      });
+  
+      const savedPost = await validPost.save();
+      testPostIds.push(savedPost._id); // Track the created post
+      
+      expect(savedPost._id).toBeDefined();
+      expect(savedPost.title).toBe(validPost.title);
+      expect(savedPost.description).toBe(validPost.description);
+      expect(savedPost.price).toBe(validPost.price);
+      expect(savedPost.owner).toEqual(validPost.owner);
+      expect(savedPost.itemType).toBe(validPost.itemType);
+      expect(savedPost.tags).toEqual(expect.arrayContaining(validPost.tags));
+      expect(savedPost.sizes).toEqual(expect.arrayContaining(validPost.sizes));
+      expect(savedPost.likeCount).toBe(0); // Default value
+      expect(savedPost.image).toBe(''); // Default value
+      expect(savedPost.createdAt).toBeDefined();
+      expect(savedPost.updatedAt).toBeDefined();
+    });
+  
+    // Test required fields
+    it('should fail to save post without required fields', async () => {
+      const postWithoutRequiredFields = new Post({});
+  
+      let err;
+      try {
+        const savedPost = await postWithoutRequiredFields.save();
+        if (savedPost) {
+          testPostIds.push(savedPost._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
+      expect(err.errors.title).toBeDefined();
+      expect(err.errors.description).toBeDefined();
+      expect(err.errors.price).toBeDefined();
+    });
+  
+    // Test price validation
+    it('should fail to save post with negative price', async () => {
+      const postWithNegativePrice = new Post({
+        title: 'Test Post',
+        description: 'Test Description',
+        price: -10.00,
+        owner: new mongoose.Types.ObjectId(),
+        itemType: 'clothing'
+      });
+  
+      let err;
+      try {
+        const savedPost = await postWithNegativePrice.save();
+        if (savedPost) {
+          testPostIds.push(savedPost._id); // Track if somehow saved
+        }
+      } catch (error) {
+        err = error;
+      }
+  
+      expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
+      expect(err.errors.price).toBeDefined();
+    });
+  
+    // Test default values
+    it('should set default values when not provided', async () => {
+      const postWithoutDefaults = new Post({
+        title: 'Test Post',
+        description: 'Test Description',
+        price: 99.99,
+        owner: new mongoose.Types.ObjectId(),
+        itemType: 'clothing'
+      });
+  
+      const savedPost = await postWithoutDefaults.save();
+      testPostIds.push(savedPost._id); // Track the created post
+      
+      expect(savedPost.likeCount).toBe(0);
+      expect(savedPost.image).toBe('');
+      expect(savedPost.tags).toEqual([]);
+      expect(savedPost.sizes).toEqual([]);
+    });
+  
+    // Test updating post
+    it('should update post successfully', async () => {
+      const post = new Post({
+        title: 'Original Title',
+        description: 'Original Description',
+        price: 99.99,
+        owner: new mongoose.Types.ObjectId(),
+        itemType: 'clothing'
+      });
+  
+      const savedPost = await post.save();
+      testPostIds.push(savedPost._id); // Track the created post
+      
+      const updatedTitle = 'Updated Title';
+      savedPost.title = updatedTitle;
+      const updatedPost = await savedPost.save();
+  
+      expect(updatedPost.title).toBe(updatedTitle);
+      expect(updatedPost.updatedAt).not.toEqual(updatedPost.createdAt);
+    });
+  
+    // Test incrementing like count
+    it('should increment like count correctly', async () => {
+      const post = new Post({
+        title: 'Test Post',
+        description: 'Test Description',
+        price: 99.99,
+        owner: new mongoose.Types.ObjectId(),
+        itemType: 'clothing'
+      });
+  
+      const savedPost = await post.save();
+      testPostIds.push(savedPost._id); // Track the created post
+      
+      expect(savedPost.likeCount).toBe(0);
+  
+      savedPost.likeCount += 1;
+      const updatedPost = await savedPost.save();
+      expect(updatedPost.likeCount).toBe(1);
+    });
+  });
