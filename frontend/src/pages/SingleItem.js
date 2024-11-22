@@ -57,27 +57,41 @@ function SingleItem() {
             rating: rating,   // Send the rating as 'rating' field
         };
 
-        // Log the comment data before submitting
-        console.log('New Comment:', newEntry);
-
         try {
+            // Submit the comment
             const response = await fetch(`/posts/${id}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newEntry), // Send the comment data in the request body
+                body: JSON.stringify(newEntry),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to submit comment');
             }
 
-            // If successful, fetch and update the comments
-            const updatedPost = await response.json();
-            setComments(updatedPost.post.comments); // Assuming the response contains the updated list of comments
-            setNewComment(''); // Clear the comment input
-            setRating(0); // Reset the star rating
+            // Optimistic UI update: Add the new comment to the list immediately
+            const updatedComments = [
+                ...comments,
+                { text: newComment, rating, username: 'CurrentUser' }
+            ];
+            setComments(updatedComments);
+
+            // Fetch updated post data in the background without overwriting comments
+            const updatedPostResponse = await fetch(`/posts/${id}`);
+            if (updatedPostResponse.ok) {
+                const updatedPost = await updatedPostResponse.json();
+                // Only update comments if the fetched post has new ones
+                setComments(prevComments => [
+                    ...prevComments,
+                    ...(updatedPost?.post?.comments || [])
+                ]);
+            }
+
+            // Clear the input and reset rating
+            setNewComment('');
+            setRating(0);
         } catch (error) {
             alert('Error submitting comment: ' + error.message);
         }
@@ -157,7 +171,7 @@ function SingleItem() {
                                             ))}
                                         </div>
                                     </div>
-                                    <p className="comment-text">{comment.text}</p> {/* Adjusted to 'text' */}
+                                    <p className="comment-text">{comment.text}</p>
                                 </div>
                             ))}
                         </div>
