@@ -50,6 +50,6 @@ router.get('/:id/comments', VerifyParamsId, VerifyLastId, VerifyS3, controller.g
 /**
  * Posts a comment to a givent post specified with :id
  */
-router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), EscapeNewComment, ValidateResult, controller.postComment);
+router.post('/:id/comments', AuthorizeUser, VerifyParamsId, VerifyS3, uploadToMemory.single('none'), EscapeNewComment, VerifyValidationResult, controller.postComment);
 
 module.exports = router;
