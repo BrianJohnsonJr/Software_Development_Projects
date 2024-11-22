@@ -112,3 +112,12 @@
     transform: scale(1.02); /* Optional hover effect for entire post */
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15); /* Highlight effect */
 }
+
+.post-owner .profile-link {
+    color: #D5FFD9; /* Medium green color */
+    text-decoration: none;
+}
+
+.post-owner .profile-link:hover {
+    color: #A7FFBA; /* Darker green on hover */
+}

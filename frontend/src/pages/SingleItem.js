@@ -166,6 +166,7 @@ function SingleItem() {
                                 comments.map((comment, index) => (
                                     <div key={comment._id || index} className="comment">
                                         <div className="comment-header">
+                                            <img alt="userProfilePic" src={comment.owner?.profilePicture}></img> {/*TODO: please style*/}
                                             <span className="username">{comment.owner?.username || 'Anonymous'}</span>
                                             <div className="rating">
                                                 {[1, 2, 3, 4, 5].map((star) => (
