@@ -68,30 +68,30 @@ describe('Following Component', () => {
     });
   });
 
-//   test('renders posts when user is authenticated', async () => {
-//     global.fetch
-//       .mockImplementationOnce(() => Promise.resolve({ ok: true })) // Auth check
-//       .mockImplementationOnce(() =>
-//         Promise.resolve({
-//           ok: true,
-//           json: () => Promise.resolve(mockPosts), // Mock posts
-//         })
-//       );
+  test('renders posts when user is authenticated', async () => {
+    global.fetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true })) // Auth check
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockPosts), // Mock posts
+        })
+      );
 
-//     render(
-//       <BrowserRouter>
-//         <Following />
-//       </BrowserRouter>
-//     );
+    render(
+      <BrowserRouter>
+        <Following />
+      </BrowserRouter>
+    );
 
-//     // Wait for posts to appear
-//     await waitFor(() => {
-//       const posts = screen.getAllByTestId('post');
-//       expect(posts).toHaveLength(mockPosts.length);
-//       expect(posts[0]).toHaveTextContent('Post 1');
-//       expect(posts[1]).toHaveTextContent('Post 2');
-//     });
-//   });
+    // Wait for posts to appear
+    await waitFor(() => {
+      const posts = screen.getAllByTestId('post');
+      expect(posts).toHaveLength(mockPosts.length);
+      expect(posts[0]).toHaveTextContent('Post 1');
+      expect(posts[1]).toHaveTextContent('Post 2');
+    });
+  });
 
   test('renders empty feed message if no posts are available', async () => {
     global.fetch
@@ -114,41 +114,41 @@ describe('Following Component', () => {
     });
   });
 
-//   test('applies sort and filter options correctly', async () => {
-//     global.fetch
-//       .mockImplementationOnce(() => Promise.resolve({ ok: true })) // Auth check
-//       .mockImplementationOnce(() =>
-//         Promise.resolve({
-//           ok: true,
-//           json: () => Promise.resolve(mockPosts), // Mock posts
-//         })
-//       );
+  test('applies sort and filter options correctly', async () => {
+    global.fetch
+      .mockImplementationOnce(() => Promise.resolve({ ok: true })) // Auth check
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockPosts), // Mock posts
+        })
+      );
 
-//     render(
-//       <BrowserRouter>
-//         <Following />
-//       </BrowserRouter>
-//     );
+    render(
+      <BrowserRouter>
+        <Following />
+      </BrowserRouter>
+    );
 
-//     // Wait for posts to load
-//     await waitFor(() => {
-//       expect(screen.getAllByTestId('post')).toHaveLength(mockPosts.length);
-//     });
+    // Wait for posts to load
+    await waitFor(() => {
+      expect(screen.getAllByTestId('post')).toHaveLength(mockPosts.length);
+    });
 
-//     // Test sorting
-//     fireEvent.click(screen.getByText('Sort by Price Ascending'));
-//     await waitFor(() => {
-//       const posts = screen.getAllByTestId('post');
-//       expect(posts[0]).toHaveTextContent('Post 1'); // Cheaper post first
-//       expect(posts[1]).toHaveTextContent('Post 2');
-//     });
+    // Test sorting
+    fireEvent.click(screen.getByText('Sort by Price Ascending'));
+    await waitFor(() => {
+      const posts = screen.getAllByTestId('post');
+      expect(posts[0]).toHaveTextContent('Post 1'); // Cheaper post first
+      expect(posts[1]).toHaveTextContent('Post 2');
+    });
 
-//     // Test filtering
-//     fireEvent.click(screen.getByText('Filter Price Range'));
-//     await waitFor(() => {
-//       const posts = screen.getAllByTestId('post');
-//       expect(posts).toHaveLength(1); // Only Post 1 matches filter range
-//       expect(posts[0]).toHaveTextContent('Post 1');
-//     });
-//   });
+    // Test filtering
+    fireEvent.click(screen.getByText('Filter Price Range'));
+    await waitFor(() => {
+      const posts = screen.getAllByTestId('post');
+      expect(posts).toHaveLength(1); // Only Post 1 matches filter range
+      expect(posts[0]).toHaveTextContent('Post 1');
+    });
+  });
 });
