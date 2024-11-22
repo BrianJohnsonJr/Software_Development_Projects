@@ -1,143 +1,171 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import '../styles/SingleItem.css';
 
 function SingleItem() {
-  const { id } = useParams(); // Extract the post ID from the URL
-  const location = useLocation(); // Get the location object
-  const [post, setPost] = useState(location.state?.post || null); // Initialize post state from location state or null
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [comments, setComments] = useState([]); // Store comments
-  const [newComment, setNewComment] = useState(''); // Store new comment text
-  const [rating, setRating] = useState(0); // Store selected rating (1-5)
-  
-  useEffect(() => {
-    if (!post) { // If post is not available from state, fetch it manually from the server
-      setLoading(true);
-      const fetchPost = async () => {
-        try {
-          const response = await fetch(`/posts/${id}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch post');
-          }
-          const data = await response.json();
-          setPost(data.post); // Set the fetched post data
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
+    const { id } = useParams(); // Extract the post ID from the URL
+    const location = useLocation(); // Get the location object
+    const [post, setPost] = useState(location.state?.post || null); // Initialize post state from location state or null
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // New state variables
+    const [rating, setRating] = useState(0); // Tracks the selected rating
+    const [newComment, setNewComment] = useState(''); // Tracks the new comment text
+    const [comments, setComments] = useState([]); // Stores submitted comments
+
+    useEffect(() => {
+        // If no post data is passed via state, fetch the post details using the ID
+        if (!post) {
+            setLoading(true);
+            const fetchPost = async () => {
+                try {
+                    const response = await fetch(`/posts/${id}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch post');
+                    }
+                    const data = await response.json();
+                    setPost(data.post);
+                    setComments(data.post.comments || []); // Set comments if available
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchPost();
         }
-      };
-      fetchPost();
-    } 
-  }, [id, post]); // Only fetch if there's no post already loaded
-  
+    }, [id, post]);
 
-  const handleSubmitComment = () => {
-    // Submit the comment along with rating (You can add further logic to send this to the server)
-    const newCommentData = {
-      username: 'User', // Replace with actual user logic if available
-      comment: newComment,
-      rating: rating
+    const handleStarClick = (star) => {
+        setRating(star); // Update the selected rating
     };
-    setComments([...comments, newCommentData]); // Update comments array
-    setNewComment(''); // Reset the input field
-    setRating(0); // Reset rating after submission
-  };
 
-  const handleStarClick = (star) => {
-    setRating(star);
-  };
+    const handleSubmitComment = async () => {
+        if (newComment.trim() === '') {
+            alert('Comment cannot be empty');
+            return;
+        }
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+        if (rating === 0) {
+            alert('Please select a rating between 1 and 5');
+            return;
+        }
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+        const newEntry = {
+            text: newComment, // Send the comment text as 'text' field
+            rating: rating,   // Send the rating as 'rating' field
+        };
 
-  if (!post) {
-    return <p>Post not found.</p>;
-  }
+        // Log the comment data before submitting
+        console.log('New Comment:', newEntry);
 
-  return (
-    <div className="single-item-container">
-      <div className="single-item-header">
-        <h1 className="single-item-title">{post.title}</h1>
-        <p className="single-item-price">${post.price}</p>
-      </div>
-      <img src={post.image} alt={post.title} className="single-item-image" />
-      <p className="single-item-description">{post.description}</p>
-      <div className="single-item-tags">
-        <strong>Tags:</strong>
-        <ul>
-          {post.tags.map((tag, index) => (
-            <li key={index}>{tag}</li>
-          ))}
-        </ul>
-      </div>
-      <p className="single-item-owner">Owned by: {post.owner?.username}</p>
-      <div className="button-group">
-        <button className="purchase-button">Purchase</button>
-        <button className="cart-button">Add to Cart</button>
-      </div>
+        try {
+            const response = await fetch(`/posts/${id}/comments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newEntry), // Send the comment data in the request body
+            });
 
-      {/* Comment Section */}
-      <div className="comment-section">
-        <h3 className="comment-section-title">Leave a Comment</h3>
+            if (!response.ok) {
+                throw new Error('Failed to submit comment');
+            }
 
-        {/* Rating Stars */}
-        <div className="star-rating">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={`star ${rating >= star ? 'selected' : ''}`}
-              onClick={() => handleStarClick(star)}
-            >
-              ★
-            </span>
-          ))}
-        </div>
+            // If successful, fetch and update the comments
+            const updatedPost = await response.json();
+            setComments(updatedPost.post.comments); // Assuming the response contains the updated list of comments
+            setNewComment(''); // Clear the comment input
+            setRating(0); // Reset the star rating
+        } catch (error) {
+            alert('Error submitting comment: ' + error.message);
+        }
+    };
 
-        {/* Comment Text Input */}
-        <textarea
-          className="comment-input"
-          placeholder="Write your comment here..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        ></textarea>
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
+    if (!post) return <p>Post not found.</p>;
 
-        {/* Submit Button */}
-        <button onClick={handleSubmitComment} className="submit-comment-button">
-          Submit Comment
-        </button>
-
-        {/* Display Submitted Comments */}
-        <div className="comments-display">
-          {comments.map((comment, index) => (
-            <div key={index} className="comment">
-              <div className="comment-header">
-                <span className="username">{comment.username}</span>
-                <div className="rating">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={`star ${comment.rating >= star ? 'selected' : ''}`}
-                    >
-                      ★
-                    </span>
-                  ))}
+    return (
+        <div className="single-item-container">
+            <h1>{post.title}</h1>
+            <div className="single-item-content">
+                <div className="single-item-left">
+                    <img src={post.image} alt={post.title} className="single-item-image" />
+                    <p className="single-item-price">${post.price}</p>
                 </div>
-              </div>
-              <p className="comment-text">{comment.comment}</p>
+                <div className="single-item-right">
+                    <p className="single-item-description">{post.description}</p>
+                    <p>
+                        <strong>Owned by: </strong>
+                        {post.owner?.username || 'Unknown Owner'}
+                    </p>
+                    <p>
+                        <strong>Tags: </strong>
+                        {post.tags && post.tags.length > 0 ? post.tags.join(', ') : 'No tags available'}
+                    </p>
+                    <div className="button-group">
+                        <button className="purchase-button">Purchase</button>
+                        <button className="cart-button">Add to Cart</button>
+                    </div>
+
+                    {/* Comment Section */}
+                    <div className="comment-section">
+                        <h3 className="comment-section-title">Leave a Comment</h3>
+
+                        {/* Rating Stars */}
+                        <div className="star-rating">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                    key={star}
+                                    className={`star ${rating >= star ? 'selected' : ''}`}
+                                    onClick={() => handleStarClick(star)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* Comment Text Input */}
+                        <textarea
+                            className="comment-input"
+                            placeholder="Write your comment here..."
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                        ></textarea>
+
+                        {/* Submit Button */}
+                        <button onClick={handleSubmitComment} className="submit-comment-button">
+                            Submit Comment
+                        </button>
+
+                        {/* Display Submitted Comments */}
+                        <div className="comments-display">
+                            {comments.map((comment, index) => (
+                                <div key={index} className="comment">
+                                    <div className="comment-header">
+                                        <span className="username">{comment.username}</span>
+                                        <div className="rating">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <span
+                                                    key={star}
+                                                    className={`star ${comment.rating >= star ? 'selected' : ''}`}
+                                                >
+                                                    ★
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="comment-text">{comment.text}</p> {/* Adjusted to 'text' */}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
-          ))}
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default SingleItem;
