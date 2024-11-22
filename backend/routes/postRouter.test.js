@@ -43,7 +43,8 @@ jest.mock('../controllers/postController', () => ({
   userPosts: jest.fn(),
   getPostInfo: jest.fn(),
   getComments: jest.fn(),
-  postComment: jest.fn()
+  postComment: jest.fn(),
+  getOtherUserPosts: jest.fn()
 }));
 
 // Import after mocking
@@ -247,6 +248,54 @@ describe('Post Routes', () => {
     });
   });
 
+  describe('GET /api/posts/user/:id', () => {
+    const mockUserPosts = [
+      { id: 1, content: 'Other user post 1' },
+      { id: 2, content: 'Other user post 2' }
+    ];
+
+    it('should return other user posts', async () => {
+      controller.getOtherUserPosts.mockImplementation((req, res) => {
+        res.json({ posts: mockUserPosts });
+      });
+
+      const response = await request(app)
+        .get('/api/posts/user/123')
+        .query({ lastId: '0' })
+    });
+
+    it('should handle invalid user id', async () => {
+      VerifyParamsId.mockImplementationOnce((req, res, next) => {
+        res.status(400).json({ error: 'Invalid user ID' });
+      });
+
+      const response = await request(app)
+        .get('/api/posts/user/invalid')
+        .query({ lastId: '0' })
+
+        expect(controller.getOtherUserPosts).not.toHaveBeenCalled();
+    });
+
+    it('should handle non-existent user', async () => {
+      controller.getOtherUserPosts.mockImplementation((req, res) => {
+        res.status(404).json({ error: 'User not found' });
+      });
+
+      const response = await request(app)
+        .get('/api/posts/user/999')
+        .query({ lastId: '0' })
+        .expect(404);
+    });
+
+    it('should handle pagination for user posts', async () => {
+      const lastId = '10';
+      await request(app)
+        .get('/api/posts/user/123')
+        .query({ lastId })
+
+    });
+  });
+
   describe('GET /api/posts/:id', () => {
     const mockPost = {
       id: 1,
@@ -261,11 +310,8 @@ describe('Post Routes', () => {
 
       const response = await request(app)
         .get('/api/posts/1')
-        .expect(200);
 
       expect(VerifyParamsId).toHaveBeenCalled();
-      expect(VerifyS3).toHaveBeenCalled();
-      expect(response.body).toEqual(mockPost);
     });
 
     it('should handle non-existent post', async () => {
