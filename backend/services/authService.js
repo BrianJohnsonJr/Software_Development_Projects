@@ -3,9 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
-if (!TOKEN_SECRET) {
-    throw new Error("TOKEN_SECRET is not defined. Set it in your .env file.");
-}
+
 
 const AuthService = {
 

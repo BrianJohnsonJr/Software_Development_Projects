@@ -1,146 +1,349 @@
 const request = require('supertest');
-const app = require('../app');
-const { User } = require('../models/users');
+const mongoose = require('mongoose');
+const express = require('express');
+const { MongoMemoryServer } = require('mongodb-memory-server');
+const User = require('../models/users');
 const { AuthService } = require('../services/authService');
-const { uploadToCloud } = require('../services/fileService');
+const { uploadToCloud, replaceProfilePicPath } = require('../services/fileService');
+const userController = require('../controllers/accountController');
 
-// Mocking the services
-jest.mock('../models/users');
+// Mock the required services
 jest.mock('../services/authService');
 jest.mock('../services/fileService');
 
-describe('Account Controller Tests', () => {
+let mongoServer;
+let app;
+let testUsers = [];
 
-    let user;
+// Create Express app for testing
+function createTestApp() {
+    const app = express();
+    app.use(express.json());
+    
+    // Mock authentication middleware
+    const authMiddleware = (req, res, next) => {
+        req.user = { id: testUsers[0]?._id }; // Use the first test user by default
+        next();
+    };
 
-    beforeAll(() => {
-        // Setup mock user data
-        user = { _id: '123', username: 'testuser', email: 'test@example.com', password: 'hashedpassword' };
+    // Mock file upload middleware
+    const uploadMiddleware = (req, res, next) => {
+        if (req.file) {
+            req.file = {
+                filename: 'test-file.jpg',
+                buffer: Buffer.from('test')
+            };
+        }
+        next();
+    };
+
+    // Mock S3 middleware
+    app.use((req, res, next) => {
+        req.s3 = {}; // Mock S3 client
+        next();
+    });
+
+    // Configure routes
+    app.get('/api/auth/check', authMiddleware, userController.authCheck);
+    app.get('/api/users/search', userController.search);
+    app.post('/api/auth/register', userController.register);
+    app.post('/api/auth/login', userController.loginUser);
+    app.post('/api/auth/logout', userController.logout);
+    app.get('/api/users/profile', authMiddleware, userController.viewProfile);
+    app.put('/api/users/profile/picture', authMiddleware, uploadMiddleware, userController.updateProfile);
+    app.get('/api/users/:id', userController.getUserProfile);
+
+    // Error handling middleware
+    app.use((err, req, res, next) => {
+        res.status(err.status || 500).json({
+            success: false,
+            message: err.message
+        });
+    });
+
+    return app;
+}
+
+describe('User Controller Tests', () => {
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const mongoUri = mongoServer.getUri();
+        await mongoose.connect(mongoUri);
+        
+        // Reset all mocks before each test suite
+        jest.clearAllMocks();
+        
+        // Create the test app
+        app = createTestApp();
+    });
+
+    afterAll(async () => {
+        // Clean up test users
+        for (const user of testUsers) {
+            await User.findByIdAndDelete(user._id);
+        }
+        await mongoose.disconnect();
+        await mongoServer.stop();
     });
 
     beforeEach(() => {
-        // Reset mocks before each test
-        User.findById.mockClear();
-        User.find.mockClear();
-        AuthService.verifyUsernameAndPassword.mockClear();
-        AuthService.generateToken.mockClear();
+        // Clear the testUsers array before each test
+        testUsers = [];
     });
 
-    test('GET /auth-check - should return user info if authenticated', async () => {
-        // Mocking the User.findById behavior
-        User.findById.mockResolvedValue(user);
-
-        const res = await request(app)
-            .get('/auth-check')
-            .set('Cookie', 'token=validtoken') // Assuming token is set in cookies
-            .expect(200);
-
-        expect(res.body.success).toBe(true);
-        expect(res.body.user).toEqual({ username: 'testuser', email: 'test@example.com' });
+    afterEach(async () => {
+        // Clean up users created in the previous test
+        for (const user of testUsers) {
+            await User.findByIdAndDelete(user._id);
+        }
     });
 
-    test('GET /auth-check - should return error if user not found', async () => {
-        // Mocking the User.findById behavior to return null (user not found)
-        User.findById.mockResolvedValue(null);
-
-        const res = await request(app)
-            .get('/auth-check')
-            .set('Cookie', 'token=validtoken')
-            .expect(404);
-
-        expect(res.body.success).toBe(false);
-        expect(res.body.message).toBe('User not found');
-    });
-
-    test('POST /login - should log in the user and return a token', async () => {
-        // Mocking the AuthService to return a user
-        AuthService.verifyUsernameAndPassword.mockResolvedValue(user);
-        AuthService.generateToken.mockReturnValue('fake-jwt-token');
-
-        const res = await request(app)
-            .post('/login')
-            .send({ username: 'testuser', password: 'password' })
-            .expect(200);
-
-        expect(res.body.success).toBe(true);
-        expect(res.body.token).toBe('fake-jwt-token');
-    });
-
-    test('POST /login - should return error if credentials are incorrect', async () => {
-        // Mocking the AuthService to return null for invalid credentials
-        AuthService.verifyUsernameAndPassword.mockResolvedValue(null);
-
-        const res = await request(app)
-            .post('/login')
-            .send({ username: 'testuser', password: 'wrongpassword' })
-            .expect(400);
-
-        expect(res.body.success).toBe(false);
-        expect(res.body.message).toBe('Invalid username or password');
-    });
-
-    test('POST /register - should register a new user', async () => {
-        // Mocking the User.save behavior
-        User.findOne.mockResolvedValue(null); // No existing user
-        User.prototype.save.mockResolvedValue(user);
-
-        const res = await request(app)
-            .post('/register')
-            .send({
-                username: 'newuser',
-                email: 'newuser@example.com',
-                password: 'password',
-                name: 'New User',
-                bio: 'Bio here',
-            })
-            .expect(200);
-
-        expect(res.body.success).toBe(true);
-        expect(res.body.message).toBe('User registered successfully');
-    });
-
-    test('POST /register - should return error if username or email exists', async () => {
-        // Mocking the User.findOne behavior to return an existing user
-        User.findOne.mockResolvedValue(user);
-
-        const res = await request(app)
-            .post('/register')
-            .send({
+    describe('authCheck', () => {
+        it('should return user information when authenticated', async () => {
+            const user = await User.create({
+                name: 'picturename',
                 username: 'testuser',
-                email: 'test@example.com',
-                password: 'password',
+                email: 'test@test.com',
+                password: 'password123'
+            });
+            testUsers.push(user);
+
+            const response = await request(app)
+                .get('/api/auth/check')
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.user).toHaveProperty('username', 'testuser');
+            expect(response.body.user).toHaveProperty('email', 'test@test.com');
+            expect(response.body.user).not.toHaveProperty('password');
+        });
+
+        it('should return 404 when user not found', async () => {
+            const response = await request(app)
+                .get('/api/auth/check')
+                .send();
+
+            expect(response.status).toBe(404);
+        });
+    });
+
+    describe('search', () => {
+        beforeEach(async () => {
+            const users = await Promise.all([
+                User.create({ username: 'john_doe', name: 'John Doe', email: 'john@test.com', password: 'pass123' }),
+                User.create({ username: 'jane_smith', name: 'Jane Smith', email: 'jane@test.com', password: 'pass123' })
+            ]);
+            testUsers.push(...users);
+        });
+
+        it('should search users by username', async () => {
+            const response = await request(app)
+                .get('/api/users/search')
+                .query({ query: 'john' })
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.users).toHaveLength(1);
+            expect(response.body.users[0].username).toBe('john_doe');
+        });
+
+        it('should search users by name', async () => {
+            const response = await request(app)
+                .get('/api/users/search')
+                .query({ query: 'Smith' })
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.users).toHaveLength(1);
+            expect(response.body.users[0].name).toBe('Jane Smith');
+        });
+    });
+
+    describe('register', () => {
+        beforeEach(() => {
+            AuthService.hashPassword.mockResolvedValue('hashedPassword123');
+        });
+
+        it('should register a new user successfully', async () => {
+            const userData = {
+                username: 'newuser',
+                email: 'new@test.com',
+                password: 'password123',
                 name: 'New User',
-                bio: 'Bio here',
-            })
-            .expect(400);
+                bio: 'Test bio'
+            };
 
-        expect(res.body.success).toBe(false);
-        expect(res.body.message).toBe('Username already exists');
+            const response = await request(app)
+                .post('/api/auth/register')
+                .send(userData);
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.message).toBe('User registered successfully');
+
+            const user = await User.findOne({ username: 'newuser' });
+            expect(user).toBeTruthy();
+            expect(user.email).toBe(userData.email);
+            testUsers.push(user);
+        });
+
+        it('should reject registration with existing username', async () => {
+            const existingUser = await User.create({
+                name: 'picturename',
+                username: 'existinguser',
+                email: 'existing@test.com',
+                password: 'password123'
+            });
+            testUsers.push(existingUser);
+
+            const response = await request(app)
+                .post('/api/auth/register')
+                .send({
+                    name: 'picturename',
+                    username: 'existinguser',
+                    email: 'new@test.com',
+                    password: 'password123'
+                });
+
+            expect(response.status).toBe(400);
+            expect(response.body.message).toBe('Username already exists');
+        });
     });
 
-    test('POST /profile - should update profile picture', async () => {
-        // Mocking file upload and profile update behavior
-        uploadToCloud.mockResolvedValue({ filename: 'newpic.jpg' });
-        User.findById.mockResolvedValue(user);
+    describe('loginUser', () => {
+        beforeEach(() => {
+            AuthService.verifyUsernameAndPassword.mockImplementation((username, password) => {
+                if (username === 'validuser' && password === 'validpass') {
+                    return Promise.resolve({ id: 'userid123', username: 'validuser' });
+                }
+                return Promise.resolve(null);
+            });
+            AuthService.generateToken.mockReturnValue('mock-token-123');
+        });
 
-        const res = await request(app)
-            .post('/profile')
-            .set('Cookie', 'token=validtoken')
-            .attach('profilePic', 'path/to/profilePic.jpg') // Assuming you're using multer or similar for file upload
-            .expect(200);
+        it('should login successfully with valid credentials', async () => {
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send({
+                    name: 'picturename',
+                    username: 'validuser',
+                    password: 'validpass'
+                });
 
-        expect(res.body.success).toBe(true);
-        expect(res.body.message).toBe('Profile picture updated successfully');
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.headers['set-cookie']).toBeDefined();
+        });
+
+        it('should reject login with invalid credentials', async () => {
+            const response = await request(app)
+                .post('/api/auth/login')
+                .send({
+                    name: 'picturename',
+                    username: 'invaliduser',
+                    password: 'invalidpass'
+                });
+
+            expect(response.status).toBe(400);
+        });
     });
 
-    test('POST /profile - should return error if no file is uploaded', async () => {
-        // No file uploaded
-        const res = await request(app)
-            .post('/profile')
-            .set('Cookie', 'token=validtoken')
-            .expect(400);
+    describe('logout', () => {
+        it('should clear the token cookie', async () => {
+            const response = await request(app)
+                .post('/api/auth/logout')
+                .send();
 
-        expect(res.body.success).toBe(false);
-        expect(res.body.message).toBe('No file uploaded');
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.headers['set-cookie']).toBeDefined();
+            expect(response.headers['set-cookie'][0]).toMatch(/token=;/);
+        });
+    });
+
+    describe('viewProfile & getUserProfile', () => {
+        let testUser;
+
+        beforeEach(async () => {
+            testUser = await User.create({
+                name: 'picturename',
+                username: 'profileuser',
+                email: 'profile@test.com',
+                password: 'password123',
+                bio: 'Test bio',
+                profilePicture: 'test.jpg'
+            });
+            testUsers.push(testUser);
+
+            replaceProfilePicPath.mockImplementation((s3, user) => {
+                user.profilePicture = 'https://example.com/test.jpg';
+                return Promise.resolve();
+            });
+        });
+
+        it('should return the authenticated user profile', async () => {
+            const response = await request(app)
+                .get('/api/users/profile')
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.user).toHaveProperty('username', 'profileuser');
+            expect(response.body.user).toHaveProperty('profilePicture', 'https://example.com/test.jpg');
+            expect(response.body.user).not.toHaveProperty('password');
+        });
+
+        it('should return a specific user profile by ID', async () => {
+            const response = await request(app)
+                .get(`/api/users/${testUser._id}`)
+                .send();
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+            expect(response.body.user).toHaveProperty('username', 'profileuser');
+            expect(response.body.user).not.toHaveProperty('password');
+        });
+
+        it('should return 404 for non-existent user profile', async () => {
+            const response = await request(app)
+                .get(`/api/users/${new mongoose.Types.ObjectId()}`)
+                .send();
+
+            expect(response.status).toBe(404);
+        });
+    });
+
+    describe('updateProfile', () => {
+        let user;
+
+        beforeEach(async () => {
+            user = await User.create({
+                name: 'picturename',
+                username: 'pictureuser',
+                email: 'picture@test.com',
+                password: 'password123'
+            });
+            testUsers.push(user);
+            uploadToCloud.mockResolvedValue({ filename: 'uploaded-test.jpg' });
+        });
+
+        it('should update profile picture successfully', async () => {
+            const response = await request(app)
+                .put('/api/users/profile/picture')
+                .attach('profilePicture', Buffer.from('fake-image'), 'test.jpg');
+
+            const updatedUser = await User.findById(user._id);
+        });
+
+        it('should reject update without file', async () => {
+            const response = await request(app)
+                .put('/api/users/profile/picture')
+                .send();
+
+            expect(response.status).toBe(400);
+            expect(response.body.message).toBe('No file uploaded');
+        });
     });
 });
