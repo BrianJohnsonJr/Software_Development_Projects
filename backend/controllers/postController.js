@@ -238,10 +238,10 @@ exports.postComment = async (req, res, next) => {
             next(err);
         }
 
-        const text = req.body.text;
+        const { text, rating } = req.body;
 
         // Validate required fields
-        if (!text) {
+        if (!text || !rating) {
             let err = new Error('Missing required field: text');
             err.status = 400;
             return next(err);
@@ -251,6 +251,7 @@ exports.postComment = async (req, res, next) => {
             postId: id,
             owner: user._id,
             text: text,
+            rating: rating,
             likes: 0,
         });
 
