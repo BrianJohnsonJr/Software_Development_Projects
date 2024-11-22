@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Post from '../components/Post'; // Import the reusable Post component
+import Post from '../components/Post';
 import SortFilterPanel from '../components/SortFilterPanel'; // Sort&Filter panel component
 import '../styles/Explore.css';  
 import { useNavigate } from 'react-router-dom';

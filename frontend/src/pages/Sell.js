@@ -76,7 +76,7 @@ const Sell = () => {
   const handleSizeSelection = (e) => {
     const selectedSize = e.target.value;
     if (sizes.includes(selectedSize)) {
-      setSizes(sizes.filter((size) => size !== selectedSize)); // Remove if already selected
+      setSizes(sizes.filter((size) => size !== selectedSize));
     } else {
       setSizes([...sizes, selectedSize]);
     }
@@ -123,7 +123,7 @@ const Sell = () => {
 
     try {
         // Send post data to the backend
-        const response = await fetch('/posts/create', { // Adjust endpoint if necessary
+        const response = await fetch('/posts/create', {
             method: 'POST',
             body: formData,
             credentials: 'include', // Ensure authentication cookie is sent
@@ -149,7 +149,7 @@ const Sell = () => {
   }
 
   if (!isAuthenticated) {
-    return null; // You can also redirect or show a message here, but the redirect is already handled
+    return null;
   }
 
   return (

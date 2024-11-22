@@ -52,7 +52,6 @@ const EditProfile = () => {
             });
 
             if (response.ok) {
-                // Optionally, you can fetch the updated profile
                 alert('Profile updated successfully!');
                 navigate('/profile'); // Redirect to profile page
             } else {

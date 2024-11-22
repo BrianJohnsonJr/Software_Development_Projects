@@ -82,7 +82,7 @@ describe("SortFilterPanel Component", () => {
     fireEvent.change(tagInput, { target: { value: "React" } });
     fireEvent.keyDown(tagInput, { key: "Enter", code: "Enter" });
   
-    // Ensure the tag is displayed (case-insensitive check)
+    // Ensure the tag is displayed
     expect(screen.getByText((content) => content.toLowerCase() === "react")).toBeInTheDocument();
   
     // Remove the tag

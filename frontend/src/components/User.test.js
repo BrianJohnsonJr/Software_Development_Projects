@@ -16,7 +16,7 @@ describe("UserResult Component", () => {
     // Check username
     expect(screen.getByText("testuser")).toBeInTheDocument();
 
-    // Check followers count (using a regex matcher for flexibility)
+    // Check followers count
     expect(screen.getByText(/Followers:/i)).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
 
