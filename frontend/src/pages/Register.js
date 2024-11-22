@@ -61,24 +61,24 @@ const Register = () => {
             <h1>Register</h1>
             <form onSubmit={handleRegister}>
                 {/* Form fields */}
-                <label>Full Name:</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-                <label>Username:</label>
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-                <label>Email:</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                <label>Password:</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <label>Confirm Password:</label>
-                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                <label htmlFor="name">Full Name:</label>
+                <input type="text" id="name" name="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <label htmlFor="username">Username:</label>
+                <input type="text" id="username" name="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                <label htmlFor="email">Email:</label>
+                <input type="email" id="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <label htmlFor="password">Password:</label>
+                <input type="password" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <label htmlFor="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                 <label>Profile Picture:</label>
                 <div className="form-group">
-                    <label>Upload Image:</label>
+                    <label htmlFor="image">Profile Picture:</label>
                     <input type="file" id="image" name="image" onChange={handleImageUpload} />
                     {profilePicture && <img src={imageURL} alt="Uploaded Preview" className="image-preview" />}
                 </div>
-                <label>Bio:</label>
-                <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength="200" placeholder="Tell us a bit about yourself..." />
+                <label htmlFor="bio">Bio:</label>
+                <textarea name="bio" id="bio" value={bio} onChange={(e) => setBio(e.target.value)} maxLength="200" placeholder="Tell us a bit about yourself..." />
                 <button type="submit">Register</button>
                 {error && <p className="error-message">{error}</p>}
             </form>
