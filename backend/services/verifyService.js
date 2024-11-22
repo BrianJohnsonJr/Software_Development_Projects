@@ -109,6 +109,7 @@ exports.EscapeNewPost = [
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
     body('tags').optional().isArray().customSanitizer(tags => {
+        console.log("tags: ", tags);
         if(!Array.isArray(tags))
              return [];
         else 
