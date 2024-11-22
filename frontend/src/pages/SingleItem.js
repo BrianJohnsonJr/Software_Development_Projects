@@ -6,7 +6,7 @@ function SingleItem() {
     const { id } = useParams();
     const location = useLocation();
     const [post, setPost] = useState(location.state?.post || null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(!location.state?.post);
     const [error, setError] = useState(null);
     const [rating, setRating] = useState(0);
     const [newComment, setNewComment] = useState('');
@@ -25,7 +25,11 @@ function SingleItem() {
                         throw new Error('Failed to fetch post');
                     }
                     const data = await response.json();
-                    setPost(data.post);
+                    if (!data.post) {
+                        setPost(null);
+                    } else {
+                        setPost(data.post);
+                    }
                 } catch (err) {
                     setError(err.message);
                 } finally {
@@ -34,7 +38,7 @@ function SingleItem() {
             };
             fetchPost();
         }
-    }, [id, post]);
+    }, [id, post, location.state]);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -111,9 +115,17 @@ function SingleItem() {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!post) return <p>Post not found.</p>;
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
+
+    if (!post) {
+        return <p>Post not found</p>;
+    }
 
     return (
         <div className="single-item-container">
@@ -127,11 +139,11 @@ function SingleItem() {
                     <p className="single-item-description">{post.description}</p>
                     <p>
                         <strong>Owned by: </strong>
-                        {post.owner?.username || 'Unknown Owner'}
+                        {post.owner?.username}
                     </p>
                     <p>
                         <strong>Tags: </strong>
-                        {post.tags && post.tags.length > 0 ? post.tags.join(', ') : 'No tags available'}
+                        {post.tags?.length > 0 ? post.tags.join(', ') : 'No tags available'}
                     </p>
                     <div className="button-group">
                         <button className="purchase-button">Purchase</button>
