@@ -112,13 +112,13 @@ exports.EscapeNewPost = [
         if(!Array.isArray(tags))
              return [];
         else 
-            return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
+            return tags.map(tag => String(tag).trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
     }),
     body('sizes').optional().isArray().customSanitizer(sizes => {
         if(!Array.isArray(tags))
             return [];
         else 
-            return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
+            return sizes.map(size => String(size).trim().replace(/[^\w\s-]/g, '').escape());
     })
 ];
 
