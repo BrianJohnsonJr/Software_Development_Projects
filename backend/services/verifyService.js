@@ -109,12 +109,10 @@ exports.EscapeNewPost = [
     body('description').optional().escape().trim(),
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
-    body('tags').optional().isArray().customSanitizer(tags => {
-        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
-    }),
-    body('sizes').optional().isArray().customSanitizer(sizes => {
-        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
-    })
+    body('tags').optional().isArray(),
+    body('tags.*').trim().replace(/[^\w\s-]/g, '').escape(), // this regex removes all but letters, numbers, spaces, and hyphens
+    body('sizes').optional().isArray(),
+    body('sizes.*').trim().replace(/[^\w\s-]/g, '').escape(),
 ];
 
 exports.EscapeNewComment = [
