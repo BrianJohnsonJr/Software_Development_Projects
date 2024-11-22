@@ -24,7 +24,7 @@ function createTestApp() {
     
     // Mock authentication middleware
     const authMiddleware = (req, res, next) => {
-        req.user = { id: testUsers[0]?._id }; // Use the first test user by default
+        req.user = { id: testUsers[0]?._id };
         next();
     };
 

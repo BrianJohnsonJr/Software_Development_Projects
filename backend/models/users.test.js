@@ -1,8 +1,3 @@
-//const uInfo = require('./users');
-
-// test('adds 1 + 2 to equal 3', () => {
-//     expect(sum(1, 2)).toBe(3);
-//   });
 
 const testingUserInfo = [
     {
@@ -98,8 +93,8 @@ const testingUserInfo = [
   ];
 
   const mongoose = require('mongoose');
-  const User = require('./users'); // Adjust path as needed
-  require('dotenv').config(); // load dotenvs
+  const User = require('./users');
+  require('dotenv').config();
   const mongoUri = process.env.MONGO_URI;
   
   describe('User Schema Test', () => {
@@ -118,7 +113,7 @@ const testingUserInfo = [
     afterEach(async () => {
       if (testUserIds.length > 0) {
         await User.collection.deleteOne({ _id: { $in: testUserIds } });
-        testUserIds = []; // Reset the array
+        testUserIds = [];
       }
     });
   
@@ -140,7 +135,7 @@ const testingUserInfo = [
       });
   
       const savedUser = await validUser.save();
-      testUserIds.push(savedUser._id); // Track the created user
+      testUserIds.push(savedUser._id);
       
       expect(savedUser._id).toBeDefined();
       expect(savedUser.name).toBe(validUser.name);
@@ -148,7 +143,7 @@ const testingUserInfo = [
       expect(savedUser.username).toBe(validUser.username);
       expect(savedUser.password).toBe(validUser.password);
       expect(savedUser.bio).toBe(validUser.bio);
-      expect(savedUser.profilePicture).toBe(''); // Default value
+      expect(savedUser.profilePicture).toBe('');
       expect(savedUser.postIds).toEqual(expect.arrayContaining(validUser.postIds));
       expect(savedUser.addressIds).toEqual(expect.arrayContaining(validUser.addressIds));
       expect(savedUser.createdAt).toBeDefined();
@@ -163,7 +158,7 @@ const testingUserInfo = [
       try {
         const savedUser = await userWithoutRequiredFields.save();
         if (savedUser) {
-          testUserIds.push(savedUser._id); // Track if somehow saved
+          testUserIds.push(savedUser._id);
         }
       } catch (error) {
         err = error;
@@ -186,12 +181,12 @@ const testingUserInfo = [
         password: 'password123'
       });
       const savedFirstUser = await firstUser.save();
-      testUserIds.push(savedFirstUser._id); // Track first user
+      testUserIds.push(savedFirstUser._id);
   
       // Try to create second user with same email
       const secondUser = new User({
         name: 'Jane Doe',
-        email: 'john@example.com', // Same email
+        email: 'john@example.com',
         username: 'janedoe',
         password: 'password456'
       });
@@ -200,14 +195,14 @@ const testingUserInfo = [
       try {
         const savedSecondUser = await secondUser.save();
         if (savedSecondUser) {
-          testUserIds.push(savedSecondUser._id); // Track if somehow saved
+          testUserIds.push(savedSecondUser._id);
         }
       } catch (error) {
         err = error;
       }
   
       expect(err).toBeDefined();
-      expect(err.code).toBe(11000); // MongoDB duplicate key error code
+      expect(err.code).toBe(11000);
     });
   
     // Test unique username constraint
@@ -220,7 +215,7 @@ const testingUserInfo = [
         password: 'password123'
       });
       const savedFirstUser = await firstUser.save();
-      testUserIds.push(savedFirstUser._id); // Track first user
+      testUserIds.push(savedFirstUser._id);
   
       // Try to create second user with same username
       const secondUser = new User({
@@ -234,14 +229,14 @@ const testingUserInfo = [
       try {
         const savedSecondUser = await secondUser.save();
         if (savedSecondUser) {
-          testUserIds.push(savedSecondUser._id); // Track if somehow saved
+          testUserIds.push(savedSecondUser._id);
         }
       } catch (error) {
         err = error;
       }
   
       expect(err).toBeDefined();
-      expect(err.code).toBe(11000); // MongoDB duplicate key error code
+      expect(err.code).toBe(11000);
     });
   
     // Test bio maxLength
@@ -251,14 +246,14 @@ const testingUserInfo = [
         email: 'john@example.com',
         username: 'johndoe',
         password: 'password123',
-        bio: 'a'.repeat(301) // Create string longer than 300 characters
+        bio: 'a'.repeat(301)
       });
   
       let err;
       try {
         const savedUser = await userWithLongBio.save();
         if (savedUser) {
-          testUserIds.push(savedUser._id); // Track if somehow saved
+          testUserIds.push(savedUser._id);
         }
       } catch (error) {
         err = error;
@@ -278,7 +273,7 @@ const testingUserInfo = [
       });
   
       const savedUser = await user.save();
-      testUserIds.push(savedUser._id); // Track the created user
+      testUserIds.push(savedUser._id);
       expect(savedUser.profilePicture).toBe('');
     });
   
@@ -292,7 +287,7 @@ const testingUserInfo = [
       });
   
       const savedUser = await user.save();
-      testUserIds.push(savedUser._id); // Track the created user
+      testUserIds.push(savedUser._id);
       
       const newName = 'John Updated';
       savedUser.name = newName;
@@ -312,7 +307,7 @@ const testingUserInfo = [
       });
   
       const savedUser = await user.save();
-      testUserIds.push(savedUser._id); // Track the created user
+      testUserIds.push(savedUser._id);
       
       const newPostId = new mongoose.Types.ObjectId();
       const newAddressId = new mongoose.Types.ObjectId();

@@ -1,5 +1,4 @@
 const posts = require('./posts');
-// get, findById, updatePost, newPost, deletePost
 
 const testingPosts = [
     {
@@ -106,7 +105,7 @@ const testingPosts = [
 
   const Post = require('./posts');
   const mongoose = require('mongoose');
-  require('dotenv').config(); // load dotenvs
+  require('dotenv').config();
   
   const mongoUri = process.env.MONGO_URI;
   
@@ -148,7 +147,7 @@ const testingPosts = [
       });
   
       const savedPost = await validPost.save();
-      testPostIds.push(savedPost._id); // Track the created post
+      testPostIds.push(savedPost._id);
       
       expect(savedPost._id).toBeDefined();
       expect(savedPost.title).toBe(validPost.title);
@@ -158,8 +157,8 @@ const testingPosts = [
       expect(savedPost.itemType).toBe(validPost.itemType);
       expect(savedPost.tags).toEqual(expect.arrayContaining(validPost.tags));
       expect(savedPost.sizes).toEqual(expect.arrayContaining(validPost.sizes));
-      expect(savedPost.likeCount).toBe(0); // Default value
-      expect(savedPost.image).toBe(''); // Default value
+      expect(savedPost.likeCount).toBe(0);
+      expect(savedPost.image).toBe('');
       expect(savedPost.createdAt).toBeDefined();
       expect(savedPost.updatedAt).toBeDefined();
     });
@@ -198,7 +197,7 @@ const testingPosts = [
       try {
         const savedPost = await postWithNegativePrice.save();
         if (savedPost) {
-          testPostIds.push(savedPost._id); // Track if somehow saved
+          testPostIds.push(savedPost._id);
         }
       } catch (error) {
         err = error;
@@ -238,7 +237,7 @@ const testingPosts = [
       });
   
       const savedPost = await post.save();
-      testPostIds.push(savedPost._id); // Track the created post
+      testPostIds.push(savedPost._id);
       
       const updatedTitle = 'Updated Title';
       savedPost.title = updatedTitle;
@@ -259,7 +258,7 @@ const testingPosts = [
       });
   
       const savedPost = await post.save();
-      testPostIds.push(savedPost._id); // Track the created post
+      testPostIds.push(savedPost._id);
       
       expect(savedPost.likeCount).toBe(0);
   
