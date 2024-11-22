@@ -37,6 +37,12 @@ router.get('/explore', VerifyLastId, VerifyS3, controller.explore);
 router.get('/user', AuthorizeUser, VerifyLastId, VerifyS3, controller.userPosts);
 
 /**
+ * Route to find all posts from a specified user
+ * Query with lastId=<id> to get another page
+ */
+router.get('/user/:id', VerifyLastId, VerifyParamsId, VerifyS3, controller.getOtherUserPosts);
+
+/**
  * Provides the post data with the specified id
  */
 router.get('/:id', VerifyParamsId, VerifyS3, controller.getPostInfo);
