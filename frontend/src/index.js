@@ -32,9 +32,6 @@ function App() {
         <Route path="/profile/:id" element={<UniqueProfileView />} /> {/* UniqueProfileView route */}
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        {/* <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-        </Route> */}
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/posts/:id" element={<SingleItem />} />
         <Route path="/not-logged-in" element={<NotLoggedIn />} />

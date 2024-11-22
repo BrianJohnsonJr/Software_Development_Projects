@@ -10,7 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
 
         try {
             const response = await fetch('/account/login', {
@@ -35,17 +35,21 @@ const Login = () => {
         <div className="auth-container">
             <h1>Login</h1>
             <form onSubmit={handleLogin}>
-                <label>Username:</label>
+                <label htmlFor="username">Username:</label>
                 <input
                     type="text"
+                    name="username"
+                    id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
                 />
 
-                <label>Password:</label>
+                <label htmlFor="password">Password:</label>
                 <input
                     type="password"
+                    name="password"
+                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
