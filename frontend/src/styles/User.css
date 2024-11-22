@@ -45,3 +45,18 @@
 .stats p {
     margin: 5px 0; /* Space between each stat */
 }
+
+
+/* Profile link styling */
+.profile-link {
+    text-decoration: none; /* Remove underline */
+    color: #D5FFD9; /* Set the text color for the link (blue) */
+    font-weight: bold; /* Make the username bold */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+  }
+  
+  /* Profile link hover state */
+  .profile-link:hover {
+    color: #A7FFBA; /* Darker blue color when hovered */
+  }
+  
