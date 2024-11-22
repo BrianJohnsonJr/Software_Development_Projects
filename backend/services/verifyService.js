@@ -20,8 +20,6 @@ exports.VerifyLastId = (req, res, next) => {
         let id = req.query.lastId || null;
         if(!id) return next(); // If no id, no error needed.
 
-        console.log("id type: " + typeof id + "\n id: " + id);
-
         const err = validateId(id);
         if(err) {
             return next(err);
@@ -71,6 +69,7 @@ exports.VerifyS3 = async (req, res, next) => {
  */
 exports.VerifyValidationResult = (req, res, next) => {
     let errors = validationResult(req);
+    
     if(!errors.isEmpty()) {
         // console.log(errors.array());
         let errMessages = errors.array().map(error => `${error.type} error: ${error.msg} in ${error.path}`);
@@ -110,15 +109,13 @@ exports.EscapeNewPost = [
     body('description').optional().escape().trim(),
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
-    body('tags').optional().isArray().customSanitizer(tags => {
-        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
-    }),
-    body('sizes').optional().isArray().customSanitizer(sizes => {
-        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
-    })
+    body('tags').optional().isArray(),
+    body('tags.*').trim().replace(/[^\w\s-]/g, '').escape(), // this regex removes all but letters, numbers, spaces, and hyphens
+    body('sizes').optional().isArray(),
+    body('sizes.*').trim().replace(/[^\w\s-]/g, '').escape(),
 ];
 
 exports.EscapeNewComment = [
     body('text').notEmpty().escape().trim(),
-    body('rating').notEmpty().isNumeric().toFloat().isFloat({ min: 0, max: 5 }),
+    body('rating').notEmpty().isNumeric().isInt({ min: 0, max: 5 }).toInt(),
 ];

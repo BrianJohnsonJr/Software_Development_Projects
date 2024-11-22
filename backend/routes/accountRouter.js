@@ -17,7 +17,7 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
 router.get('/search', VerifyLastId, SanitizeSearch, VerifyValidationResult, controller.search);
 
 // Register route
-router.post('/register', uploadToMemory.none(), EscapeRegister, VerifyValidationResult, controller.register);
+router.post('/register', uploadToMemory.single('profilePicture'), EscapeRegister, VerifyValidationResult, controller.register);
 
 // Login route
 router.post('/login', uploadToMemory.none(), EscapeLogin, VerifyValidationResult, controller.loginUser);

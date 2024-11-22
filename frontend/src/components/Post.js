@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import '../styles/Post.css';  
 import Likes from './Likes';
@@ -7,10 +6,10 @@ import { Link } from 'react-router-dom';
 const Post = forwardRef(({ id, title, description, owner, price, image, tags = [], likes }, ref) => {
   const ownerUsername = owner?.username || 'Unknown';
   const imageSrc = image || 'https://via.placeholder.com/150';
+  const ownerImage = owner?.profilePicture;
 
   return (
     <div className="post" ref={ref}>
-      {/* Main Post Link */}
       <Link
         to={`/posts/${id}`}
         state={{ post: { id, title, description, owner, price, image, tags } }}
@@ -26,19 +25,18 @@ const Post = forwardRef(({ id, title, description, owner, price, image, tags = [
         </div>
       </Link>
 
-      {/* Owner Link */}
       <p className="post-owner">
         Owned by:&nbsp;
         <Link
-          to={owner?._id ? `/profile/${owner._id}` : '#'}
-          state={{ owner }}
-          className="profile-link"
+            to={owner?._id ? `/profile/${owner._id}` : '#'}
+            state={{ owner }}
+            className="profile-link"
         >
-          {ownerUsername}
+            {ownerUsername}
         </Link>
       </p>
 
-      {/* Tags */}
+
       <div className="post-tags">
         <ul>
           {Array.isArray(tags) && tags.length > 0 ? (
@@ -49,13 +47,11 @@ const Post = forwardRef(({ id, title, description, owner, price, image, tags = [
         </ul>
       </div>
 
-      {/* Likes */}
       <div className="post-likes">
         <Likes />
       </div>
     </div>
   );
 });
-
 
 export default Post;

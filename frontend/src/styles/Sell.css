@@ -1,7 +1,7 @@
 /* styles/Sell.css */
 .sell-form-container {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 40px auto;
   padding: 20px;
   background-color: #222222; /* Dark background for consistency */
   color: #D5FFD9; /* Light green text */
@@ -24,7 +24,7 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #D5FFD9; /* Light green for label text */
+  color: #B8A6FF; /* Light green for label text */
 }
 
 .form-group input,
@@ -46,7 +46,7 @@
 
 .size-options label {
   margin-right: 10px;
-  color: #D5FFD9; /* Light green color for size options */
+  color: #B8A6FF; /* Light green color for size options */
 }
 
 .image-preview {
@@ -79,7 +79,7 @@
   background: none;
   border: none;
   font-size: 16px;
-  color: #FF5733; /* Red color for remove button */
+  color: #ff7566; /* Red color for remove button */
   cursor: pointer;
 }
 
@@ -97,4 +97,75 @@
 .submit-btn:hover {
   background-color: #B8A6FF; /* Lighter lavender on hover */
   transform: scale(1.05); /* Slight scale effect on hover */
+}
+
+/* Size options styling */
+.size-options {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.size-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0;
+  color: #B8A6FF; /* Purple color for the "Select Sizes:" label */
+}
+
+/* Style for the size text next to checkbox */
+.size-options label span {
+  color: #D5FFD9; /* Green color for the size text */
+}
+
+/* Item type options styling */
+.type-options {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.type-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0;
+  color: #D5FFD9; /* Green color for the item type text */
+}
+
+/* Optional: Add some hover effects */
+.size-options label:hover span,
+.type-options label:hover {
+  color: #B8A6FF !important;
+  cursor: pointer;
+}
+
+/* Style for the checkboxes and radio buttons to make them more visible */
+.size-options input[type="checkbox"],
+.type-options input[type="radio"] {
+  width: auto; /* Override the 100% width from the general input styling */
+  margin-right: 5px;
+  color: #D5FFD9;
+}
+
+.size-options label.selected span {
+  color: #B8A6FF;
+}
+
+.size-options label:not(.selected) span {
+  color: #D5FFD9;
+}
+
+.type-options label.selected {
+  background-color: #222222;
+  color: #B8A6FF;
+}
+
+.type-options label:not(.selected) {
+  color: #D5FFD9;
 }

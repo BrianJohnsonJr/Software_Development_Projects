@@ -8,15 +8,17 @@ function SingleItem() {
     const [post, setPost] = useState(location.state?.post || null);
     const [loading, setLoading] = useState(!location.state?.post);
     const [error, setError] = useState(null);
-
-    // State for comments and ratings
     const [rating, setRating] = useState(0);
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState([]);
+    const [loadingComments, setLoadingComments] = useState(false);
+
+    const MAX_COMMENT_LENGTH = 250;
 
     useEffect(() => {
-        const fetchPost = async () => {
-            if (!location.state?.post) {
+        if (!post) {
+            setLoading(true);
+            const fetchPost = async () => {
                 try {
                     const response = await fetch(`/posts/${id}`);
                     if (!response.ok) {
@@ -27,23 +29,48 @@ function SingleItem() {
                         setPost(null);
                     } else {
                         setPost(data.post);
-                        setComments(data.post.comments || []);
                     }
                 } catch (err) {
                     setError(err.message);
                 } finally {
                     setLoading(false);
                 }
+            };
+            fetchPost();
+        }
+    }, [id, post, location.state]);
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            setLoadingComments(true);
+            try {
+                const response = await fetch(`/posts/${id}/comments`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch comments');
+                }
+                const data = await response.json();
+                setComments(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error('Error fetching comments:', err);
+            } finally {
+                setLoadingComments(false);
             }
         };
 
-        if (!post && !error) {
-            fetchPost();
+        if (id) {
+            fetchComments();
         }
-    }, [id, post, location.state, error]);
+    }, [id]);
 
     const handleStarClick = (star) => {
         setRating(star);
+    };
+
+    const handleCommentChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= MAX_COMMENT_LENGTH) {
+            setNewComment(value);
+        }
     };
 
     const handleSubmitComment = async () => {
@@ -75,8 +102,12 @@ function SingleItem() {
                 throw new Error('Failed to submit comment');
             }
 
-            const updatedPost = await response.json();
-            setComments(updatedPost.post.comments);
+            const updatedCommentsResponse = await fetch(`/posts/${id}/comments`);
+            if (updatedCommentsResponse.ok) {
+                const updatedComments = await updatedCommentsResponse.json();
+                setComments(Array.isArray(updatedComments) ? updatedComments : []);
+            }
+
             setNewComment('');
             setRating(0);
         } catch (error) {
@@ -138,32 +169,38 @@ function SingleItem() {
                             className="comment-input"
                             placeholder="Write your comment here..."
                             value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
+                            onChange={handleCommentChange}
                         ></textarea>
+                        <p className="character-count">{MAX_COMMENT_LENGTH - newComment.length} characters remaining</p>
 
                         <button onClick={handleSubmitComment} className="submit-comment-button">
                             Submit Comment
                         </button>
 
                         <div className="comments-display">
-                            {comments.map((comment, index) => (
-                                <div key={index} className="comment">
-                                    <div className="comment-header">
-                                        <span className="username">{comment.username}</span>
-                                        <div className="rating">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <span
-                                                    key={star}
-                                                    className={`star ${comment.rating >= star ? 'selected' : ''}`}
-                                                >
-                                                    ★
-                                                </span>
-                                            ))}
+                            {loadingComments ? (
+                                <p>Loading comments...</p>
+                            ) : (
+                                comments.map((comment, index) => (
+                                    <div key={comment._id || index} className="comment">
+                                        <div className="comment-header">
+                                            <img alt="userProfilePic" src={comment.owner?.profilePicture}></img>
+                                            <span className="username">{comment.owner?.username || 'Anonymous'}</span>
+                                            <div className="rating">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span
+                                                        key={star}
+                                                        className={`star ${comment.rating >= star ? 'selected' : ''}`}
+                                                    >
+                                                        ★
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
+                                        <p className="comment-text">{comment.text}</p>
                                     </div>
-                                    <p className="comment-text">{comment.text}</p>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
