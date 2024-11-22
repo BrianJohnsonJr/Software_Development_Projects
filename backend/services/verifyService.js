@@ -20,8 +20,6 @@ exports.VerifyLastId = (req, res, next) => {
         let id = req.query.lastId || null;
         if(!id) return next(); // If no id, no error needed.
 
-        console.log("id type: " + typeof id + "\n id: " + id);
-
         const err = validateId(id);
         if(err) {
             return next(err);
