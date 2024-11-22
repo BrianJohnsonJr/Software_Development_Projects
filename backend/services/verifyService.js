@@ -67,7 +67,7 @@ exports.VerifyS3 = async (req, res, next) => {
  * Middleware to check the results of the validators ran in the previous middleware.
  * Creates an error if there were  failures on the validators
  */
-exports.ValidateResult = (req, res, next) => {
+exports.VerifyValidationResult = (req, res, next) => {
     let errors = validationResult(req);
     if(!errors.isEmpty()) {
         // console.log(errors.array());
@@ -92,8 +92,8 @@ exports.EscapeRegister = [
     body('username').trim().escape().isAlphanumeric().isLength({min: 3, max: 30}),
     body('email').isEmail().normalizeEmail(),
     // Enable the first one if we want a proper password validation
-    // body('password').isStrongPassword({minLength: 5, minUppercase: 1, minNumbers: 1, minSymbols: 1}),
-    body('password').isStrongPassword({minLength: 5}),
+    // body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 }),
+    body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 0, minNumbers: 0, minSymbols: 0 }),
     body('bio').optional().trim().escape().isLength({max: 250}),
 
 ];
@@ -109,10 +109,10 @@ exports.EscapeNewPost = [
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
     body('tags').optional().isArray().customSanitizer(tags => {
-        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '')); 
+        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
     }),
     body('sizes').optional().isArray().customSanitizer(sizes => {
-        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, ''));
+        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
     })
 ];
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const { AuthorizeUser } = require('../services/authService'); // Import AuthService
-const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, ValidateResult, 
+const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, VerifyValidationResult, 
     EscapeRegister, EscapeLogin, } = require('../services/verifyService');
 const { uploadToMemory } = require('../services/fileService');
 const controller = require('../controllers/accountController');
@@ -14,13 +14,13 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
  * Queries users and returns users matching the specified query.
  * Does not allow for paging with lastId=<id>
  */
-router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
+router.get('/search', VerifyLastId, SanitizeSearch, VerifyValidationResult, controller.search);
 
 // Register route
-router.post('/register', uploadToMemory.none(), EscapeRegister, ValidateResult, controller.register);
+router.post('/register', uploadToMemory.none(), EscapeRegister, VerifyValidationResult, controller.register);
 
 // Login route
-router.post('/login', uploadToMemory.none(), EscapeLogin, ValidateResult, controller.loginUser);
+router.post('/login', uploadToMemory.none(), EscapeLogin, VerifyValidationResult, controller.loginUser);
 
 // Logout route
 router.post('/logout', uploadToMemory.none(), controller.logout);
