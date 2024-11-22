@@ -1,24 +1,31 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import SingleItem from './SingleItem';
+
+// Mock fetch globally
+global.fetch = jest.fn();
 
 describe('SingleItem Component', () => {
   const mockPost = {
     title: 'Sample Post',
     price: 49.99,
-    imageUrl: 'https://example.com/image.jpg',
+    image: 'https://example.com/image.jpg',
     description: 'This is a sample post description.',
     tags: ['Tag1', 'Tag2', 'Tag3'],
-    ownerUsername: 'user123'
+    owner: { username: 'user123' },
   };
 
-  // Helper function to render component with mocked location state
+  beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+  });
+
   const renderWithRouter = (state) => {
     render(
-      <MemoryRouter initialEntries={[{ state }]}>
+      <MemoryRouter initialEntries={[{ pathname: '/items/1', state }]}>
         <Routes>
-          <Route path="/" element={<SingleItem />} />
+          <Route path="/items/:id" element={<SingleItem />} />
         </Routes>
       </MemoryRouter>
     );
@@ -35,25 +42,52 @@ describe('SingleItem Component', () => {
     // Check if image is rendered with the correct src and alt attributes
     const image = screen.getByAltText(mockPost.title);
     expect(image).toBeInTheDocument();
-    expect(image.src).toBe(mockPost.imageUrl);
+    expect(image.src).toBe(mockPost.image);
 
-    // Check if tags are rendered correctly
-    mockPost.tags.forEach(tag => {
-      expect(screen.getByText(tag)).toBeInTheDocument();
-    });
+    // Check if tags are rendered correctly - using a more flexible approach
+    expect(screen.getByText('Tags:')).toBeInTheDocument();
+    expect(screen.getByText(mockPost.tags.join(', '))).toBeInTheDocument();
 
-    // Check if owner username is displayed
-    expect(screen.getByText(`Owned by: ${mockPost.ownerUsername}`)).toBeInTheDocument();
+    // Check if owner username is displayed - using a more flexible approach
+    expect(screen.getByText('Owned by:')).toBeInTheDocument();
+    expect(screen.getByText(mockPost.owner.username)).toBeInTheDocument();
 
     // Check if buttons are rendered
     expect(screen.getByRole('button', { name: /purchase/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
   });
 
-  test('renders "Post not found" message when no post data is available', () => {
+  test('renders "Post not found" message when no post data is available', async () => {
+    // Mock the fetch to return null data
+    global.fetch.mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ post: null })
+      })
+    );
+
     renderWithRouter({ post: null });
 
-    // Verify the "Post not found" message is shown
-    expect(screen.getByText(/post not found/i)).toBeInTheDocument();
+    // First, we should see loading
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    // Then wait for the post not found message
+    await waitFor(() => {
+      expect(screen.getByText('Post not found')).toBeInTheDocument();
+    });
+  });
+
+  // Add a new test for network error handling
+  test('renders error message when network request fails', async () => {
+    // Mock the fetch to simulate a network error
+    global.fetch.mockImplementationOnce(() =>
+      Promise.reject(new Error('Network error'))
+    );
+
+    renderWithRouter({ post: null });
+
+    await waitFor(() => {
+      expect(screen.getByText(/error/i)).toBeInTheDocument();
+    });
   });
 });
