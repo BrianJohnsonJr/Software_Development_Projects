@@ -3,19 +3,18 @@ import { useLocation, useParams } from 'react-router-dom';
 import '../styles/SingleItem.css';
 
 function SingleItem() {
-    const { id } = useParams(); // Extract the post ID from the URL
-    const location = useLocation(); // Get the location object
-    const [post, setPost] = useState(location.state?.post || null); // Initialize post state from location state or null
+    const { id } = useParams();
+    const location = useLocation();
+    const [post, setPost] = useState(location.state?.post || null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [rating, setRating] = useState(0);
+    const [newComment, setNewComment] = useState('');
+    const [comments, setComments] = useState([]);
+    const [loadingComments, setLoadingComments] = useState(false);
 
-    // New state variables
-    const [rating, setRating] = useState(0); // Tracks the selected rating
-    const [newComment, setNewComment] = useState(''); // Tracks the new comment text
-    const [comments, setComments] = useState([]); // Stores submitted comments
-
+    // Separate useEffect for fetching post details
     useEffect(() => {
-        // If no post data is passed via state, fetch the post details using the ID
         if (!post) {
             setLoading(true);
             const fetchPost = async () => {
@@ -26,7 +25,6 @@ function SingleItem() {
                     }
                     const data = await response.json();
                     setPost(data.post);
-                    setComments(data.post.comments || []); // Set comments if available
                 } catch (err) {
                     setError(err.message);
                 } finally {
@@ -37,8 +35,31 @@ function SingleItem() {
         }
     }, [id, post]);
 
+    // Separate useEffect for fetching comments
+    useEffect(() => {
+        const fetchComments = async () => {
+            setLoadingComments(true);
+            try {
+                const response = await fetch(`/posts/${id}/comments`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch comments');
+                }
+                const data = await response.json();
+                setComments(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error('Error fetching comments:', err);
+            } finally {
+                setLoadingComments(false);
+            }
+        };
+
+        if (id) {
+            fetchComments();
+        }
+    }, [id]);
+
     const handleStarClick = (star) => {
-        setRating(star); // Update the selected rating
+        setRating(star);
     };
 
     const handleSubmitComment = async () => {
@@ -53,12 +74,9 @@ function SingleItem() {
         }
 
         const newEntry = {
-            text: newComment, // Send the comment text as 'text' field
-            rating: rating,   // Send the rating as 'rating' field
+            text: newComment,
+            rating: rating,
         };
-
-        // Log the comment data before submitting
-        console.log('New Comment:', newEntry);
 
         try {
             const response = await fetch(`/posts/${id}/comments`, {
@@ -66,18 +84,23 @@ function SingleItem() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newEntry), // Send the comment data in the request body
+                body: JSON.stringify(newEntry),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to submit comment');
             }
 
-            // If successful, fetch and update the comments
-            const updatedPost = await response.json();
-            setComments(updatedPost.post.comments); // Assuming the response contains the updated list of comments
-            setNewComment(''); // Clear the comment input
-            setRating(0); // Reset the star rating
+            // Fetch the updated comments after successful submission
+            const updatedCommentsResponse = await fetch(`/posts/${id}/comments`);
+            if (updatedCommentsResponse.ok) {
+                const updatedComments = await updatedCommentsResponse.json();
+                setComments(Array.isArray(updatedComments) ? updatedComments : []);
+            }
+
+            // Clear the input and reset rating
+            setNewComment('');
+            setRating(0);
         } catch (error) {
             alert('Error submitting comment: ' + error.message);
         }
@@ -110,11 +133,9 @@ function SingleItem() {
                         <button className="cart-button">Add to Cart</button>
                     </div>
 
-                    {/* Comment Section */}
                     <div className="comment-section">
                         <h3 className="comment-section-title">Leave a Comment</h3>
 
-                        {/* Rating Stars */}
                         <div className="star-rating">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <span
@@ -127,7 +148,6 @@ function SingleItem() {
                             ))}
                         </div>
 
-                        {/* Comment Text Input */}
                         <textarea
                             className="comment-input"
                             placeholder="Write your comment here..."
@@ -135,31 +155,33 @@ function SingleItem() {
                             onChange={(e) => setNewComment(e.target.value)}
                         ></textarea>
 
-                        {/* Submit Button */}
                         <button onClick={handleSubmitComment} className="submit-comment-button">
                             Submit Comment
                         </button>
 
-                        {/* Display Submitted Comments */}
                         <div className="comments-display">
-                            {comments.map((comment, index) => (
-                                <div key={index} className="comment">
-                                    <div className="comment-header">
-                                        <span className="username">{comment.username}</span>
-                                        <div className="rating">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <span
-                                                    key={star}
-                                                    className={`star ${comment.rating >= star ? 'selected' : ''}`}
-                                                >
-                                                    ★
-                                                </span>
-                                            ))}
+                            {loadingComments ? (
+                                <p>Loading comments...</p>
+                            ) : (
+                                comments.map((comment, index) => (
+                                    <div key={comment._id || index} className="comment">
+                                        <div className="comment-header">
+                                            <span className="username">{comment.owner?.username || 'Anonymous'}</span>
+                                            <div className="rating">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <span
+                                                        key={star}
+                                                        className={`star ${comment.rating >= star ? 'selected' : ''}`}
+                                                    >
+                                                        ★
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
+                                        <p className="comment-text">{comment.text}</p>
                                     </div>
-                                    <p className="comment-text">{comment.text}</p> {/* Adjusted to 'text' */}
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
