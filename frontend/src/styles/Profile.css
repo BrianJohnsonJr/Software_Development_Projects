@@ -67,6 +67,21 @@
     margin-bottom: 10px; /* Spacing between info items */
 }
 
+.profile-info div:nth-child(3) {
+    max-height: 60px; /* Limit height of the bio section */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+    white-space: normal; /* Allow text to wrap onto the next line */
+    display: -webkit-box; /* Enable multi-line truncation */
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical; /* Required for line clamping */
+    word-wrap: break-word; /* Enable word wrapping */
+    overflow-wrap: break-word;
+    white-space: pre-wrap; /* Preserve line breaks while wrapping text */
+    text-align: center; /* Center-align text */
+    padding: 5px;
+}
+
 /* Profile posts section */
 .profile-posts {
     font-size: 16px;
