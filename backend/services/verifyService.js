@@ -115,7 +115,7 @@ exports.EscapeNewPost = [
             return tags.map(tag => String(tag).trim().replace(/[^\w\s-]/g, '')); // this regex removes all but letters, numbers, spaces, and hyphens
     }),
     body('sizes').optional().isArray().customSanitizer(sizes => {
-        if(!Array.isArray(tags))
+        if(!Array.isArray(sizes))
             return [];
         else 
             return sizes.map(size => String(size).trim().replace(/[^\w\s-]/g, ''));
