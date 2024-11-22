@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 const Post = forwardRef(({ id, title, description, owner, price, image, tags = [], likes }, ref) => {
   const ownerUsername = owner?.username || 'Unknown';
   const imageSrc = image || 'https://via.placeholder.com/150';
+  const ownerImage = owner?.profilePicture;
 
   return (
     <div className="post" ref={ref}>
@@ -27,13 +28,14 @@ const Post = forwardRef(({ id, title, description, owner, price, image, tags = [
       <p className="post-owner">
         Owned by:&nbsp;
         <Link
-          to={owner?._id ? `/profile/${owner._id}` : '#'}
-          state={{ owner }}
-          className="profile-link"
+            to={owner?._id ? `/profile/${owner._id}` : '#'}
+            state={{ owner }}
+            className="profile-link"
         >
-          {ownerUsername}
+            {ownerUsername}
         </Link>
       </p>
+
 
       <div className="post-tags">
         <ul>

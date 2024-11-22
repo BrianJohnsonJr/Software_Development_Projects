@@ -60,6 +60,10 @@
     font-size: 18px; /* Highlight the price */
 }
 
+.post-tags{
+    padding-left: 20px;
+}
+
 .post-tags ul {
     display: flex;
     flex-wrap: wrap;
@@ -78,6 +82,7 @@
 
 .post-likes {
     text-align: left;
+    padding-left: 20px;
 }
 
 .post-likes button {
@@ -113,11 +118,30 @@
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15); /* Highlight effect */
 }
 
+.post-owner {
+    text-align: left;
+    padding-left: 20px;
+    display: flex; /* Ensure the content is displayed in a row */
+    align-items: center; /* Vertically align the image and text */
+}
+
 .post-owner .profile-link {
     color: #D5FFD9; /* Medium green color */
     text-decoration: none;
+    font-weight: 700; /* Bold font for the username */
+    display: flex; /* Keep the profile picture and username in the same row */
+    align-items: center; /* Vertically center the profile picture and text */
 }
 
 .post-owner .profile-link:hover {
-    color: #A7FFBA; /* Darker green on hover */
+    color: #B8A6FF; /* Darker green on hover */
+    text-decoration: underline;
+}
+
+/* Styling for the owner's profile picture */
+.owner-profile-picture {
+    width: 30px; /* Set the size of the profile picture */
+    height: 30px;
+    border-radius: 50%; /* Make the image circular */
+    margin-right: 10px; /* Add space between the image and the username */
 }
