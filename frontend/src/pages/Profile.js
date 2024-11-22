@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 
 const Profile = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
@@ -26,11 +27,14 @@ const Profile = () => {
                     setIsAuthenticated(true);
                     setUser(userData.user);
                 } else {
+                    setIsAuthenticated(false);
                     navigate('/login'); // Redirect to login if not authenticated
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 navigate('/login');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -51,8 +55,12 @@ const Profile = () => {
         }
     };
 
-    if (!isAuthenticated) {
+    if (isLoading) {
         return <p>Loading...</p>;
+    }
+
+    if (!isAuthenticated && !user) {
+        return null;
     }
 
     return (
