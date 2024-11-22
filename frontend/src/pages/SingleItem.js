@@ -13,7 +13,8 @@ function SingleItem() {
     const [comments, setComments] = useState([]);
     const [loadingComments, setLoadingComments] = useState(false);
 
-    // Separate useEffect for fetching post details
+    const MAX_COMMENT_LENGTH = 250;
+
     useEffect(() => {
         if (!post) {
             setLoading(true);
@@ -35,7 +36,6 @@ function SingleItem() {
         }
     }, [id, post]);
 
-    // Separate useEffect for fetching comments
     useEffect(() => {
         const fetchComments = async () => {
             setLoadingComments(true);
@@ -60,6 +60,13 @@ function SingleItem() {
 
     const handleStarClick = (star) => {
         setRating(star);
+    };
+
+    const handleCommentChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= MAX_COMMENT_LENGTH) {
+            setNewComment(value);
+        }
     };
 
     const handleSubmitComment = async () => {
@@ -91,14 +98,12 @@ function SingleItem() {
                 throw new Error('Failed to submit comment');
             }
 
-            // Fetch the updated comments after successful submission
             const updatedCommentsResponse = await fetch(`/posts/${id}/comments`);
             if (updatedCommentsResponse.ok) {
                 const updatedComments = await updatedCommentsResponse.json();
                 setComments(Array.isArray(updatedComments) ? updatedComments : []);
             }
 
-            // Clear the input and reset rating
             setNewComment('');
             setRating(0);
         } catch (error) {
@@ -152,8 +157,9 @@ function SingleItem() {
                             className="comment-input"
                             placeholder="Write your comment here..."
                             value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
+                            onChange={handleCommentChange}
                         ></textarea>
+                        <p className="character-count">{MAX_COMMENT_LENGTH - newComment.length} characters remaining</p>
 
                         <button onClick={handleSubmitComment} className="submit-comment-button">
                             Submit Comment
@@ -166,7 +172,7 @@ function SingleItem() {
                                 comments.map((comment, index) => (
                                     <div key={comment._id || index} className="comment">
                                         <div className="comment-header">
-                                            <img alt="userProfilePic" src={comment.owner?.profilePicture}></img> {/*TODO: please style*/}
+                                            <img alt="userProfilePic" src={comment.owner?.profilePicture}></img>
                                             <span className="username">{comment.owner?.username || 'Anonymous'}</span>
                                             <div className="rating">
                                                 {[1, 2, 3, 4, 5].map((star) => (
