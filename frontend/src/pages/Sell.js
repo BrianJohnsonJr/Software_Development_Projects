@@ -44,11 +44,32 @@ const Sell = () => {
 
   // Handle image file upload
   const handleImageUpload = (e) => {
-    setImageURL(URL.createObjectURL(e.target.files[0]));
     const file = e.target.files[0];
     if (file) {
-        setImage(file); // Store the raw file for uploading
+      try {
+        const url = URL.createObjectURL(file);
+        console.log('Created URL:', url); // Add for debugging
+        setImageURL(url);
+        setImage(file);
+      } catch (error) {
+        console.error('Error creating object URL:', error);
+      }
     }
+  };
+  
+  // Update the image preview section
+  const ImagePreview = ({ url }) => {
+    if (!url) return null;
+    return (
+      <div className="image-preview-container">
+        <img
+          src={url}
+          alt="Uploaded Preview"
+          className="image-preview"
+          data-testid="image-preview"
+        />
+      </div>
+    );
   };
 
   // Handle size selection (multiple sizes)
@@ -137,14 +158,21 @@ const Sell = () => {
       <form onSubmit={handleSubmit} className="sell-form">
         {/* Image Upload */}
         <div className="form-group">
-          <label>Upload Image:</label>
-          <input type="file" id="image" name="image" onChange={handleImageUpload} />
-          {imageURL && <img src={imageURL} alt="Uploaded Preview" className="image-preview" />}
+          <label htmlFor="image">Upload Image:</label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            onChange={handleImageUpload}
+            accept="image/*"
+            data-testid="image-input"
+          />
+          <ImagePreview url={imageURL} />
         </div>
 
         {/* Post Title */}
         <div className="form-group">
-          <label for="title">Title:</label>
+          <label htmlFor="title">Title:</label>
           <input
             type="text"
             id="title"
@@ -158,7 +186,7 @@ const Sell = () => {
 
         {/* Post Description */}
         <div className="form-group">
-          <label for="description">Description:</label>
+          <label htmlFor="description">Description:</label>
           <textarea
             id="description"
             name="description"
@@ -171,7 +199,7 @@ const Sell = () => {
 
         {/* Price */}
         <div className="form-group">
-          <label for="price">Price:</label>
+          <label htmlFor="price">Price:</label>
           <input
             id="price"
             name="price"
@@ -185,7 +213,7 @@ const Sell = () => {
 
         {/* Available Sizes */}
         <div className="form-group">
-          <label for="sizes">Select Sizes:</label>
+          <label htmlFor="sizes">Select Sizes:</label>
           <div className="size-options" id="sizes" name="sizes">
             {['S', 'M', 'L', 'XL'].map((size) => (
               <label htmlFor={size} key={size} className={sizes.includes(size) ? 'selected' : ''}>
@@ -205,8 +233,8 @@ const Sell = () => {
         
         {/* Select item type */}
         <div className="form-group">
-          <label>Select item type:</label>
-          <div className="type-options">
+          <label htmlFor="types">Select item type:</label>
+          <div className="type-options" id="types" name="types">
             {['T-shirt', 'Hoodie', 'Poster', 'Sticker', 'Mug'].map((type) => (
               <label key={type} className={`type-option ${itemType === type ? 'selected' : ''}`}>
                 <input
