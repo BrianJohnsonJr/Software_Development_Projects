@@ -179,6 +179,26 @@ exports.userPosts = async (req, res, next) => {
 };
 
 /**
+ * Retrieves posts created by a specific user. Supports pagination with `lastId`.
+ */
+exports.getOtherUserPosts = async (req, res, next) => {
+    try {
+        let id = req.params.id;
+
+        const lastId = req.query.lastId || null;
+        const query = lastId ? { _id: { $lt: lastId }} : {};
+        const posts = await Post.find({$and: [query, { owner: id }]}).populate('owner', 'username name').sort({ _id: -1 }).limit(25);
+        
+        if(posts.length > 0) {
+            await replaceFilePath(req.s3, posts);
+            res.json(posts);
+        }
+        else res.json([]);
+    }
+    catch (error) { next(error); }
+};
+
+/**
  * Retrieves detailed information about a specific post by its ID.
  * This route is designed to be the last route in the controller because it catches unmatched post routes.
  */
