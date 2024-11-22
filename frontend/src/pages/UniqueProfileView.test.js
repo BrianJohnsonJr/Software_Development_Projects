@@ -1,50 +1,132 @@
-// Import React to enable JSX usage
-import React from 'react';
+import React from "react";
+import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import UniqueProfileView from "./UniqueProfileView";
 
-// Import testing utilities from React Testing Library
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+global.fetch = jest.fn();
 
-// Import router utilities to simulate navigation and routing in tests
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-
-// Import the component to be tested
-import UniqueProfileView from './UniqueProfileView';
-
-// Mock the global fetch function to simulate API calls
-global.fetch = jest.fn(); 
-
-// Define the test suite for the UniqueProfileView component
-describe('UniqueProfileView Component', () => {
-    // Run this before each test to ensure the fetch mock is reset
+describe("UniqueProfileView Component", () => {
     beforeEach(() => {
-        fetch.mockClear(); // Clear fetch mock before each test
+        fetch.mockClear();
     });
 
-    // Test case to verify that the loading text appears initially
-    it('renders loading text initially', () => {
-        // Render the component with a simulated route using MemoryRouter and Routes
+    it("renders loading text initially", () => {
         render(
-            <MemoryRouter initialEntries={['/users/123']}> {/* Simulate navigating to the /users/123 route */}
-                <Routes> {/* Define the routes context */}
-                    <Route path="/users/:userId" element={<UniqueProfileView />} /> {/* Map the route to the component */}
+            <MemoryRouter initialEntries={["/users/123"]}>
+                <Routes>
+                    <Route path="/users/:userId" element={<UniqueProfileView />} />
+                </Routes>
+            </MemoryRouter>
+        );
+        expect(screen.getByText("Loading...")).toBeInTheDocument();
+    });
+
+    it("fetches and displays user data correctly", async () => {
+        const mockUserData = {
+            user: {
+                name: "John Doe",
+                username: "johndoe",
+                email: "john@example.com",
+                bio: "This is a bio",
+                followers: [],
+                postIds: [1, 2, 3, 4, 5],
+                profilePicture: "https://via.placeholder.com/120",
+            },
+            isFollowing: false,
+        };
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockUserData,
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/users/123"]}>
+                <Routes>
+                    <Route path="/users/:userId" element={<UniqueProfileView />} />
                 </Routes>
             </MemoryRouter>
         );
 
-        // Assert that the loading text is displayed
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
+        // Wait for the data to load
+        await waitFor(() => expect(screen.getByText("John Doe")).toBeInTheDocument());
+
+        // Check username, email, and bio
+        expect(screen.getByText(/Username:/)).toHaveTextContent("johndoe");
+        expect(screen.getByText(/Email:/)).toHaveTextContent("john@example.com");
+        expect(screen.getByText(/Bio:/)).toHaveTextContent("This is a bio");
+
+        // Check followers and posts counts
+        const followersSection = screen.getByText("Followers:").closest('p');
+        expect(followersSection).toHaveTextContent("Followers: 0");
+
+        const postsSection = screen.getByText("Posts:").closest('p');
+        expect(postsSection).toHaveTextContent("Posts: 5");
     });
 
-    it('fetches and displays user data correctly', async () => {
+    it("handles follow button toggle correctly", async () => {
         const mockUserData = {
             user: {
-                name: 'John Doe',
-                username: 'johndoe',
-                email: 'john@example.com',
-                bio: 'This is a bio',
-                followersCount: 10,
-                postsCount: 5,
-                profilePicture: 'https://via.placeholder.com/120',
+                name: "John Doe",
+                username: "johndoe",
+                email: "john@example.com",
+                bio: "This is a bio",
+                followers: [],
+                postIds: [1, 2, 3, 4, 5],
+                profilePicture: "https://via.placeholder.com/120",
+            },
+            isFollowing: false,
+        };
+
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockUserData,
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/users/123"]}>
+                <Routes>
+                    <Route path="/users/:userId" element={<UniqueProfileView />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(screen.getByText("John Doe")).toBeInTheDocument());
+        const followButton = screen.getByRole("button", { name: "Follow" });
+        expect(followButton).toBeInTheDocument();
+
+        fetch.mockResolvedValueOnce({ ok: true });
+
+        fireEvent.click(followButton);
+
+        await waitFor(() => expect(screen.getByRole("button", { name: "Unfollow" })).toBeInTheDocument());
+    });
+
+    it("handles API fetch failure gracefully", async () => {
+        fetch.mockResolvedValueOnce({ ok: false });
+
+        render(
+            <MemoryRouter initialEntries={["/users/123"]}>
+                <Routes>
+                    <Route path="/users/:userId" element={<UniqueProfileView />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => expect(screen.queryByText("Loading...")).not.toBeInTheDocument());
+        expect(screen.getByText("Failed to load user data")).toBeInTheDocument();
+    });
+
+    it("renders correctly when user data is incomplete", async () => {
+        const mockUserData = {
+            user: {
+                name: "John Doe",
+                username: null,
+                email: null,
+                bio: null,
+                followers: null,
+                postIds: null,
+                profilePicture: null,
             },
             isFollowing: false,
         };
@@ -55,96 +137,24 @@ describe('UniqueProfileView Component', () => {
         });
     
         render(
-            <MemoryRouter initialEntries={['/users/123']}>
+            <MemoryRouter initialEntries={["/users/123"]}>
                 <Routes>
                     <Route path="/users/:userId" element={<UniqueProfileView />} />
                 </Routes>
             </MemoryRouter>
         );
     
-        // Wait for profile data to load
-        await waitFor(() => {
-            console.log(screen.debug()); // Debug rendered output
-            expect(screen.getByText('John Doe')).toBeInTheDocument();
-        });
+        await waitFor(() => expect(screen.getByText("John Doe")).toBeInTheDocument());
+        expect(screen.getByText(/Username:/)).toHaveTextContent("N/A");
+        expect(screen.getByText(/Email:/)).toHaveTextContent("N/A");
+        expect(screen.getByText(/Bio:/)).toHaveTextContent("N/A");
     
-        // Check other data using flexible matchers
-        expect(screen.getByText(/Username:\s*johndoe/)).toBeInTheDocument();
-        expect(screen.getByText(/Email:\s*john@example.com/)).toBeInTheDocument();
-        expect(screen.getByText(/Bio:\s*This is a bio/)).toBeInTheDocument();
-        expect(screen.getByText((content) => content.includes('Followers: 10'))).toBeInTheDocument();
-        expect(screen.getByText(/Posts:\s*5/)).toBeInTheDocument();
+        // Use more robust queries for structured DOM
+        const statsContainer = screen.getByText("Followers:").closest("div");
+        expect(within(statsContainer).getByText("0")).toBeInTheDocument();
+    
+        const postsContainer = screen.getByText("Posts:").closest("div");
+        expect(within(postsContainer).getByText("0")).toBeInTheDocument();
     });
     
-    
-    // Test case to verify follow button functionality
-    it('handles follow button toggle correctly', async () => {
-        // Define mock user data to be returned by the fetch call
-        const mockUserData = {
-            user: {
-                name: 'John Doe',
-                username: 'johndoe',
-                email: 'john@example.com',
-                bio: 'This is a bio',
-                followersCount: 10,
-                postsCount: 5,
-                profilePicture: 'https://via.placeholder.com/120',
-            },
-            isFollowing: false, // Initially, the logged-in user is not following
-        };
-
-        // Mock the resolved value of fetch to simulate the API response
-        fetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => mockUserData,
-        });
-
-        // Render the component with a simulated route
-        render(
-            <MemoryRouter initialEntries={['/users/123']}>
-                <Routes>
-                    <Route path="/users/:userId" element={<UniqueProfileView />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        // Wait for the profile data to load and ensure the user's name is displayed
-        await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument());
-
-        // Select the follow button and verify its initial text is "Follow"
-        const followButton = screen.getByRole('button', { name: 'Follow' });
-        expect(followButton).toBeInTheDocument();
-
-        // Mock the follow API call to simulate the action of following the user
-        fetch.mockResolvedValueOnce({ ok: true });
-
-        // Simulate clicking the follow button
-        fireEvent.click(followButton);
-
-        // Wait for the button text to change to "Unfollow"
-        await waitFor(() => expect(screen.getByRole('button', { name: 'Unfollow' })).toBeInTheDocument());
-    });
-
-    // Test case to verify behavior when the API fetch fails
-    it('handles API fetch failure gracefully', async () => {
-        // Mock the resolved value of fetch to simulate a failed API response
-        fetch.mockResolvedValueOnce({
-            ok: false, // Simulate a non-OK response
-        });
-
-        // Render the component with a simulated route
-        render(
-            <MemoryRouter initialEntries={['/users/123']}>
-                <Routes>
-                    <Route path="/users/:userId" element={<UniqueProfileView />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        // Wait for the loading text to disappear
-        await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-
-        // Verify that no user data is displayed due to the failed fetch
-        expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-    });
 });

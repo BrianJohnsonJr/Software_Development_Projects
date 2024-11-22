@@ -10,6 +10,7 @@ const UniqueProfileView = () => {
     const { id } = useParams(); // Get userId from the URL
     const { state } = useLocation(); // Get passed state
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -23,6 +24,7 @@ const UniqueProfileView = () => {
                     setUser(data.user);
                 } else {
                     console.error('Failed to fetch profile');
+                    setError(true); // Add a state to indicate an error occurred
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -57,36 +59,40 @@ const UniqueProfileView = () => {
         return <p>Loading...</p>;
     }
 
+    if (error) {
+        return <div>Failed to load user data</div>;
+    }
+
     return (
         <div className="unique-profile-container">
             <h1 className="unique-profile-title">Profile View</h1>
 
             <div className="unique-profile-header">
                 <img
-                    src={user.profilePicture || 'https://via.placeholder.com/120'}
-                    alt=""
+                    src={user?.profilePicture || 'https://via.placeholder.com/120'}
+                    alt={`${user?.name || 'User'}'s profile`}
                     className="unique-profile-picture"
                 />
-                <h2>{user.name}</h2>
+                <h2>{user?.name || 'Unknown User'}</h2>
             </div>
             <div className="unique-profile-stats">
                 <div>
-                    <strong>Followers:</strong> {user.followers.length}
+                    <p><strong>Followers:</strong> {user?.followers?.length || 0}</p>
                 </div>
             </div>
             <div className="unique-profile-info">
-                <div>
-                    <FontAwesomeIcon icon={faUser} /> Username: {user?.username}
-                </div>
-                <div>
-                    <FontAwesomeIcon icon={faEnvelope} /> Email: {user?.email}
-                </div>
-                <div>
-                    <FontAwesomeIcon icon={faInfoCircle} /> Bio: {user?.bio}
-                </div>
+                <p>
+                    <FontAwesomeIcon icon={faUser} /> Username: {user?.username || 'N/A'}
+                </p>
+                <p>
+                    <FontAwesomeIcon icon={faEnvelope} /> Email: {user?.email || 'N/A'}
+                </p>
+                <p>
+                    <FontAwesomeIcon icon={faInfoCircle} /> Bio: {user?.bio || 'N/A'}
+                </p>
             </div>
             <div className="unique-profile-posts">
-                <strong>Posts:</strong> {user.postIds?.length}
+                <p><strong>Posts:</strong> {user?.postIds?.length || 0}</p>
             </div>
             <button
                 onClick={handleFollowToggle}
