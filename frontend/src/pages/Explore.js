@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import SortFilterPanel from '../components/SortFilterPanel'; // Sort&Filter panel component
 import '../styles/Explore.css';
-import blankImagePath from "../images/blank_image.webp"; //can be removed once the imageUrls are being pulled in the post object
+import blankImagePath from "../images/blank_image.webp"; // can be removed once the imageUrls are being pulled in the post object
 
 const Explore = () => {
     const [posts, setPosts] = useState([]);
@@ -11,9 +11,9 @@ const Explore = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
-            try{
-                const response = await fetch('/posts/explore'); 
-                if(!response.ok){
+            try {
+                const response = await fetch('/posts/explore');
+                if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
@@ -28,7 +28,6 @@ const Explore = () => {
                 console.error('Error fetching posts:', error);
                 setPosts([]); // Set to empty array on failure
             }
-          
         };
         fetchPosts();
     }, []);
@@ -39,7 +38,7 @@ const Explore = () => {
 
             // Check if there are any user-entered tags
             const hasTags = tags.length > 0;
-            
+
             // Match tags according to tagsApply setting if tags are provided
             const matchesTags = !hasTags || (tagsApply === 'all'
                 ? tags.every(tag => post.tags.includes(tag)) // all tags must match
@@ -81,12 +80,13 @@ const Explore = () => {
                 {filteredAndSortedPosts.length > 0 ? (
                     filteredAndSortedPosts.map((post) => (
                         <Post
-                            key={post.id}
+                            key={post._id} // Use unique key
+                            id={post._id} // Pass post ID here
                             title={post.title}
                             description={post.description}
-                            ownerUsername={post.ownerUsername}
+                            owner={post.owner}
                             price={post.price}
-                            image={post.image}
+                            image={post.image || blankImagePath} // Default image if missing
                             tags={post.tags}
                         />
                     ))
