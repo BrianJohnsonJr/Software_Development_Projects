@@ -3,20 +3,20 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home'
 import Login from './pages/Login'
-import Register from './pages/Register'; // Import the Register component
+import Register from './pages/Register';
 import './styles/index.css';
-import Navbar from './components/Navbar'; // Import the Navbar component
-import Following from './pages/Following'; // Import the Following component
-import Sell from './pages/Sell'; // Import the Sell component
-import Profile from './pages/Profile'; // Import the Profile component
-import Explore from './pages/Explore'; // Import the Explore component
+import Navbar from './components/Navbar';
+import Following from './pages/Following'; 
+import Sell from './pages/Sell';
+import Profile from './pages/Profile';
+import Explore from './pages/Explore'; 
 import Footer from './components/Footer';
 import reportWebVitals from './reportWebVitals';
-import EditProfile from './pages/EditProfile'; // Adjust the path as needed
+import EditProfile from './pages/EditProfile'; 
 import SingleItem from './pages/SingleItem';
 import NotLoggedIn from './pages/NotLoggedIn';
 import SearchResults from './pages/SearchResults';
-import UniqueProfileView from './pages/UniqueProfileView'; // Adjust the path as needed
+import UniqueProfileView from './pages/UniqueProfileView'; 
 
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
         <Route path="/following" element={<Following />} />
         <Route path="/sell" element={<Sell />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/:id" element={<UniqueProfileView />} /> {/* UniqueProfileView route */}
+        <Route path="/profile/:id" element={<UniqueProfileView />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="/edit-profile" element={<EditProfile />} />
@@ -53,5 +53,3 @@ root.render(
 );
 
 reportWebVitals();
-
-//export default App;

@@ -111,7 +111,7 @@ h1 {
 }
 
 .post-card{
-    width: 250px; /* Increased width to 500px for more space */
+    width: 250px; /* Increased width for more space */
     flex-shrink: 0; /* Prevent cards from shrinking */
     text-align: center;
     background-color: #D5FFD9;
