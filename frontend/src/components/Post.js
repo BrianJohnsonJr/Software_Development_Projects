@@ -9,7 +9,6 @@ const Post = forwardRef(({ id, title, description, owner, price, image, tags = [
 
   return (
     <div className="post" ref={ref}>
-      {/* Main Post Link */}
       <Link
         to={`/posts/${id}`}
         state={{ post: { id, title, description, owner, price, image, tags } }}
@@ -21,33 +20,34 @@ const Post = forwardRef(({ id, title, description, owner, price, image, tags = [
             <h2>{title}</h2>
             <p>${price}</p>
             <p>{description}</p>
-            <p className="post-owner">
-              Owned by:&nbsp;
-              <Link
-                to={owner?._id ? `/profile/${owner._id}` : '#'}
-                state={{ owner }}
-                className="profile-link"
-              >
-                {ownerUsername}
-              </Link>
-            </p>
-            {/* Tags moved inside post-details */}
-            <div className="post-tags">
-              <ul>
-                {Array.isArray(tags) && tags.length > 0 ? (
-                  tags.map((tag, index) => <li key={index}>{tag}</li>)
-                ) : (
-                  <li>No tags available</li>
-                )}
-              </ul>
-            </div>
-            {/* Likes moved inside post-details */}
-            <div className="post-likes">
-              <Likes />
-            </div>
           </div>
         </div>
       </Link>
+
+      <p className="post-owner">
+        Owned by:&nbsp;
+        <Link
+          to={owner?._id ? `/profile/${owner._id}` : '#'}
+          state={{ owner }}
+          className="profile-link"
+        >
+          {ownerUsername}
+        </Link>
+      </p>
+
+      <div className="post-tags">
+        <ul>
+          {Array.isArray(tags) && tags.length > 0 ? (
+            tags.map((tag, index) => <li key={index}>{tag}</li>)
+          ) : (
+            <li>No tags available</li>
+          )}
+        </ul>
+      </div>
+
+      <div className="post-likes">
+        <Likes />
+      </div>
     </div>
   );
 });
