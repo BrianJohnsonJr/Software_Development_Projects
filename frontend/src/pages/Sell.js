@@ -64,9 +64,14 @@ const Sell = () => {
   // Handle tag input and add tags (max of 3)
   const handleTagAddition = (e) => {
     e.preventDefault();
-    if (tagInput.trim() !== '' && tags.length < 3) {
+    const normalizedInput = tagInput.trim().toLowerCase();
+    if (
+      normalizedInput !== '' && 
+      tags.length < 3 && 
+      !tags.map(tag => tag.toLowerCase()).includes(normalizedInput)
+    ) {
       setTags([...tags, tagInput.trim()]);
-      setTagInput(''); // Clear input
+      setTagInput('');
     }
   };
 
@@ -183,8 +188,8 @@ const Sell = () => {
           <label for="sizes">Select Sizes:</label>
           <div className="size-options" id="sizes" name="sizes">
             {['S', 'M', 'L', 'XL'].map((size) => (
-              <label for={size} key={size}>
-                <input
+              <label htmlFor={size} key={size} className={sizes.includes(size) ? 'selected' : ''}>
+                <input 
                   id={size}
                   name={size}
                   type="checkbox"
@@ -192,7 +197,7 @@ const Sell = () => {
                   checked={sizes.includes(size)}
                   onChange={handleSizeSelection}
                 />
-                {size}
+                <span>{size}</span>
               </label>
             ))}
           </div>
@@ -203,7 +208,7 @@ const Sell = () => {
           <label>Select item type:</label>
           <div className="type-options">
             {['T-shirt', 'Hoodie', 'Poster', 'Sticker', 'Mug'].map((type) => (
-              <label key={type} className="type-option">
+              <label key={type} className={`type-option ${itemType === type ? 'selected' : ''}`}>
                 <input
                   type="radio"
                   value={type}
