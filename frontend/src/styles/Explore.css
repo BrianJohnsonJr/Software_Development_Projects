@@ -19,7 +19,7 @@ body {
 /* Individual Post Styling */
 .posts-container .post {
     flex: 1 1 45%;
-    max-width: 450px;
+    max-width: 495px;
     background-color: #333333; /* Match navbar color */
     border: 1px solid #444444;
     border-radius: 8px;

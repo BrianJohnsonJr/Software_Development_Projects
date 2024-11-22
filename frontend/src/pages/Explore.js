@@ -134,12 +134,12 @@ const Explore = () => {
                         <Post
                             ref={index === filteredAndSortedPosts.length - 1 ? lastPostRef : null}
                             key={post._id}
-                            _id={post._id}
+                            id={post._id}
                             title={post.title}
                             description={post.description}
-                            ownerUsername={post.ownerUsername}
+                            owner={post.owner}
                             price={post.price}
-                            image={post.image}
+                            image={post.image || blankImagePath} // Default image if missing
                             tags={post.tags}
                         />
                     ))

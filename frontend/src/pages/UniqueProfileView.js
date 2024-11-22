@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom'; // Added useLocation
 import '../styles/UniqueProfileView.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -7,42 +7,40 @@ import { faUser, faEnvelope, faInfoCircle } from '@fortawesome/free-solid-svg-ic
 const UniqueProfileView = () => {
     const [user, setUser] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
-    const { userId } = useParams(); // Get userId from the URL
+    const { id } = useParams(); // Get userId from the URL
+    const { state } = useLocation(); // Get passed state
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                // Fetch the user profile from the backend using the userId
-                const response = await fetch(`/users/${userId}`, {
+                const response = await fetch(`/account/profile/${id}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
                 });
-
                 if (response.ok) {
-                    const userData = await response.json();
-                    setUser(userData.user);
-                    setIsFollowing(userData.isFollowing); // Assume the API sends follow status
+                    const data = await response.json();
+                    setUser(data.user);
                 } else {
-                    console.error('Error fetching profile');
+                    console.error('Failed to fetch profile');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error fetching profile:', error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProfile();
-    }, [userId]);
+    }, [id]);
 
     const handleFollowToggle = async () => {
         try {
-            const response = await fetch(`/users/${userId}/follow`, {
+            const response = await fetch(`/users/${id}/follow`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: isFollowing ? 'unfollow' : 'follow' })
+                body: JSON.stringify({ action: isFollowing ? 'unfollow' : 'follow' }),
             });
 
             if (response.ok) {
@@ -61,16 +59,19 @@ const UniqueProfileView = () => {
 
     return (
         <div className="unique-profile-container">
-            {/* Page title */}
-            <h1 className="unique-profile-title">Unique Profile View</h1>
+            <h1 className="unique-profile-title">Profile View</h1>
 
             <div className="unique-profile-header">
-                <img src={user?.profilePicture || 'https://via.placeholder.com/120'} alt="" className="unique-profile-picture" />
-                <h2>{user?.name}</h2>
+                <img
+                    src={user.profilePicture || 'https://via.placeholder.com/120'}
+                    alt=""
+                    className="unique-profile-picture"
+                />
+                <h2>{user.name}</h2>
             </div>
             <div className="unique-profile-stats">
                 <div>
-                    <strong>Followers:</strong> {user?.followersCount}
+                    <strong>Followers:</strong> {user.followers.length}
                 </div>
             </div>
             <div className="unique-profile-info">
@@ -85,9 +86,12 @@ const UniqueProfileView = () => {
                 </div>
             </div>
             <div className="unique-profile-posts">
-                <strong>Posts:</strong> {user?.postsCount}
+                <strong>Posts:</strong> {user.postIds?.length}
             </div>
-            <button onClick={handleFollowToggle} className={`auth-button follow-button ${isFollowing ? 'following' : ''}`}>
+            <button
+                onClick={handleFollowToggle}
+                className={`auth-button follow-button ${isFollowing ? 'following' : ''}`}
+            >
                 {isFollowing ? 'Unfollow' : 'Follow'}
             </button>
         </div>

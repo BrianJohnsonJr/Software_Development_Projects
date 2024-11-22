@@ -1,6 +1,7 @@
 const express = require('express');
 const { AuthorizeUser } = require('../services/authService'); // Import AuthService
-const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, ValidateResult } = require('../services/verifyService');
+const { VerifyParamsId, VerifyLastId, VerifyS3, SanitizeSearch, VerifyValidationResult, 
+    EscapeRegister, EscapeLogin, } = require('../services/verifyService');
 const { uploadToMemory } = require('../services/fileService');
 const controller = require('../controllers/accountController');
 
@@ -13,36 +14,13 @@ router.get('/auth-check', AuthorizeUser, controller.authCheck);
  * Queries users and returns users matching the specified query.
  * Does not allow for paging with lastId=<id>
  */
-router.get('/search', VerifyLastId, SanitizeSearch, ValidateResult, controller.search);
-
-/**
- * Queries users and returns users matching the specified query.
- * Does not allow for paging with lastId=<id>
- */
-router.get('/search', async (req, res, next) => {
-    try {
-        const searchParams = req.query.query?.trim() || '';
-        const searchQuery = searchParams ? {
-            $or: [
-                { username: { $regex: searchParams, $options: 'i' }},
-                { name: { $regex: searchParams, $options: 'i' }}
-            ],
-        }
-        : {};
-
-        const usersFound = await User.find(searchQuery).select('-password').sort({ _id: -1 }).limit(25);
-        const totalFound = await User.countDocuments(searchQuery); // Count the amount of results
-
-        res.json({ success: true, users: usersFound, resultCount: totalFound });
-    }
-    catch (err) { next(err); }
-});
+router.get('/search', VerifyLastId, SanitizeSearch, VerifyValidationResult, controller.search);
 
 // Register route
-router.post('/register', uploadToMemory.none(), controller.register);
+router.post('/register', uploadToMemory.none(), EscapeRegister, VerifyValidationResult, controller.register);
 
 // Login route
-router.post('/login', uploadToMemory.none(), controller.loginUser);
+router.post('/login', uploadToMemory.none(), EscapeLogin, VerifyValidationResult, controller.loginUser);
 
 // Logout route
 router.post('/logout', uploadToMemory.none(), controller.logout);

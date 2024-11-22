@@ -69,10 +69,12 @@ exports.VerifyS3 = async (req, res, next) => {
  * Middleware to check the results of the validators ran in the previous middleware.
  * Creates an error if there were  failures on the validators
  */
-exports.ValidateResult = (req, res, next) => {
+exports.VerifyValidationResult = (req, res, next) => {
     let errors = validationResult(req);
     if(!errors.isEmpty()) {
-        let err = new Error(errors.array().join('\n'));
+        // console.log(errors.array());
+        let errMessages = errors.array().map(error => `${error.type} error: ${error.msg} in ${error.path}`);
+        let err = new Error(errMessages.join('\n'));
         err.status = 400;
         return next(err);
     } else {
@@ -85,4 +87,38 @@ exports.ValidateResult = (req, res, next) => {
  */
 exports.SanitizeSearch = [
     query('query').trim().isString().isLength({max: 100}).escape().toLowerCase()
+];
+
+exports.EscapeRegister = [
+    body('name').trim().escape().isLength({min: 2, max: 50}),
+    body('username').trim().escape().isAlphanumeric().isLength({min: 3, max: 30}),
+    body('email').isEmail().normalizeEmail(),
+    // Enable the first one if we want a proper password validation
+    // body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 }),
+    body('password').isLength({min: 8, max: 64}).isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 0, minNumbers: 0, minSymbols: 0 }),
+    body('bio').optional().trim().escape().isLength({max: 250}),
+
+];
+
+exports.EscapeLogin = [
+    body('username').trim().escape(),
+    body('password').notEmpty()
+];
+
+exports.EscapeNewPost = [
+    body('title').escape().trim().isLength({min: 2}),
+    body('description').optional().escape().trim(),
+    body('price').escape().trim().isNumeric(),
+    body('itemType').notEmpty().trim().escape(),
+    body('tags').optional().isArray().customSanitizer(tags => {
+        return tags.map(tag => tag.trim().replace(/[^\w\s-]/g, '').escape()); // this regex removes all but letters, numbers, spaces, and hyphens
+    }),
+    body('sizes').optional().isArray().customSanitizer(sizes => {
+        return sizes.map(size => size.trim().replace(/[^\w\s-]/g, '').escape());
+    })
+];
+
+exports.EscapeNewComment = [
+    body('text').notEmpty().escape().trim(),
+    body('rating').notEmpty().isNumeric().toFloat().isFloat({ min: 0, max: 5 }),
 ];

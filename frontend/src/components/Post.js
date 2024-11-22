@@ -1,9 +1,10 @@
+
 import React, { forwardRef } from 'react';
 import '../styles/Post.css';  
 import Likes from './Likes';
 import { Link } from 'react-router-dom';
 
-const Post = forwardRef(({ _id, title, description, owner, price, image, tags = [], likes }, ref) => {
+const Post = forwardRef(({ id, title, description, owner, price, image, tags = [], likes }, ref) => {
   const ownerUsername = owner?.username || 'Unknown';
   const imageSrc = image || 'https://via.placeholder.com/150';
 
@@ -11,8 +12,8 @@ const Post = forwardRef(({ _id, title, description, owner, price, image, tags = 
     <div className="post" ref={ref}>
       {/* Main Post Link */}
       <Link
-        to={`/posts/${_id}`}
-        state={{ post: { _id, title, description, owner, price, image, tags } }}
+        to={`/posts/${id}`}
+        state={{ post: { id, title, description, owner, price, image, tags } }}
         className="post-link"
       >
         <img src={imageSrc} alt={title} className="post-image" />
@@ -55,5 +56,6 @@ const Post = forwardRef(({ _id, title, description, owner, price, image, tags = 
     </div>
   );
 });
+
 
 export default Post;

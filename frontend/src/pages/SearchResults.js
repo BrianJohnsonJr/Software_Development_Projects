@@ -38,6 +38,7 @@ const SearchResults = () => {
                 setIsLoading(false);
             }
         };
+
         const fetchPostSearchResults = async () => {
             if (!searchTerm || searchTerm.trim() === "") {
                 setError('Please enter a search term.');
@@ -46,7 +47,7 @@ const SearchResults = () => {
             }
             try {
                 setIsLoading(true);
-                const postResponse = await fetch(`/posts/search?query=${encodeURIComponent(searchTerm)}`)
+                const postResponse = await fetch(`/posts/search?query=${encodeURIComponent(searchTerm)}`);
                 if (!postResponse.ok) {
                     console.log(postResponse);
                     throw new Error('Failed to fetch post search results.');
@@ -65,6 +66,7 @@ const SearchResults = () => {
                 setIsLoading(false);
             }
         };
+
         fetchUserSearchResults();
         fetchPostSearchResults();
     }, [searchTerm]);
@@ -87,19 +89,20 @@ const SearchResults = () => {
 
             {results.users?.length >= 0 && (
                 <div className="user-results-section">
-                    <h2>Users</h2>
+                    <h3>Users</h3>
                     <div className="user-results-grid">
                         {results.users.map((user) => (
-                            <User
-                                key={user._id}
-                                user={{
-                                    username: user.username,
-                                    image: user.image,
-                                    followers: user.followers,
-                                    following: user.following,
-                                    postIds: user.postIds,
-                                }}
-                            />
+                            <div className="user-card" key={user._id}>
+                                <User
+                                    user={{
+                                        username: user.username,
+                                        image: user.image,
+                                        followers: user.followers,
+                                        following: user.following,
+                                        postIds: user.postIds,
+                                    }}
+                                />
+                            </div>
                         ))}
                     </div>
                 </div>
