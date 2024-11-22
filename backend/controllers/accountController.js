@@ -49,9 +49,10 @@ exports.search = async (req, res, next) => {
  * Registers a new user by validating input, hashing the password, and saving the user to the database.
  */
 exports.register = async (req, res, next) => {
-    const { name, username, email, password, bio, imageUrl } = req.body;
-
+    
     try {
+        const { name, username, email, password, bio } = req.body;
+        
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             const message = existingUser.username === username ? 'Username already exists' : 'Email already exists';
@@ -60,6 +61,8 @@ exports.register = async (req, res, next) => {
             return next(err);
         }
 
+        const file = req.file ? await uploadToCloud(req.s3, req.file) : '';
+
         const hashedPassword = await AuthService.hashPassword(password);
         const newUser = new User({
             name,
@@ -67,7 +70,7 @@ exports.register = async (req, res, next) => {
             email,
             password: hashedPassword,
             bio,
-            profilePicture: imageUrl || '' // Ensure a default empty string if imageUrl is missing
+            profilePicture: file.filename || '',
         });
 
         await newUser.save();
