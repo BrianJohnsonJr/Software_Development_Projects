@@ -78,22 +78,17 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     const formData = new FormData();
-    formData.append('image', image); // Attach the raw file
+    formData.append('image', image); 
     formData.append('title', title);
     formData.append('description', description);
     formData.append('price', price);
-    // formData.append('tags', JSON.stringify(tags)); // Convert array to string
     formData.append('itemType', itemType);
-    // formData.append('sizes', JSON.stringify(sizes)); // Convert array to string
 
     // Append each tag individually
     tags.forEach((tag, index) => {
       formData.append('tags[]', tag);
     });
-    
-    console.log("tags: ", tags);
 
     // Append each size individually
     sizes.forEach((size, index) => {
