@@ -139,7 +139,7 @@ const Explore = () => {
                             description={post.description}
                             owner={post.owner}
                             price={post.price}
-                            image={post.image || blankImagePath} // Default image if missing
+                            image={post.image || 'https://preview.redd.it/tuya5a8s2tv71.png?width=422&format=png&auto=webp&s=b379b435e0b570d34bea7eadb00f78faa53ae98d'} // Default image if missing
                             tags={post.tags}
                         />
                     ))
