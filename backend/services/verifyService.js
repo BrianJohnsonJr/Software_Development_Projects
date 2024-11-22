@@ -108,21 +108,10 @@ exports.EscapeNewPost = [
     body('description').optional().escape().trim(),
     body('price').escape().trim().isNumeric(),
     body('itemType').notEmpty().trim().escape(),
-    body('tags').optional().isArray().customSanitizer(tags => {
-        console.log("tags: ", tags);
-        if(!Array.isArray(tags))
-             return [];
-        else 
-            return tags.map(tag => String(tag).trim().replace(/[^\w\s-]/g, '')); // this regex removes all but letters, numbers, spaces, and hyphens
-    }),
-    body('sizes').optional().isArray().customSanitizer(sizes => {
-        if(!Array.isArray(sizes))
-            return [];
-        else 
-            return sizes.map(size => String(size).trim().replace(/[^\w\s-]/g, ''));
-    }),
-    body('tags.*').escape(),
-    body('sizes.*').escape(),
+    body('tags').optional().isArray(),
+    body('tags.*').trim().replace(/[^\w\s-]/g, '').escape(), // this regex removes all but letters, numbers, spaces, and hyphens
+    body('sizes').optional().isArray(),
+    body('sizes.*').trim().replace(/[^\w\s-]/g, '').escape(),
 ];
 
 exports.EscapeNewComment = [
